@@ -103,6 +103,12 @@ If you find Respool useful, consider buying me a coffee!
 
 [![Buy Me A Coffee](https://img.shields.io/badge/Buy_Me_A_Coffee-FFDD00?style=for-the-badge&logo=buy-me-a-coffee&logoColor=black)](https://buymeacoffee.com/NindroidA)
 
+## Code Health
+
+<img src="scorecard.png" width="100%">
+
+*Scanned with [desloppify](https://github.com/peteromallet/desloppify)*
+
 ## License
 
 [MIT](LICENSE)
