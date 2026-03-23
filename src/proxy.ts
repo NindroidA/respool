@@ -11,7 +11,7 @@ const PROTECTED_PREFIXES = [
   "/admin",
 ];
 
-export function middleware(request: NextRequest) {
+export function proxy(request: NextRequest) {
   const sessionCookie = request.cookies.get("better-auth.session_token");
   const { pathname } = request.nextUrl;
 

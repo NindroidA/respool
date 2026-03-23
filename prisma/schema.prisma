@@ -15,9 +15,10 @@ model User {
   email         String    @unique
   emailVerified Boolean   @default(false)
   image         String?
-  role          String    @default("user") // "user" | "admin"
-  banned        Boolean   @default(false)
-  lastAccessed  DateTime?
+  role              String    @default("user") // "user" | "admin"
+  banned            Boolean   @default(false)
+  twoFactorEnabled  Boolean   @default(false)
+  lastAccessed      DateTime?
   createdAt     DateTime  @default(now())
   updatedAt     DateTime  @updatedAt
 
