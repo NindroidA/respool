@@ -105,7 +105,7 @@ If you find Respool useful, consider buying me a coffee!
 
 ## Code Health
 
-<img src="scorecard.png" width="100%">
+<img src="public/scorecard.png" width="100%">
 
 *Scanned with [desloppify](https://github.com/peteromallet/desloppify)*
 
