@@ -30,7 +30,7 @@ interface SpoolCardProps {
     material: string;
     currentMass: number;
     startingMass: number;
-    archived: boolean;
+    archived?: boolean;
     box?: { id: string; name: string } | null;
   };
   index?: number;
