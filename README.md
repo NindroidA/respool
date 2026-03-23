@@ -30,7 +30,7 @@ Self-hosted 3D printing filament management — track spools, log usage, plan sw
 ## Quick Start (Docker)
 
 ```bash
-git clone https://github.com/YOUR_USERNAME/respool.git
+git clone https://github.com/NindroidA/respool.git
 cd respool
 cp .env.example .env
 # Edit .env with your secrets

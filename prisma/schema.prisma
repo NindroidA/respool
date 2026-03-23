@@ -1,0 +1,195 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// ─── Better Auth managed tables ─────────────────────────
+
+model User {
+  id            String    @id
+  name          String
+  email         String    @unique
+  emailVerified Boolean   @default(false)
+  image         String?
+  role          String    @default("user") // "user" | "admin"
+  banned        Boolean   @default(false)
+  lastAccessed  DateTime?
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  sessions Session[]
+  accounts Account[]
+  spools   Spool[]
+  boxes    Box[]
+  prints   Print[]
+  settings UserSettings?
+
+  twoFactors TwoFactor[]
+}
+
+model Session {
+  id        String   @id
+  expiresAt DateTime
+  token     String   @unique
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  ipAddress String?
+  userAgent String?
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model Account {
+  id                    String    @id
+  accountId             String
+  providerId            String
+  userId                String
+  user                  User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  accessToken           String?
+  refreshToken          String?
+  idToken               String?
+  accessTokenExpiresAt  DateTime?
+  refreshTokenExpiresAt DateTime?
+  scope                 String?
+  password              String?
+  createdAt             DateTime  @default(now())
+  updatedAt             DateTime  @updatedAt
+}
+
+model Verification {
+  id         String   @id
+  identifier String
+  value      String
+  expiresAt  DateTime
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+}
+
+model TwoFactor {
+  id          String @id
+  secret      String
+  backupCodes String
+  userId      String
+  user        User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+// ─── Application tables ─────────────────────────────────
+
+model Spool {
+  id       String @id @default(cuid())
+  shortId  String @unique @default(cuid())
+  userId   String
+  user     User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  name     String
+  brand    String
+  color    String  // hex, e.g. "#FF5733"
+  material String  // e.g. "PLA", "PETG"
+  note     String  @default("")
+
+  currentMass  Int // grams
+  startingMass Int // grams
+
+  diameter            Float? // mm, e.g. 1.75
+  printingTemperature Int?   // °C
+  cost                Int?   // cents (e.g. 2499 = $24.99)
+
+  filamentColorId String?
+  filamentColor   FilamentColor? @relation(fields: [filamentColorId], references: [id], onDelete: SetNull)
+
+  boxId    String?
+  box      Box?    @relation(fields: [boxId], references: [id], onDelete: SetNull)
+
+  archived     Boolean  @default(false)
+  displayOrder Int      @default(0)
+  lastUsed     DateTime @default(now())
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  logs           SpoolLog[]
+  printFilaments PrintFilament[]
+}
+
+model SpoolLog {
+  id       String @id @default(cuid())
+  spoolId  String
+  spool    Spool  @relation(fields: [spoolId], references: [id], onDelete: Cascade)
+
+  gramsUsed    Int
+  note         String?
+  previousMass Int
+  newMass      Int
+
+  createdAt DateTime @default(now())
+}
+
+model Box {
+  id     String @id @default(cuid())
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  name         String
+  displayOrder Int @default(0)
+
+  spools    Spool[]
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Print {
+  id     String @id @default(cuid())
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  name             String
+  notes            String?
+  printTimeMinutes Int?    // nullable for pre-print mode
+  totalGramsUsed   Int
+  status           String  @default("completed") // "planned" | "in_progress" | "completed"
+  estimatedGrams   Int?    // slicer estimate (pre-print mode)
+  estimatedLayers  Int?    // slicer estimate (pre-print mode)
+
+  filaments PrintFilament[]
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model PrintFilament {
+  id       String @id @default(cuid())
+  printId  String
+  print    Print  @relation(fields: [printId], references: [id], onDelete: Cascade)
+  spoolId  String
+  spool    Spool  @relation(fields: [spoolId], references: [id], onDelete: Cascade)
+
+  gramsUsed Int
+}
+
+model UserSettings {
+  userId String @id
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  materialOptions      String[] @default(["PLA", "PETG", "ABS", "TPU", "ASA", "PC", "HIPS", "PVA"])
+  dateFormat           String   @default("MM/dd/yyyy")
+  timeFormat           String   @default("12h")
+  defaultMaterial      String   @default("PLA")
+  defaultMass          Int      @default(1000) // grams
+  unitPreference       String   @default("grams") // "grams" | "oz"
+  lowFilamentThreshold Int      @default(100) // grams remaining to trigger warnings
+}
+
+model FilamentColor {
+  id           String  @id @default(cuid())
+  name         String  // e.g. "Silk Gold", "Matte Black"
+  hex          String  // primary hex, e.g. "#D4AF37"
+  hexSecondary String? // for dual-color filaments
+  category     String  // "solid" | "silk" | "matte" | "dual" | "translucent" | "glow" | "marble"
+  sortOrder    Int     @default(0)
+
+  spools Spool[]
+
+  @@unique([name, category])
+}

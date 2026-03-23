@@ -61,42 +61,80 @@
   --material-pva: #06b6d4;
   --material-pva-light: #67e8f9;
 
-  /* shadcn/ui integration */
-  --card: oklch(1 0 0);
-  --card-foreground: oklch(0.145 0 0);
-  --popover: oklch(1 0 0);
-  --popover-foreground: oklch(0.145 0 0);
-  --primary: oklch(0.205 0 0);
-  --primary-foreground: oklch(0.985 0 0);
-  --secondary: oklch(0.97 0 0);
-  --secondary-foreground: oklch(0.205 0 0);
-  --muted: oklch(0.97 0 0);
-  --muted-foreground: oklch(0.556 0 0);
-  --accent: oklch(0.97 0 0);
-  --accent-foreground: oklch(0.205 0 0);
-  --destructive: oklch(0.577 0.245 27.325);
+  /* shadcn/ui integration — dark-first (we always use dark) */
+  --background: var(--bg-base);
+  --foreground: var(--text-primary);
+  --card: var(--bg-card);
+  --card-foreground: var(--text-primary);
+  --popover: var(--bg-card);
+  --popover-foreground: var(--text-primary);
+  --primary: var(--accent-jade);
+  --primary-foreground: var(--bg-base);
+  --secondary: var(--bg-card);
+  --secondary-foreground: var(--text-secondary);
+  --muted: var(--bg-card);
+  --muted-foreground: var(--text-muted);
+  --accent: var(--bg-card-hover);
+  --accent-foreground: var(--text-primary);
+  --destructive: #7f1d1d;
   --destructive-foreground: #fca5a5;
-  --border: oklch(0.922 0 0);
-  --input: oklch(0.922 0 0);
-  --ring: oklch(0.708 0 0);
+  --border: var(--border-default);
+  --input: var(--border-default);
+  --ring: var(--accent-jade);
   --radius: 0.625rem;
 
-  /* Chart colors for Recharts / shadcn */
-  --chart-1: oklch(0.87 0 0);
-  --chart-2: oklch(0.556 0 0);
-  --chart-3: oklch(0.439 0 0);
-  --chart-4: oklch(0.371 0 0);
-  --chart-5: oklch(0.269 0 0);
-  --background: oklch(1 0 0);
-  --foreground: oklch(0.145 0 0);
-  --sidebar: oklch(0.985 0 0);
-  --sidebar-foreground: oklch(0.145 0 0);
-  --sidebar-primary: oklch(0.205 0 0);
-  --sidebar-primary-foreground: oklch(0.985 0 0);
-  --sidebar-accent: oklch(0.97 0 0);
-  --sidebar-accent-foreground: oklch(0.205 0 0);
-  --sidebar-border: oklch(0.922 0 0);
-  --sidebar-ring: oklch(0.708 0 0);
+  /* Chart colors */
+  --chart-1: var(--accent-jade);
+  --chart-2: var(--material-petg);
+  --chart-3: var(--material-abs);
+  --chart-4: var(--material-tpu);
+  --chart-5: var(--material-asa);
+
+  /* Sidebar */
+  --sidebar: var(--bg-raised);
+  --sidebar-foreground: var(--text-primary);
+  --sidebar-primary: var(--accent-jade);
+  --sidebar-primary-foreground: var(--bg-base);
+  --sidebar-accent: var(--bg-card-hover);
+  --sidebar-accent-foreground: var(--text-primary);
+  --sidebar-border: var(--border-default);
+  --sidebar-ring: var(--accent-jade);
+}
+
+/* Dark mode uses the same values (dark-first design) */
+.dark {
+  --background: var(--bg-base);
+  --foreground: var(--text-primary);
+  --card: var(--bg-card);
+  --card-foreground: var(--text-primary);
+  --popover: var(--bg-card);
+  --popover-foreground: var(--text-primary);
+  --primary: var(--accent-jade);
+  --primary-foreground: var(--bg-base);
+  --secondary: var(--bg-card);
+  --secondary-foreground: var(--text-secondary);
+  --muted: var(--bg-card);
+  --muted-foreground: var(--text-muted);
+  --accent: var(--bg-card-hover);
+  --accent-foreground: var(--text-primary);
+  --destructive: #7f1d1d;
+  --destructive-foreground: #fca5a5;
+  --border: var(--border-default);
+  --input: var(--border-default);
+  --ring: var(--accent-jade);
+  --chart-1: var(--accent-jade);
+  --chart-2: var(--material-petg);
+  --chart-3: var(--material-abs);
+  --chart-4: var(--material-tpu);
+  --chart-5: var(--material-asa);
+  --sidebar: var(--bg-raised);
+  --sidebar-foreground: var(--text-primary);
+  --sidebar-primary: var(--accent-jade);
+  --sidebar-primary-foreground: var(--bg-base);
+  --sidebar-accent: var(--bg-card-hover);
+  --sidebar-accent-foreground: var(--text-primary);
+  --sidebar-border: var(--border-default);
+  --sidebar-ring: var(--accent-jade);
 }
 
 /* ─── Tailwind Theme Extension ─────────────────────────── */
@@ -126,12 +164,24 @@
   --color-chart-3: var(--chart-3);
   --color-chart-4: var(--chart-4);
   --color-chart-5: var(--chart-5);
+  --color-sidebar: var(--sidebar);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar-primary: var(--sidebar-primary);
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-ring: var(--sidebar-ring);
   --radius-sm: calc(var(--radius) - 4px);
   --radius-md: calc(var(--radius) - 2px);
   --radius-lg: var(--radius);
   --radius-xl: calc(var(--radius) + 4px);
-  --font-sans: var(--font-sans);
+  --radius-2xl: calc(var(--radius) * 1.8);
+  --radius-3xl: calc(var(--radius) * 2.2);
+  --radius-4xl: calc(var(--radius) * 2.6);
+  --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
+  --font-heading: var(--font-geist-sans);
 
   /* Custom accent colors for Tailwind classes */
   --color-jade: var(--accent-jade);
@@ -139,26 +189,20 @@
   --color-emerald-accent: var(--accent-emerald);
   --color-mint: var(--accent-mint);
   --color-teal-accent: var(--accent-teal);
-  --font-heading: var(--font-sans);
-  --color-sidebar-ring: var(--sidebar-ring);
-  --color-sidebar-border: var(--sidebar-border);
-  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
-  --color-sidebar-accent: var(--sidebar-accent);
-  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
-  --color-sidebar-primary: var(--sidebar-primary);
-  --color-sidebar-foreground: var(--sidebar-foreground);
-  --color-sidebar: var(--sidebar);
-  --radius-2xl: calc(var(--radius) * 1.8);
-  --radius-3xl: calc(var(--radius) * 2.2);
-  --radius-4xl: calc(var(--radius) * 2.6);
 }
 
-/* ─── Base Styles ──────────────────────────────────────── */
+/* ─── Base Layer ───────────────────────────────────────── */
 
-body {
-  background: var(--bg-base);
-  color: var(--text-primary);
-  font-family: var(--font-geist-sans), system-ui, -apple-system, sans-serif;
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+  body {
+    @apply bg-background text-foreground;
+  }
+  html {
+    @apply font-sans;
+  }
 }
 
 /* ─── Glass & Glow Utilities ───────────────────────────── */
@@ -219,50 +263,4 @@ body {
 
 ::-webkit-scrollbar-thumb:hover {
   background: var(--text-faint);
-}
-
-.dark {
-  --background: oklch(0.145 0 0);
-  --foreground: oklch(0.985 0 0);
-  --card: oklch(0.205 0 0);
-  --card-foreground: oklch(0.985 0 0);
-  --popover: oklch(0.205 0 0);
-  --popover-foreground: oklch(0.985 0 0);
-  --primary: oklch(0.922 0 0);
-  --primary-foreground: oklch(0.205 0 0);
-  --secondary: oklch(0.269 0 0);
-  --secondary-foreground: oklch(0.985 0 0);
-  --muted: oklch(0.269 0 0);
-  --muted-foreground: oklch(0.708 0 0);
-  --accent: oklch(0.269 0 0);
-  --accent-foreground: oklch(0.985 0 0);
-  --destructive: oklch(0.704 0.191 22.216);
-  --border: oklch(1 0 0 / 10%);
-  --input: oklch(1 0 0 / 15%);
-  --ring: oklch(0.556 0 0);
-  --chart-1: oklch(0.87 0 0);
-  --chart-2: oklch(0.556 0 0);
-  --chart-3: oklch(0.439 0 0);
-  --chart-4: oklch(0.371 0 0);
-  --chart-5: oklch(0.269 0 0);
-  --sidebar: oklch(0.205 0 0);
-  --sidebar-foreground: oklch(0.985 0 0);
-  --sidebar-primary: oklch(0.488 0.243 264.376);
-  --sidebar-primary-foreground: oklch(0.985 0 0);
-  --sidebar-accent: oklch(0.269 0 0);
-  --sidebar-accent-foreground: oklch(0.985 0 0);
-  --sidebar-border: oklch(1 0 0 / 10%);
-  --sidebar-ring: oklch(0.556 0 0);
-}
-
-@layer base {
-  * {
-    @apply border-border outline-ring/50;
-  }
-  body {
-    @apply bg-background text-foreground;
-  }
-  html {
-    @apply font-sans;
-  }
 }
