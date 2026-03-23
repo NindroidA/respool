@@ -8,7 +8,6 @@ import { LowFilamentAlerts } from "@/components/dashboard/low-filament-alerts";
 import { ActivityFeed } from "@/components/dashboard/activity-feed";
 import { RecentlyUsed } from "@/components/dashboard/recently-used";
 import { MATERIAL_COLORS } from "@/lib/constants";
-import { Disc, Weight, TrendingDown, Percent } from "lucide-react";
 
 async function getDashboardData(userId: string) {
   const [spools, logs, prints, settings] = await Promise.all([
@@ -130,25 +129,29 @@ export default async function DashboardPage() {
 
       {/* Stats */}
       <div className="grid grid-cols-2 gap-3 lg:grid-cols-4">
-        <StatCard label="active spools" value={data.totalSpools} icon={Disc} />
+        <StatCard
+          label="active spools"
+          value={data.totalSpools}
+          iconName="disc"
+        />
         <StatCard
           label="available"
           value={data.totalAvailable}
           suffix="g"
-          icon={Weight}
+          iconName="weight"
           color="var(--accent-neon)"
         />
         <StatCard
           label="total used"
           value={data.totalUsed}
           suffix="g"
-          icon={TrendingDown}
+          iconName="trending-down"
         />
         <StatCard
           label="avg utilization"
           value={data.avgUtilization}
           suffix="%"
-          icon={Percent}
+          iconName="percent"
         />
       </div>
 

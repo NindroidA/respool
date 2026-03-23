@@ -2,18 +2,26 @@
 
 import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
-import { type LucideIcon } from "lucide-react";
+import { Disc, Weight, TrendingDown, Percent, type LucideIcon } from "lucide-react";
+
+const ICON_MAP: Record<string, LucideIcon> = {
+  disc: Disc,
+  weight: Weight,
+  "trending-down": TrendingDown,
+  percent: Percent,
+};
 
 interface StatCardProps {
   label: string;
   value: number;
   suffix?: string;
-  icon: LucideIcon;
+  iconName: string;
   color?: string;
 }
 
-export function StatCard({ label, value, suffix = "", icon: Icon, color }: StatCardProps) {
+export function StatCard({ label, value, suffix = "", iconName, color }: StatCardProps) {
   const [displayed, setDisplayed] = useState(0);
+  const Icon = ICON_MAP[iconName] ?? Disc;
 
   useEffect(() => {
     const duration = 600;
