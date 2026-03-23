@@ -12,8 +12,13 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Badge } from "@/components/ui/badge";
 import { ProgressBar } from "@/components/shared/progress-bar";
+import { QuickLog } from "@/components/spools/quick-log";
 import { MATERIAL_COLORS } from "@/lib/constants";
-import { duplicateSpool, archiveSpool, deleteSpool } from "@/app/(dashboard)/spools/actions";
+import {
+  duplicateSpool,
+  archiveSpool,
+  deleteSpool,
+} from "@/app/(dashboard)/spools/actions";
 import { toast } from "sonner";
 
 interface SpoolCardProps {
@@ -96,30 +101,37 @@ export function SpoolCard({ spool, index = 0 }: SpoolCardProps) {
             </div>
           </Link>
 
-          {/* Actions menu */}
-          <DropdownMenu>
-            <DropdownMenuTrigger className="rounded p-1 opacity-0 transition-opacity group-hover:opacity-100 hover:bg-(--bg-card-hover)">
-              <MoreHorizontal className="h-4 w-4 text-muted-foreground" />
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="end">
-              <DropdownMenuItem onClick={handleDuplicate}>
-                <Copy className="mr-2 h-4 w-4" />
-                Duplicate
-              </DropdownMenuItem>
-              <DropdownMenuItem onClick={handleArchive}>
-                <Archive className="mr-2 h-4 w-4" />
-                Archive
-              </DropdownMenuItem>
-              <DropdownMenuSeparator />
-              <DropdownMenuItem
-                onClick={handleDelete}
-                className="text-destructive-foreground"
-              >
-                <Trash2 className="mr-2 h-4 w-4" />
-                Delete
-              </DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
+          {/* Quick log + Actions menu */}
+          <div className="flex items-center gap-0.5">
+            <QuickLog
+              spoolId={spool.id}
+              currentMass={spool.currentMass}
+              spoolName={spool.name}
+            />
+            <DropdownMenu>
+              <DropdownMenuTrigger className="rounded p-1 opacity-0 transition-opacity group-hover:opacity-100 hover:bg-(--bg-card-hover)">
+                <MoreHorizontal className="h-4 w-4 text-muted-foreground" />
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end">
+                <DropdownMenuItem onClick={handleDuplicate}>
+                  <Copy className="mr-2 h-4 w-4" />
+                  Duplicate
+                </DropdownMenuItem>
+                <DropdownMenuItem onClick={handleArchive}>
+                  <Archive className="mr-2 h-4 w-4" />
+                  Archive
+                </DropdownMenuItem>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem
+                  onClick={handleDelete}
+                  className="text-destructive-foreground"
+                >
+                  <Trash2 className="mr-2 h-4 w-4" />
+                  Delete
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+          </div>
         </div>
 
         {/* Material badge */}
