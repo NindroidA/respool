@@ -43,22 +43,33 @@ export function ColorPicker({
 
   const filteredColors = colors.filter(
     (c) =>
-      c.category === tab &&
-      c.name.toLowerCase().includes(search.toLowerCase())
+      c.category === tab && c.name.toLowerCase().includes(search.toLowerCase()),
   );
 
   return (
     <div className="space-y-3">
       {/* Preview */}
       <div className="flex items-center gap-3">
-        <div
-          className="h-10 w-10 shrink-0 rounded-lg border border-border"
-          style={{ backgroundColor: value || "#808080" }}
-        />
+        {(() => {
+          const selectedColor = filamentColorId
+            ? colors.find((c) => c.id === filamentColorId)
+            : null;
+          const isDual = selectedColor?.hexSecondary;
+          return (
+            <div
+              className="h-10 w-10 shrink-0 rounded-lg border border-border"
+              style={{
+                background: isDual
+                  ? `linear-gradient(135deg, ${selectedColor.hex} 50%, ${selectedColor.hexSecondary} 50%)`
+                  : value || "#808080",
+              }}
+            />
+          );
+        })()}
         <div className="min-w-0 flex-1">
           <p className="text-sm font-medium text-foreground">
             {filamentColorId
-              ? colors.find((c) => c.id === filamentColorId)?.name ?? "Custom"
+              ? (colors.find((c) => c.id === filamentColorId)?.name ?? "Custom")
               : value
                 ? "Custom Color"
                 : "No color selected"}
@@ -97,7 +108,7 @@ export function ColorPicker({
                       "group relative flex h-10 w-full items-center justify-center rounded-lg border-2 transition-all",
                       filamentColorId === color.id
                         ? "border-jade shadow-[0_0_8px_rgba(16,185,129,0.3)]"
-                        : "border-transparent hover:border-[var(--border-default)]"
+                        : "border-transparent hover:border-[var(--border-default)]",
                     )}
                     style={{ backgroundColor: color.hex }}
                     title={color.name}

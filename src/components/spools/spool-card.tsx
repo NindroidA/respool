@@ -12,6 +12,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Badge } from "@/components/ui/badge";
 import { ProgressBar } from "@/components/shared/progress-bar";
+import { ColorSwatch } from "@/components/shared/color-swatch";
 import { QuickLog } from "@/components/spools/quick-log";
 import { MATERIAL_COLORS } from "@/lib/constants";
 import {
@@ -27,6 +28,7 @@ interface SpoolCardProps {
     name: string;
     brand: string;
     color: string;
+    colorSecondary?: string | null;
     material: string;
     currentMass: number;
     startingMass: number;
@@ -86,10 +88,11 @@ export function SpoolCard({ spool, index = 0 }: SpoolCardProps) {
             href={`/spools/${spool.id}`}
             className="flex min-w-0 flex-1 items-start gap-3"
           >
-            {/* Color dot */}
-            <div
-              className="mt-0.5 h-5 w-5 shrink-0 rounded-full border border-[var(--border-subtle)]"
-              style={{ backgroundColor: spool.color }}
+            <ColorSwatch
+              hex={spool.color}
+              hexSecondary={spool.colorSecondary}
+              size="md"
+              className="mt-0.5"
             />
             <div className="min-w-0">
               <p className="truncate text-sm font-semibold text-foreground">
