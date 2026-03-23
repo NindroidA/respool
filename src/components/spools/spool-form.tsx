@@ -6,12 +6,28 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
 import { ColorPicker } from "./color-picker";
 import { createSpool, updateSpool } from "@/app/(dashboard)/spools/actions";
 import { createSpoolSchema } from "@/lib/validators";
-import { DEFAULT_MATERIALS, DEFAULT_SPOOL_MASS, DEFAULT_FILAMENT_DIAMETER } from "@/lib/constants";
+import {
+  DEFAULT_MATERIALS,
+  DEFAULT_SPOOL_MASS,
+  DEFAULT_FILAMENT_DIAMETER,
+} from "@/lib/constants";
 import { toast } from "sonner";
 import { Loader2, Plus } from "lucide-react";
 
@@ -63,7 +79,7 @@ export function SpoolForm({
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [selectedColor, setSelectedColor] = useState(spool?.color ?? "#808080");
   const [selectedColorId, setSelectedColorId] = useState<string | null>(
-    spool?.filamentColorId ?? null
+    spool?.filamentColorId ?? null,
   );
 
   const isEdit = !!spool;
@@ -108,9 +124,7 @@ export function SpoolForm({
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
-      <DialogTrigger
-        className="inline-flex items-center justify-center gap-2 rounded-lg bg-primary px-4 py-2 text-sm font-semibold text-primary-foreground transition-colors hover:bg-(--accent-jade-hover)"
-      >
+      <DialogTrigger className="inline-flex items-center justify-center gap-2 rounded-lg bg-primary px-4 py-2 text-sm font-semibold text-primary-foreground transition-colors hover:bg-(--accent-jade-hover)">
         {trigger ?? (
           <>
             <Plus className="h-4 w-4" />
@@ -135,7 +149,9 @@ export function SpoolForm({
                 placeholder="Generic White PLA"
               />
               {errors.name && (
-                <p className="text-xs text-[var(--color-error)]">{errors.name}</p>
+                <p className="text-xs text-[var(--color-error)]">
+                  {errors.name}
+                </p>
               )}
             </div>
             <div className="space-y-1.5">
@@ -147,26 +163,28 @@ export function SpoolForm({
                 placeholder="Hatchbox"
               />
               {errors.brand && (
-                <p className="text-xs text-[var(--color-error)]">{errors.brand}</p>
+                <p className="text-xs text-[var(--color-error)]">
+                  {errors.brand}
+                </p>
               )}
             </div>
           </div>
 
           {/* Material */}
           <div className="space-y-1.5">
-            <Label>Material</Label>
-            <Select name="material" defaultValue={spool?.material ?? materials[0]}>
-              <SelectTrigger>
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                {materials.map((m) => (
-                  <SelectItem key={m} value={m}>
-                    {m}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
+            <Label htmlFor="material">Material</Label>
+            <select
+              id="material"
+              name="material"
+              defaultValue={spool?.material ?? materials[0]}
+              className="h-10 w-full rounded-lg border border-input bg-transparent px-3 text-sm text-foreground outline-none transition-colors focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50 dark:bg-input/30"
+            >
+              {materials.map((m) => (
+                <option key={m} value={m}>
+                  {m}
+                </option>
+              ))}
+            </select>
           </div>
 
           {/* Color */}
@@ -243,20 +261,20 @@ export function SpoolForm({
 
           {/* Box */}
           <div className="space-y-1.5">
-            <Label>Box</Label>
-            <Select name="boxId" defaultValue={spool?.boxId ?? ""}>
-              <SelectTrigger>
-                <SelectValue placeholder="No box" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="">No box</SelectItem>
-                {boxes.map((b) => (
-                  <SelectItem key={b.id} value={b.id}>
-                    {b.name}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
+            <Label htmlFor="boxId">Box</Label>
+            <select
+              id="boxId"
+              name="boxId"
+              defaultValue={spool?.boxId ?? ""}
+              className="h-10 w-full rounded-lg border border-input bg-transparent px-3 text-sm text-foreground outline-none transition-colors focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50 dark:bg-input/30"
+            >
+              <option value="">No box</option>
+              {boxes.map((b) => (
+                <option key={b.id} value={b.id}>
+                  {b.name}
+                </option>
+              ))}
+            </select>
           </div>
 
           {/* Note */}

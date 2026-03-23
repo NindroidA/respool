@@ -4,7 +4,13 @@ import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
 import { MATERIAL_COLORS } from "@/lib/constants";
 import { Plus, X } from "lucide-react";
@@ -48,8 +54,8 @@ export function SpoolSelector({ spools, value, onChange }: SpoolSelectorProps) {
   function handleGramsChange(spoolId: string, grams: number) {
     onChange(
       value.map((v) =>
-        v.spoolId === spoolId ? { ...v, gramsUsed: grams } : v
-      )
+        v.spoolId === spoolId ? { ...v, gramsUsed: grams } : v,
+      ),
     );
   }
 
@@ -103,7 +109,10 @@ export function SpoolSelector({ spools, value, onChange }: SpoolSelectorProps) {
                 max={spool.currentMass}
                 value={selected.gramsUsed || ""}
                 onChange={(e) =>
-                  handleGramsChange(selected.spoolId, parseInt(e.target.value) || 0)
+                  handleGramsChange(
+                    selected.spoolId,
+                    parseInt(e.target.value) || 0,
+                  )
                 }
                 placeholder="grams"
                 className="w-24 font-mono text-sm"
@@ -126,24 +135,18 @@ export function SpoolSelector({ spools, value, onChange }: SpoolSelectorProps) {
       {/* Add spool */}
       {availableSpools.length > 0 && (
         <div className="flex gap-2">
-          <Select value={addingSpoolId} onValueChange={(v) => setAddingSpoolId(v ?? "")}>
-            <SelectTrigger className="flex-1">
-              <SelectValue placeholder="Select a spool..." />
-            </SelectTrigger>
-            <SelectContent>
-              {availableSpools.map((spool) => (
-                <SelectItem key={spool.id} value={spool.id}>
-                  <div className="flex items-center gap-2">
-                    <div
-                      className="h-3 w-3 rounded-full border border-[var(--border-subtle)]"
-                      style={{ backgroundColor: spool.color }}
-                    />
-                    {spool.name} ({spool.currentMass}g)
-                  </div>
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
+          <select
+            value={addingSpoolId}
+            onChange={(e) => setAddingSpoolId(e.target.value)}
+            className="h-10 flex-1 rounded-lg border border-input bg-transparent px-3 text-sm text-foreground outline-none transition-colors focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50 dark:bg-input/30"
+          >
+            <option value="">Select a spool...</option>
+            {availableSpools.map((spool) => (
+              <option key={spool.id} value={spool.id}>
+                {spool.name} ({spool.currentMass}g)
+              </option>
+            ))}
+          </select>
           <Button
             type="button"
             variant="outline"

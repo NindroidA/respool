@@ -3,15 +3,17 @@
 import { useRouter, useSearchParams } from "next/navigation";
 import { useCallback, useState, useTransition } from "react";
 import { Input } from "@/components/ui/input";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
 import { Search } from "lucide-react";
 import { DEFAULT_MATERIALS } from "@/lib/constants";
+
+const SORT_OPTIONS = [
+  { value: "lastUsed", label: "Last Used" },
+  { value: "name", label: "Name" },
+  { value: "brand", label: "Brand" },
+  { value: "material", label: "Material" },
+  { value: "currentMass", label: "Remaining" },
+  { value: "createdAt", label: "Date Added" },
+];
 
 interface SpoolFiltersProps {
   materials?: string[];
@@ -49,6 +51,10 @@ export function SpoolFilters({
     [updateParams],
   );
 
+  const currentSort = searchParams.get("sort") ?? "lastUsed";
+  const currentMaterial = searchParams.get("material") ?? "all";
+  const currentArchived = searchParams.get("archived") ?? "false";
+
   return (
     <div className="flex flex-wrap items-center gap-3">
       {/* Search */}
@@ -63,54 +69,41 @@ export function SpoolFilters({
       </div>
 
       {/* Material filter */}
-      <Select
-        defaultValue={searchParams.get("material") ?? "all"}
-        onValueChange={(v) => updateParams("material", v ?? "all")}
+      <select
+        value={currentMaterial}
+        onChange={(e) => updateParams("material", e.target.value)}
+        className="h-10 rounded-lg border border-input bg-transparent px-3 text-sm text-foreground outline-none transition-colors focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50 dark:bg-input/30"
       >
-        <SelectTrigger className="w-[130px]">
-          <SelectValue placeholder="Material" />
-        </SelectTrigger>
-        <SelectContent>
-          <SelectItem value="all">All Materials</SelectItem>
-          {materials.map((m) => (
-            <SelectItem key={m} value={m}>
-              {m}
-            </SelectItem>
-          ))}
-        </SelectContent>
-      </Select>
+        <option value="all">All Materials</option>
+        {materials.map((m) => (
+          <option key={m} value={m}>
+            {m}
+          </option>
+        ))}
+      </select>
 
       {/* Sort */}
-      <Select
-        defaultValue={searchParams.get("sort") ?? "lastUsed"}
-        onValueChange={(v) => updateParams("sort", v ?? "lastUsed")}
+      <select
+        value={currentSort}
+        onChange={(e) => updateParams("sort", e.target.value)}
+        className="h-10 rounded-lg border border-input bg-transparent px-3 text-sm text-foreground outline-none transition-colors focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50 dark:bg-input/30"
       >
-        <SelectTrigger className="w-[150px]">
-          <SelectValue placeholder="Sort by" />
-        </SelectTrigger>
-        <SelectContent>
-          <SelectItem value="lastUsed">Last Used</SelectItem>
-          <SelectItem value="name">Name</SelectItem>
-          <SelectItem value="brand">Brand</SelectItem>
-          <SelectItem value="material">Material</SelectItem>
-          <SelectItem value="currentMass">Remaining</SelectItem>
-          <SelectItem value="createdAt">Date Added</SelectItem>
-        </SelectContent>
-      </Select>
+        {SORT_OPTIONS.map((opt) => (
+          <option key={opt.value} value={opt.value}>
+            {opt.label}
+          </option>
+        ))}
+      </select>
 
       {/* Archived toggle */}
-      <Select
-        defaultValue={searchParams.get("archived") ?? "false"}
-        onValueChange={(v) => updateParams("archived", v ?? "false")}
+      <select
+        value={currentArchived}
+        onChange={(e) => updateParams("archived", e.target.value)}
+        className="h-10 rounded-lg border border-input bg-transparent px-3 text-sm text-foreground outline-none transition-colors focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50 dark:bg-input/30"
       >
-        <SelectTrigger className="w-[120px]">
-          <SelectValue />
-        </SelectTrigger>
-        <SelectContent>
-          <SelectItem value="false">Active</SelectItem>
-          <SelectItem value="true">Archived</SelectItem>
-        </SelectContent>
-      </Select>
+        <option value="false">Active</option>
+        <option value="true">Archived</option>
+      </select>
     </div>
   );
 }

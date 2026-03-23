@@ -4,7 +4,13 @@ import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { Separator } from "@/components/ui/separator";
 import { MaterialManager } from "./material-manager";
 import { updateSettings } from "@/app/(dashboard)/settings/actions";
@@ -39,7 +45,8 @@ export function SettingsForm({ settings }: SettingsFormProps) {
         defaultMaterial: formData.get("defaultMaterial") as string,
         defaultMass: parseInt(formData.get("defaultMass") as string) || 1000,
         unitPreference: formData.get("unitPreference") as string,
-        lowFilamentThreshold: parseInt(formData.get("lowFilamentThreshold") as string) || 100,
+        lowFilamentThreshold:
+          parseInt(formData.get("lowFilamentThreshold") as string) || 100,
       });
       toast.success("Settings saved");
     } catch {
@@ -55,22 +62,26 @@ export function SettingsForm({ settings }: SettingsFormProps) {
       <div className="space-y-4">
         <div>
           <h3 className="text-base font-semibold text-foreground">General</h3>
-          <p className="text-sm text-muted-foreground">Default values for new spools</p>
+          <p className="text-sm text-muted-foreground">
+            Default values for new spools
+          </p>
         </div>
 
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
           <div className="space-y-1.5">
-            <Label>Default Material</Label>
-            <Select name="defaultMaterial" defaultValue={settings.defaultMaterial}>
-              <SelectTrigger>
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                {settings.materialOptions.map((m) => (
-                  <SelectItem key={m} value={m}>{m}</SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
+            <Label htmlFor="defaultMaterial">Default Material</Label>
+            <select
+              id="defaultMaterial"
+              name="defaultMaterial"
+              defaultValue={settings.defaultMaterial}
+              className="h-10 w-full rounded-lg border border-input bg-transparent px-3 text-sm text-foreground outline-none transition-colors focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50 dark:bg-input/30"
+            >
+              {settings.materialOptions.map((m) => (
+                <option key={m} value={m}>
+                  {m}
+                </option>
+              ))}
+            </select>
           </div>
 
           <div className="space-y-1.5">
@@ -85,7 +96,9 @@ export function SettingsForm({ settings }: SettingsFormProps) {
           </div>
 
           <div className="space-y-1.5">
-            <Label htmlFor="lowFilamentThreshold">Low Filament Threshold (g)</Label>
+            <Label htmlFor="lowFilamentThreshold">
+              Low Filament Threshold (g)
+            </Label>
             <Input
               id="lowFilamentThreshold"
               name="lowFilamentThreshold"
@@ -106,48 +119,50 @@ export function SettingsForm({ settings }: SettingsFormProps) {
       <div className="space-y-4">
         <div>
           <h3 className="text-base font-semibold text-foreground">Display</h3>
-          <p className="text-sm text-muted-foreground">Date, time, and unit preferences</p>
+          <p className="text-sm text-muted-foreground">
+            Date, time, and unit preferences
+          </p>
         </div>
 
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
           <div className="space-y-1.5">
-            <Label>Date Format</Label>
-            <Select name="dateFormat" defaultValue={settings.dateFormat}>
-              <SelectTrigger>
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="MM/dd/yyyy">MM/DD/YYYY</SelectItem>
-                <SelectItem value="dd/MM/yyyy">DD/MM/YYYY</SelectItem>
-                <SelectItem value="yyyy-MM-dd">YYYY-MM-DD</SelectItem>
-              </SelectContent>
-            </Select>
+            <Label htmlFor="dateFormat">Date Format</Label>
+            <select
+              id="dateFormat"
+              name="dateFormat"
+              defaultValue={settings.dateFormat}
+              className="h-10 w-full rounded-lg border border-input bg-transparent px-3 text-sm text-foreground outline-none transition-colors focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50 dark:bg-input/30"
+            >
+              <option value="MM/dd/yyyy">MM/DD/YYYY</option>
+              <option value="dd/MM/yyyy">DD/MM/YYYY</option>
+              <option value="yyyy-MM-dd">YYYY-MM-DD</option>
+            </select>
           </div>
 
           <div className="space-y-1.5">
-            <Label>Time Format</Label>
-            <Select name="timeFormat" defaultValue={settings.timeFormat}>
-              <SelectTrigger>
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="12h">12-hour</SelectItem>
-                <SelectItem value="24h">24-hour</SelectItem>
-              </SelectContent>
-            </Select>
+            <Label htmlFor="timeFormat">Time Format</Label>
+            <select
+              id="timeFormat"
+              name="timeFormat"
+              defaultValue={settings.timeFormat}
+              className="h-10 w-full rounded-lg border border-input bg-transparent px-3 text-sm text-foreground outline-none transition-colors focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50 dark:bg-input/30"
+            >
+              <option value="12h">12-hour</option>
+              <option value="24h">24-hour</option>
+            </select>
           </div>
 
           <div className="space-y-1.5">
-            <Label>Unit Preference</Label>
-            <Select name="unitPreference" defaultValue={settings.unitPreference}>
-              <SelectTrigger>
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="grams">Grams (g)</SelectItem>
-                <SelectItem value="oz">Ounces (oz)</SelectItem>
-              </SelectContent>
-            </Select>
+            <Label htmlFor="unitPreference">Unit Preference</Label>
+            <select
+              id="unitPreference"
+              name="unitPreference"
+              defaultValue={settings.unitPreference}
+              className="h-10 w-full rounded-lg border border-input bg-transparent px-3 text-sm text-foreground outline-none transition-colors focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50 dark:bg-input/30"
+            >
+              <option value="grams">Grams (g)</option>
+              <option value="oz">Ounces (oz)</option>
+            </select>
           </div>
         </div>
       </div>
