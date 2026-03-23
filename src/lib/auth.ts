@@ -37,8 +37,11 @@ export const auth = betterAuth({
   },
 });
 
-export async function getSession(headers: Headers) {
+import { cache } from "react";
+
+// Deduplicate session lookups within a single request (layout + page + actions)
+export const getSession = cache(async (headers: Headers) => {
   return auth.api.getSession({ headers });
-}
+});
 
 export type Session = typeof auth.$Infer.Session;
