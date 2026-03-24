@@ -3,6 +3,7 @@ import {
   Disc,
   Package,
   Printer,
+  Calculator,
   Settings,
   Shield,
   type LucideIcon,
@@ -22,6 +23,7 @@ export const mainNavItems: NavItem[] = [
 ];
 
 export const toolNavItems: NavItem[] = [
+  { label: "Calculator", href: "/calculator", icon: Calculator },
   { label: "Settings", href: "/settings", icon: Settings },
 ];
 
