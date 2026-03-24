@@ -26,12 +26,10 @@ export default async function AdminPage() {
           <Shield className="h-5 w-5 text-jade" />
         </div>
         <div>
-          <h1 className="text-2xl font-semibold tracking-tight text-foreground">
+          <h1 className="bg-linear-to-r from-emerald-400 to-teal-400 bg-clip-text text-2xl font-bold tracking-tight text-transparent">
             Admin Panel
           </h1>
-          <p className="text-sm text-muted-foreground">
-            User management
-          </p>
+          <p className="text-sm text-muted-foreground">User management</p>
         </div>
       </div>
 

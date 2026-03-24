@@ -25,6 +25,7 @@ import { toast } from "sonner";
 interface SpoolCardProps {
   spool: {
     id: string;
+    spoolNumber: number;
     name: string;
     brand: string;
     color: string;
@@ -96,6 +97,9 @@ export function SpoolCard({ spool, index = 0 }: SpoolCardProps) {
             />
             <div className="min-w-0">
               <p className="truncate text-sm font-semibold text-foreground">
+                <span className="font-mono text-primary">
+                  #{spool.spoolNumber}
+                </span>{" "}
                 {spool.name}
               </p>
               <p className="truncate text-xs text-muted-foreground">

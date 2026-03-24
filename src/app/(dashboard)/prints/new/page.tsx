@@ -17,7 +17,7 @@ export default async function NewPrintPage() {
       </Link>
 
       <div>
-        <h1 className="text-2xl font-semibold tracking-tight text-foreground">
+        <h1 className="bg-linear-to-r from-emerald-400 to-teal-400 bg-clip-text text-2xl font-bold tracking-tight text-transparent">
           Log a Print
         </h1>
         <p className="text-sm text-muted-foreground">

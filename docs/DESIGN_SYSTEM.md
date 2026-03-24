@@ -23,17 +23,20 @@ Respool should feel like a **control dashboard for a 3D printing lab** — dark 
 |-------|-------|-------|
 | `--border-default` | `#2e2e33` | Card and input borders |
 | `--border-subtle` | `#222226` | Dividers, separators |
-| `--border-focus` | `#22d3ee` | Focus ring color |
+| `--border-focus` | `#10b981` | Focus ring color |
 
-### Accent Colors
+### Accent Colors — Green Gradient System (Jade Anchor)
 | Token | Value | Usage |
 |-------|-------|-------|
-| `--accent-primary` | `#22d3ee` | Primary actions, links, highlights |
-| `--accent-primary-hover` | `#06b6d4` | Primary hover states |
-| `--accent-primary-muted` | `rgba(34,211,238,0.15)` | Primary subtle backgrounds |
-| `--accent-secondary` | `#fbbf24` | Warnings, pause markers, highlights |
-| `--accent-success` | `#4ade80` | Success states, "enough filament" |
-| `--accent-error` | `#f87171` | Errors, "not enough filament" |
+| `--accent-jade` | `#10b981` | Primary actions, links, highlights |
+| `--accent-jade-hover` | `#059669` | Primary hover states |
+| `--accent-jade-muted` | `rgba(16,185,129,0.15)` | Primary subtle backgrounds |
+| `--accent-neon` | `#4ade80` | Success states, progress highlights |
+| `--accent-emerald` | `#34d399` | Secondary accent |
+| `--accent-mint` | `#6ee7b7` | Light accent, tags |
+| `--accent-teal` | `#2dd4bf` | Tertiary accent |
+| `--color-warning` | `#fbbf24` | Warnings, pause markers |
+| `--color-error` | `#f87171` | Errors, "not enough filament" |
 
 ### Text
 | Token | Value | Usage |
@@ -88,15 +91,15 @@ Respool should feel like a **control dashboard for a 3D printing lab** — dark 
 ### Glow Effects
 ```css
 /* Subtle ambient glow on focused/active cards */
-.glow-cyan {
-  box-shadow: 0 0 20px rgba(34, 211, 238, 0.1),
-              0 0 40px rgba(34, 211, 238, 0.05);
+.glow-jade {
+  box-shadow: 0 0 20px rgba(16, 185, 129, 0.1),
+              0 0 40px rgba(16, 185, 129, 0.05);
 }
 
 /* Stronger glow for primary buttons on hover */
-.glow-cyan-strong {
-  box-shadow: 0 0 15px rgba(34, 211, 238, 0.3),
-              0 0 30px rgba(34, 211, 238, 0.15);
+.glow-jade-strong {
+  box-shadow: 0 0 15px rgba(16, 185, 129, 0.3),
+              0 0 30px rgba(16, 185, 129, 0.15);
 }
 
 /* Amber glow for warnings/pauses */
@@ -112,9 +115,9 @@ Use Framer Motion to rotate a conic-gradient behind a card, masked to only show 
 // Concept: outer wrapper has the animated gradient,
 // inner card overlays it with solid bg, leaving gradient visible as a 1-2px border
 <motion.div
-  className="relative rounded-xl p-[1px]"
+  className="relative rounded-xl p-px"
   style={{
-    background: "conic-gradient(from var(--angle), #22d3ee, #06b6d4, #0891b2, #22d3ee)"
+    background: "conic-gradient(from var(--angle), #10b981, #059669, #047857, #10b981)"
   }}
   animate={{ "--angle": ["0deg", "360deg"] }}
   transition={{ duration: 4, repeat: Infinity, ease: "linear" }}
@@ -146,7 +149,7 @@ Subtle grain overlay on page backgrounds for depth:
 ### Buttons
 | Variant | Background | Text | Border | Hover |
 |---------|-----------|------|--------|-------|
-| Primary | `#22d3ee` | `#09090b` | none | glow + darken to `#06b6d4` |
+| Primary | `#10b981` (jade) | `#09090b` | none | glow + darken to `#059669` |
 | Secondary | transparent | `#a1a1aa` | `#2e2e33` | bg `#222225`, glow subtle |
 | Ghost | transparent | `#71717a` | none | bg `#1c1c1f` |
 | Destructive | `#7f1d1d` | `#fca5a5` | none | bg `#991b1b` |
@@ -164,8 +167,8 @@ Subtle grain overlay on page backgrounds for depth:
   transition: border-color 0.15s, box-shadow 0.15s;
 }
 .input:focus {
-  border-color: var(--accent-primary);
-  box-shadow: 0 0 0 2px rgba(34, 211, 238, 0.15);
+  border-color: var(--accent-jade);
+  box-shadow: 0 0 0 2px rgba(16, 185, 129, 0.15);
   outline: none;
 }
 ```
@@ -182,7 +185,7 @@ Subtle grain overlay on page backgrounds for depth:
 ### Badges / Tags
 | Type | Background | Text |
 |------|-----------|------|
-| Material tag (PLA, PETG) | `rgba(34,211,238,0.1)` | `#22d3ee` |
+| Material tag (PLA, PETG) | `rgba(16,185,129,0.1)` | `#10b981` |
 | Pause marker | `#422006` | `#fbbf24` |
 | Done/success | `#052e16` | `#4ade80` |
 | Warning/short | `#2a1215` | `#fca5a5` |

@@ -121,7 +121,7 @@ export default async function DashboardPage() {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-2xl font-semibold tracking-tight text-foreground">
+        <h1 className="bg-linear-to-r from-emerald-400 to-teal-400 bg-clip-text text-2xl font-bold tracking-tight text-transparent">
           Dashboard
         </h1>
         <p className="text-sm text-muted-foreground">Your filament overview</p>
@@ -160,7 +160,7 @@ export default async function DashboardPage() {
 
       {/* Charts */}
       <div className="grid grid-cols-1 gap-3 lg:grid-cols-2">
-        <div className="rounded-xl border border-border bg-card p-4">
+        <div className="rounded-xl border border-border bg-card p-4 ring-1 ring-primary/5">
           <p className="mb-2 text-[10px] font-bold uppercase tracking-[0.12em] text-(--text-faint)">
             Filament by Material
           </p>
@@ -185,7 +185,7 @@ export default async function DashboardPage() {
             ))}
           </div>
         </div>
-        <div className="rounded-xl border border-border bg-card p-4">
+        <div className="rounded-xl border border-border bg-card p-4 ring-1 ring-primary/5">
           <p className="mb-2 text-[10px] font-bold uppercase tracking-[0.12em] text-(--text-faint)">
             Usage (Last 30 Days)
           </p>

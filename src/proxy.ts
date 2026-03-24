@@ -7,6 +7,7 @@ const PROTECTED_PREFIXES = [
   "/spools",
   "/boxes",
   "/prints",
+  "/calculator",
   "/settings",
   "/admin",
 ];

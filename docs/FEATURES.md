@@ -142,12 +142,6 @@ User-configurable preferences:
 
 ---
 
-## Phase 2: Respool Exclusives
-
-New features not in filatrack.
-
----
-
 ### 8. Spool Swap Calculator
 
 **The killer feature. Calculate exactly where to pause and swap filament spools during a print.**
@@ -223,6 +217,6 @@ For now, just stub the route and data model — actual implementation is Phase 3
 | Print tracking | P1 | Medium | 1 |
 | Settings | P1 | Low | 1 |
 | QR codes | P2 | Low | 1 |
-| **Swap Calculator** | **P0** | **High** | **2** |
+| **Swap Calculator** | **P0** | **High** | **1** |
 | Command palette | P1 | Medium | 2 |
 | Slicer API (stub) | P3 | Low | 2 |

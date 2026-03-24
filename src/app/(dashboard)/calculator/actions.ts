@@ -18,6 +18,7 @@ export async function getSpoolsForCalculator() {
     where: { userId: user.id, archived: false },
     select: {
       id: true,
+      spoolNumber: true,
       name: true,
       brand: true,
       material: true,

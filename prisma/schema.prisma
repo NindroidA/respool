@@ -22,13 +22,14 @@ model User {
   createdAt     DateTime  @default(now())
   updatedAt     DateTime  @updatedAt
 
-  sessions Session[]
-  accounts Account[]
-  spools   Spool[]
-  boxes    Box[]
-  prints   Print[]
-  settings UserSettings?
+  nextSpoolNumber Int       @default(1)
 
+  sessions   Session[]
+  accounts   Account[]
+  spools     Spool[]
+  boxes      Box[]
+  prints     Print[]
+  settings   UserSettings?
   twoFactors TwoFactor[]
 }
 
@@ -86,11 +87,12 @@ model Spool {
   userId   String
   user     User   @relation(fields: [userId], references: [id], onDelete: Cascade)
 
-  name     String
-  brand    String
-  color    String  // hex, e.g. "#FF5733"
-  material String  // e.g. "PLA", "PETG"
-  note     String  @default("")
+  spoolNumber Int    // per-user sequential number (e.g. #1, #2, #3)
+  name        String
+  brand       String
+  color       String  // hex, e.g. "#FF5733"
+  material    String  // e.g. "PLA", "PETG"
+  note        String  @default("")
 
   currentMass  Int // grams
   startingMass Int // grams

@@ -34,7 +34,7 @@ export default async function PrintsPage({ searchParams }: Props) {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-semibold tracking-tight text-foreground">
+          <h1 className="bg-linear-to-r from-emerald-400 to-teal-400 bg-clip-text text-2xl font-bold tracking-tight text-transparent">
             Prints
           </h1>
           <p className="text-sm text-muted-foreground">
@@ -55,19 +55,19 @@ export default async function PrintsPage({ searchParams }: Props) {
           <p className="font-mono text-lg font-bold text-foreground">
             {stats.totalPrints}
           </p>
-          <p className="text-[10px] text-[var(--text-faint)]">total prints</p>
+          <p className="text-[10px] text-(--text-faint)">total prints</p>
         </div>
         <div className="rounded-lg border border-border bg-card p-4 text-center">
           <p className="font-mono text-lg font-bold text-foreground">
             {stats.totalGrams}g
           </p>
-          <p className="text-[10px] text-[var(--text-faint)]">filament used</p>
+          <p className="text-[10px] text-(--text-faint)">filament used</p>
         </div>
         <div className="rounded-lg border border-border bg-card p-4 text-center">
           <p className="font-mono text-lg font-bold text-foreground">
             {stats.totalMinutes > 0 ? formatTime(stats.totalMinutes) : "—"}
           </p>
-          <p className="text-[10px] text-[var(--text-faint)]">print time</p>
+          <p className="text-[10px] text-(--text-faint)">print time</p>
         </div>
       </div>
 

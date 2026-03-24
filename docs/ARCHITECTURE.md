@@ -150,24 +150,26 @@ export const { POST, GET } = toNextJsHandler(auth)
 5. Session cookie set on response
 6. Middleware validates session on subsequent requests
 
-### Middleware (Route Protection)
+### Proxy (Route Protection)
 ```typescript
-// src/middleware.ts
+// src/proxy.ts (Next.js 16 convention, replaces deprecated middleware.ts)
 import { NextResponse } from "next/server"
 import type { NextRequest } from "next/server"
 
-export function middleware(request: NextRequest) {
-  const sessionCookie = request.cookies.get("better-auth.session_token")
-  const isAuthPage = request.nextUrl.pathname.startsWith("/login") ||
-                     request.nextUrl.pathname.startsWith("/register")
-  const isDashboard = request.nextUrl.pathname.startsWith("/dashboard") ||
-                      request.nextUrl.pathname.startsWith("/spools") ||
-                      request.nextUrl.pathname.startsWith("/boxes") ||
-                      request.nextUrl.pathname.startsWith("/prints") ||
-                      request.nextUrl.pathname.startsWith("/calculator") ||
-                      request.nextUrl.pathname.startsWith("/settings")
+const AUTH_PAGES = ["/login", "/register"]
+const PROTECTED_PREFIXES = [
+  "/dashboard", "/spools", "/boxes", "/prints",
+  "/calculator", "/settings", "/admin",
+]
 
-  if (isDashboard && !sessionCookie) {
+export function proxy(request: NextRequest) {
+  const sessionCookie = request.cookies.get("better-auth.session_token")
+  const { pathname } = request.nextUrl
+
+  const isAuthPage = AUTH_PAGES.some((p) => pathname.startsWith(p))
+  const isProtected = PROTECTED_PREFIXES.some((p) => pathname.startsWith(p))
+
+  if (isProtected && !sessionCookie) {
     return NextResponse.redirect(new URL("/login", request.url))
   }
 
@@ -202,21 +204,25 @@ datasource db {
 // ─── Better Auth managed tables ─────────────────────
 
 model User {
-  id            String    @id
-  name          String
-  email         String    @unique
-  emailVerified Boolean   @default(false)
-  image         String?
-  lastAccessed  DateTime?
-  createdAt     DateTime  @default(now())
-  updatedAt     DateTime  @updatedAt
+  id                String    @id
+  name              String
+  email             String    @unique
+  emailVerified     Boolean   @default(false)
+  image             String?
+  role              String    @default("user") // "user" | "admin"
+  banned            Boolean   @default(false)
+  twoFactorEnabled  Boolean   @default(false)
+  lastAccessed      DateTime?
+  createdAt         DateTime  @default(now())
+  updatedAt         DateTime  @updatedAt
 
-  sessions Session[]
-  accounts Account[]
-  spools   Spool[]
-  boxes    Box[]
-  prints   Print[]
-  settings UserSettings?
+  sessions   Session[]
+  accounts   Account[]
+  spools     Spool[]
+  boxes      Box[]
+  prints     Print[]
+  settings   UserSettings?
+  twoFactors TwoFactor[]
 }
 
 model Session {
@@ -261,7 +267,7 @@ model Verification {
 
 model Spool {
   id       String @id @default(cuid())
-  shortId  String @unique @default(cuid()) // 8-char for QR codes, truncate in app logic
+  shortId  String @unique @default(cuid())
   userId   String
   user     User   @relation(fields: [userId], references: [id], onDelete: Cascade)
 
@@ -277,6 +283,9 @@ model Spool {
   diameter            Float?  // mm, e.g. 1.75
   printingTemperature Int?    // °C
   cost                Int?    // cents (e.g. 2499 = $24.99)
+
+  filamentColorId String?
+  filamentColor   FilamentColor? @relation(fields: [filamentColorId], references: [id], onDelete: SetNull)
 
   boxId    String?
   box      Box?     @relation(fields: [boxId], references: [id], onDelete: SetNull)
@@ -324,8 +333,11 @@ model Print {
 
   name             String
   notes            String?
-  printTimeMinutes Int
+  printTimeMinutes Int?    // nullable for pre-print mode
   totalGramsUsed   Int
+  status           String  @default("completed") // "planned" | "in_progress" | "completed"
+  estimatedGrams   Int?    // slicer estimate (pre-print mode)
+  estimatedLayers  Int?    // slicer estimate (pre-print mode)
 
   filaments PrintFilament[]
   createdAt DateTime @default(now())
@@ -346,12 +358,34 @@ model UserSettings {
   userId String @id
   user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
 
-  materialOptions String[] @default(["PLA", "PETG", "ABS", "TPU", "ASA", "PC", "HIPS", "PVA"])
-  dateFormat      String   @default("MM/dd/yyyy")
-  timeFormat      String   @default("12h")
-  defaultMaterial String   @default("PLA")
-  defaultMass     Int      @default(1000) // grams
-  unitPreference  String   @default("grams") // "grams" | "oz"
+  materialOptions      String[] @default(["PLA", "PETG", "ABS", "TPU", "ASA", "PC", "HIPS", "PVA"])
+  dateFormat           String   @default("MM/dd/yyyy")
+  timeFormat           String   @default("12h")
+  defaultMaterial      String   @default("PLA")
+  defaultMass          Int      @default(1000) // grams
+  unitPreference       String   @default("grams") // "grams" | "oz"
+  lowFilamentThreshold Int      @default(100) // grams remaining to trigger warnings
+}
+
+model TwoFactor {
+  id          String @id
+  secret      String
+  backupCodes String
+  userId      String
+  user        User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model FilamentColor {
+  id           String  @id @default(cuid())
+  name         String  // e.g. "Silk Gold", "Matte Black"
+  hex          String  // primary hex, e.g. "#D4AF37"
+  hexSecondary String? // for dual-color filaments
+  category     String  // "solid" | "silk" | "matte" | "dual" | "translucent" | "glow" | "marble"
+  sortOrder    Int     @default(0)
+
+  spools Spool[]
+
+  @@unique([name, category])
 }
 ```
 
@@ -454,7 +488,7 @@ NEXT_PUBLIC_APP_URL=http://localhost:3000
 ```
 
 ### Reverse Proxy
-Designed to sit behind Andrew's existing Cloudflare Tunnel or nginx reverse proxy on Prizmo, with TLS terminated externally.
+Designed to sit behind nginx reverse proxy on Prizmo, with Cloudflare DNS and TLS terminated externally.
 
 ---
 

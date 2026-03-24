@@ -2,7 +2,7 @@ import {
   LayoutDashboard,
   Disc,
   Package,
-  Printer,
+  Layers3,
   Calculator,
   Settings,
   Shield,
@@ -19,7 +19,7 @@ export const mainNavItems: NavItem[] = [
   { label: "Dashboard", href: "/dashboard", icon: LayoutDashboard },
   { label: "Spools", href: "/spools", icon: Disc },
   { label: "Boxes", href: "/boxes", icon: Package },
-  { label: "Prints", href: "/prints", icon: Printer },
+  { label: "Prints", href: "/prints", icon: Layers3 },
 ];
 
 export const toolNavItems: NavItem[] = [

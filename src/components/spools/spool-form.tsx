@@ -55,7 +55,6 @@ interface SpoolFormProps {
     startingMass: number;
     diameter: number | null;
     printingTemperature: number | null;
-    cost: number | null;
     note: string;
     boxId: string | null;
     filamentColorId: string | null;
@@ -124,14 +123,18 @@ export function SpoolForm({
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
-      <DialogTrigger className="inline-flex items-center justify-center gap-2 rounded-lg bg-primary px-4 py-2 text-sm font-semibold text-primary-foreground transition-colors hover:bg-(--accent-jade-hover)">
-        {trigger ?? (
-          <>
-            <Plus className="h-4 w-4" />
-            Add Spool
-          </>
-        )}
-      </DialogTrigger>
+      <DialogTrigger
+        render={
+          <Button className="gap-2">
+            {trigger ?? (
+              <>
+                <Plus className="h-4 w-4" />
+                Add Spool
+              </>
+            )}
+          </Button>
+        }
+      />
       <DialogContent className="max-h-[90vh] overflow-y-auto sm:max-w-lg">
         <DialogHeader>
           <DialogTitle>{isEdit ? "Edit Spool" : "Add New Spool"}</DialogTitle>
@@ -245,18 +248,6 @@ export function SpoolForm({
                 placeholder="200"
               />
             </div>
-          </div>
-
-          {/* Cost */}
-          <div className="space-y-1.5">
-            <Label htmlFor="cost">Cost (cents)</Label>
-            <Input
-              id="cost"
-              name="cost"
-              type="number"
-              defaultValue={spool?.cost ?? ""}
-              placeholder="2499 = $24.99"
-            />
           </div>
 
           {/* Box */}

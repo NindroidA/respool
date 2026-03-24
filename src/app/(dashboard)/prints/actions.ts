@@ -63,14 +63,21 @@ export async function createPrint(data: {
   const user = await requireUser();
 
   const validated = createPrintSchema.parse(data);
-  const totalGrams = validated.filaments.reduce((sum, f) => sum + f.gramsUsed, 0);
+  const totalGrams = validated.filaments.reduce(
+    (sum, f) => sum + f.gramsUsed,
+    0,
+  );
 
   // Verify all spools belong to user and have enough mass
   for (const filament of validated.filaments) {
-    const spool = await prisma.spool.findUnique({ where: { id: filament.spoolId } });
+    const spool = await prisma.spool.findUnique({
+      where: { id: filament.spoolId },
+    });
     if (!spool || spool.userId !== user.id) throw new Error("Spool not found");
     if (filament.gramsUsed > spool.currentMass) {
-      throw new Error(`Not enough filament on ${spool.name} (${spool.currentMass}g remaining)`);
+      throw new Error(
+        `Not enough filament on ${spool.name} (${spool.currentMass}g remaining)`,
+      );
     }
   }
 
@@ -97,7 +104,9 @@ export async function createPrint(data: {
 
     // Deduct from each spool and create log entries
     for (const filament of validated.filaments) {
-      const spool = await tx.spool.findUniqueOrThrow({ where: { id: filament.spoolId } });
+      const spool = await tx.spool.findUniqueOrThrow({
+        where: { id: filament.spoolId },
+      });
       const newMass = Math.max(0, spool.currentMass - filament.gramsUsed);
 
       await tx.spoolLog.create({
@@ -129,8 +138,14 @@ export async function createPrint(data: {
   return print;
 }
 
+const VALID_STATUSES = ["planned", "in_progress", "completed"] as const;
+
 export async function updatePrintStatus(id: string, status: string) {
   const user = await requireUser();
+
+  if (!VALID_STATUSES.includes(status as (typeof VALID_STATUSES)[number])) {
+    throw new Error("Invalid status");
+  }
 
   const print = await prisma.print.findUnique({ where: { id } });
   if (!print || print.userId !== user.id) throw new Error("Not found");

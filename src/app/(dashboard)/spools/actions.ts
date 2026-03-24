@@ -4,7 +4,11 @@ import { headers } from "next/headers";
 import { revalidatePath } from "next/cache";
 import { prisma } from "@/lib/prisma";
 import { getSession } from "@/lib/auth";
-import { createSpoolSchema, updateSpoolSchema, logUsageSchema } from "@/lib/validators";
+import {
+  createSpoolSchema,
+  updateSpoolSchema,
+  logUsageSchema,
+} from "@/lib/validators";
 
 async function requireUser() {
   const session = await getSession(await headers());
@@ -38,10 +42,19 @@ export async function getSpools(filters?: {
     ];
   }
 
-  const orderBy: Record<string, string> = {};
-  const sortField = filters?.sort ?? "lastUsed";
-  const sortOrder = filters?.order ?? "desc";
-  orderBy[sortField] = sortOrder;
+  const ALLOWED_SORT_FIELDS = [
+    "name",
+    "brand",
+    "material",
+    "currentMass",
+    "lastUsed",
+    "createdAt",
+  ];
+  const sortField = ALLOWED_SORT_FIELDS.includes(filters?.sort ?? "")
+    ? filters!.sort!
+    : "lastUsed";
+  const sortOrder = filters?.order === "asc" ? "asc" : "desc";
+  const orderBy: Record<string, string> = { [sortField]: sortOrder };
 
   return prisma.spool.findMany({
     where,
@@ -75,18 +88,33 @@ export async function createSpool(data: FormData) {
   const raw = Object.fromEntries(data);
   const validated = createSpoolSchema.parse(raw);
 
-  // Generate a short 8-char ID for QR codes
   const shortId = Math.random().toString(36).substring(2, 10);
 
-  const spool = await prisma.spool.create({
-    data: {
-      ...validated,
-      shortId,
-      userId: user.id,
-      boxId: validated.boxId || null,
-      filamentColorId: validated.filamentColorId || null,
-      note: validated.note ?? "",
-    },
+  // Atomic: assign spool number and increment user's counter in one transaction
+  const spool = await prisma.$transaction(async (tx) => {
+    const currentUser = await tx.user.findUniqueOrThrow({
+      where: { id: user.id },
+      select: { nextSpoolNumber: true },
+    });
+
+    const spoolNumber = currentUser.nextSpoolNumber;
+
+    await tx.user.update({
+      where: { id: user.id },
+      data: { nextSpoolNumber: spoolNumber + 1 },
+    });
+
+    return tx.spool.create({
+      data: {
+        ...validated,
+        shortId,
+        spoolNumber,
+        userId: user.id,
+        boxId: validated.boxId || null,
+        filamentColorId: validated.filamentColorId || null,
+        note: validated.note ?? "",
+      },
+    });
   });
 
   revalidatePath("/spools");
@@ -138,23 +166,38 @@ export async function duplicateSpool(id: string) {
 
   const shortId = Math.random().toString(36).substring(2, 10);
 
-  const spool = await prisma.spool.create({
-    data: {
-      name: existing.name,
-      brand: existing.brand,
-      color: existing.color,
-      material: existing.material,
-      note: existing.note,
-      currentMass: existing.startingMass,
-      startingMass: existing.startingMass,
-      diameter: existing.diameter,
-      printingTemperature: existing.printingTemperature,
-      cost: existing.cost,
-      filamentColorId: existing.filamentColorId,
-      boxId: existing.boxId,
-      shortId,
-      userId: user.id,
-    },
+  const spool = await prisma.$transaction(async (tx) => {
+    const currentUser = await tx.user.findUniqueOrThrow({
+      where: { id: user.id },
+      select: { nextSpoolNumber: true },
+    });
+
+    const spoolNumber = currentUser.nextSpoolNumber;
+
+    await tx.user.update({
+      where: { id: user.id },
+      data: { nextSpoolNumber: spoolNumber + 1 },
+    });
+
+    return tx.spool.create({
+      data: {
+        name: existing.name,
+        brand: existing.brand,
+        color: existing.color,
+        material: existing.material,
+        note: existing.note,
+        currentMass: existing.startingMass,
+        startingMass: existing.startingMass,
+        diameter: existing.diameter,
+        printingTemperature: existing.printingTemperature,
+        cost: existing.cost,
+        filamentColorId: existing.filamentColorId,
+        boxId: existing.boxId,
+        shortId,
+        spoolNumber,
+        userId: user.id,
+      },
+    });
   });
 
   revalidatePath("/spools");
@@ -190,7 +233,10 @@ export async function unarchiveSpool(id: string) {
   revalidatePath("/spools");
 }
 
-export async function logUsage(spoolId: string, data: { gramsUsed: number; note?: string }) {
+export async function logUsage(
+  spoolId: string,
+  data: { gramsUsed: number; note?: string },
+) {
   const user = await requireUser();
 
   const validated = logUsageSchema.parse(data);

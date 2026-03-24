@@ -23,6 +23,7 @@ export async function getBoxes() {
         where: { archived: false },
         select: {
           id: true,
+          spoolNumber: true,
           name: true,
           color: true,
           material: true,
@@ -143,6 +144,7 @@ export async function getUnboxedSpools() {
     orderBy: { name: "asc" },
     select: {
       id: true,
+      spoolNumber: true,
       name: true,
       color: true,
       material: true,

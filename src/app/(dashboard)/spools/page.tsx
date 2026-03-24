@@ -40,7 +40,7 @@ export default async function SpoolsPage({ searchParams }: Props) {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-semibold tracking-tight text-foreground">
+          <h1 className="bg-linear-to-r from-emerald-400 to-teal-400 bg-clip-text text-2xl font-bold tracking-tight text-transparent">
             Spools
           </h1>
           <p className="text-sm text-muted-foreground">
@@ -85,9 +85,7 @@ export default async function SpoolsPage({ searchParams }: Props) {
         ) : (
           <div className="flex flex-col items-center justify-center rounded-xl border border-dashed border-border py-16 text-center">
             <Disc className="mb-3 h-10 w-10 text-muted-foreground" />
-            <p className="text-sm font-medium text-foreground">
-              No spools yet
-            </p>
+            <p className="text-sm font-medium text-foreground">No spools yet</p>
             <p className="mt-1 text-xs text-muted-foreground">
               Add your first filament spool to get started
             </p>

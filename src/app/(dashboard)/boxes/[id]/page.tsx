@@ -47,17 +47,21 @@ export default async function BoxDetailPage({ params }: Props) {
             <Package className="h-5 w-5 text-jade" />
           </div>
           <div>
-            <h1 className="text-2xl font-semibold tracking-tight text-foreground">
+            <h1 className="bg-linear-to-r from-emerald-400 to-teal-400 bg-clip-text text-2xl font-bold tracking-tight text-transparent">
               {box.name}
             </h1>
             <p className="font-mono text-sm text-muted-foreground">
-              {box.spools.length} spool{box.spools.length !== 1 ? "s" : ""} · {totalMass}g
+              {box.spools.length} spool{box.spools.length !== 1 ? "s" : ""} ·{" "}
+              {totalMass}g
             </p>
           </div>
         </div>
         <div className="flex items-center gap-2">
           <AddSpoolToBox boxId={box.id} unboxedSpools={unboxedSpools} />
-          <BoxForm box={{ id: box.id, name: box.name }} trigger={<span className="text-sm">Edit</span>} />
+          <BoxForm
+            box={{ id: box.id, name: box.name }}
+            trigger={<span className="text-sm">Edit</span>}
+          />
           <BoxDetailActions boxId={box.id} />
         </div>
       </div>

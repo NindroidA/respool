@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useCallback, useRef } from "react";
+import { useState, useCallback, useRef, useMemo } from "react";
 import { parseGcode, type ParseResult } from "@/lib/gcode-parser";
 import {
   mmToGrams,
@@ -20,7 +20,6 @@ import {
   Upload,
   FileCode2,
   X,
-  Plus,
   Trash2,
   Calculator,
   RotateCcw,
@@ -28,14 +27,19 @@ import {
   AlertTriangle,
   XCircle,
   Pause,
-  ChevronRight,
+  ArrowRight,
   Layers,
   Zap,
   Info,
+  Plus,
+  Disc,
 } from "lucide-react";
+
+// ─── Types ──────────────────────────────────────────
 
 interface InventorySpool {
   id: string;
+  spoolNumber: number;
   name: string;
   brand: string;
   material: string;
@@ -44,23 +48,31 @@ interface InventorySpool {
   startingMass: number;
 }
 
-interface SpoolEntry {
-  id: number;
-  grams: string;
-  inventorySpoolId?: string;
-  label?: string;
+interface SelectedSpool {
+  entryId: number;
+  inventoryId: string;
+  spoolNumber: number;
+  name: string;
+  brand: string;
+  color: string;
+  material: string;
+  grams: number;
 }
+
+type SortOption = "least-first" | "most-first" | "name" | "custom";
 
 interface Props {
   inventorySpools: InventorySpool[];
 }
 
+// ─── Main Component ─────────────────────────────────
+
 export function CalculatorClient({ inventorySpools }: Props) {
   const [mode, setMode] = useState<"gcode" | "manual">("gcode");
   const [totalGrams, setTotalGrams] = useState("");
   const [totalLayers, setTotalLayers] = useState("");
-  const [spools, setSpools] = useState<SpoolEntry[]>([{ id: 1, grams: "" }]);
-  const [nextId, setNextId] = useState(2);
+  const [selectedSpools, setSelectedSpools] = useState<SelectedSpool[]>([]);
+  const [nextEntryId, setNextEntryId] = useState(1);
   const [gcodeData, setGcodeData] = useState<ParseResult | null>(null);
   const [gcodeRaw, setGcodeRaw] = useState<string | null>(null);
   const [gcodeName, setGcodeName] = useState("");
@@ -68,40 +80,68 @@ export function CalculatorClient({ inventorySpools }: Props) {
   const [density, setDensity] = useState(MATERIAL_DENSITIES.PLA);
   const [selectedMaterial, setSelectedMaterial] = useState("PLA");
   const [purgeLength, setPurgeLength] = useState("100");
+  const [sortOption, setSortOption] = useState<SortOption>("custom");
   const [results, setResults] = useState<SwapResult | null>(null);
+  const [error, setError] = useState<string | null>(null);
   const fileRef = useRef<HTMLInputElement>(null);
 
-  const addSpool = () => {
-    setSpools((s) => [...s, { id: nextId, grams: "" }]);
-    setNextId((n) => n + 1);
-  };
+  // Spools not yet selected
+  const availableSpools = useMemo(
+    () =>
+      inventorySpools.filter(
+        (inv) => !selectedSpools.some((s) => s.inventoryId === inv.id),
+      ),
+    [inventorySpools, selectedSpools],
+  );
 
-  const addFromInventory = (inv: InventorySpool) => {
-    setSpools((s) => [
-      ...s,
+  // Sorted selected spools
+  const sortedSpools = useMemo(() => {
+    const sorted = [...selectedSpools];
+    switch (sortOption) {
+      case "least-first":
+        sorted.sort((a, b) => a.grams - b.grams);
+        break;
+      case "most-first":
+        sorted.sort((a, b) => b.grams - a.grams);
+        break;
+      case "name":
+        sorted.sort((a, b) => a.name.localeCompare(b.name));
+        break;
+    }
+    return sorted;
+  }, [selectedSpools, sortOption]);
+
+  const addSpool = (inv: InventorySpool) => {
+    setSelectedSpools((prev) => [
+      ...prev,
       {
-        id: nextId,
-        grams: String(inv.currentMass),
-        inventorySpoolId: inv.id,
-        label: `${inv.brand ? inv.brand + " " : ""}${inv.name}`,
+        entryId: nextEntryId,
+        inventoryId: inv.id,
+        spoolNumber: inv.spoolNumber,
+        name: inv.name,
+        brand: inv.brand,
+        color: inv.color,
+        material: inv.material,
+        grams: inv.currentMass,
       },
     ]);
-    setNextId((n) => n + 1);
+    setNextEntryId((n) => n + 1);
+    setResults(null);
+    setError(null);
   };
 
-  const removeSpool = (id: number) =>
-    setSpools((s) => s.filter((sp) => sp.id !== id));
-
-  const updateSpoolGrams = (id: number, val: string) =>
-    setSpools((s) =>
-      s.map((sp) => (sp.id === id ? { ...sp, grams: val } : sp)),
-    );
+  const removeSpool = (entryId: number) => {
+    setSelectedSpools((prev) => prev.filter((s) => s.entryId !== entryId));
+    setResults(null);
+  };
 
   const handleFile = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
     setGcodeLoading(true);
     setGcodeName(file.name);
+    setError(null);
+    setResults(null);
     const reader = new FileReader();
     reader.onload = (ev) => {
       const raw = ev.target?.result as string;
@@ -133,47 +173,73 @@ export function CalculatorClient({ inventorySpools }: Props) {
     setGcodeName("");
     setTotalGrams("");
     setTotalLayers("");
+    setResults(null);
+    setError(null);
     if (fileRef.current) fileRef.current.value = "";
   };
 
   const calculate = useCallback(() => {
+    setError(null);
     const total = parseFloat(totalGrams);
     const layers = parseInt(totalLayers);
-    const spoolWeights = spools
-      .map((s) => parseFloat(s.grams))
-      .filter((g) => !isNaN(g) && g > 0);
 
-    if (isNaN(total) || total <= 0 || isNaN(layers) || layers <= 0) return;
-    if (spoolWeights.length === 0) return;
+    if (isNaN(total) || total <= 0 || isNaN(layers) || layers <= 0) {
+      setError(
+        mode === "gcode"
+          ? "Upload a G-code file first to get print data."
+          : "Enter the total filament (grams) and layer count from your slicer.",
+      );
+      return;
+    }
 
+    if (sortedSpools.length === 0) {
+      setError("Select at least one spool from your inventory.");
+      return;
+    }
+
+    const spoolWeights = sortedSpools.map((s) => s.grams);
     const purgeGrams = mmToGrams(parseFloat(purgeLength) || 0, density);
 
+    let result: SwapResult;
     if (gcodeData && mode === "gcode") {
-      setResults(
-        calculateSwapPointsGcode(
-          gcodeData.layers,
-          spoolWeights,
-          purgeGrams,
-          layers,
-        ),
+      result = calculateSwapPointsGcode(
+        gcodeData.layers,
+        spoolWeights,
+        purgeGrams,
+        layers,
       );
     } else {
-      setResults(
-        calculateSwapPointsLinear(total, layers, spoolWeights, purgeGrams),
+      result = calculateSwapPointsLinear(
+        total,
+        layers,
+        spoolWeights,
+        purgeGrams,
       );
     }
-  }, [totalGrams, totalLayers, spools, gcodeData, mode, purgeLength, density]);
+
+    setResults(result);
+  }, [
+    totalGrams,
+    totalLayers,
+    sortedSpools,
+    gcodeData,
+    mode,
+    purgeLength,
+    density,
+  ]);
 
   const reset = () => {
     setTotalGrams("");
     setTotalLayers("");
-    setSpools([{ id: 1, grams: "" }]);
+    setSelectedSpools([]);
     setResults(null);
+    setError(null);
     clearGcode();
     setMode("gcode");
     setPurgeLength("100");
     setSelectedMaterial("PLA");
     setDensity(MATERIAL_DENSITIES.PLA);
+    setSortOption("custom");
   };
 
   const purgeGramsDisplay = mmToGrams(
@@ -181,22 +247,68 @@ export function CalculatorClient({ inventorySpools }: Props) {
     density,
   ).toFixed(1);
 
+  // Recommendation: spools the user could add to cover the deficit
+  const recommendations = useMemo(() => {
+    if (!results || results.enough) return null;
+    const deficit = results.totalWithPurge - results.totalAvailable;
+    const candidates = availableSpools
+      .filter((s) => s.currentMass > 0)
+      .sort((a, b) => b.currentMass - a.currentMass);
+
+    if (candidates.length === 0)
+      return { deficit, spools: [], canCover: false };
+
+    const recommended: InventorySpool[] = [];
+    let remaining = deficit;
+    for (const spool of candidates) {
+      if (remaining <= 0) break;
+      recommended.push(spool);
+      remaining -= spool.currentMass;
+    }
+
+    return {
+      deficit: Math.round(deficit),
+      spools: recommended,
+      canCover: remaining <= 0,
+    };
+  }, [results, availableSpools]);
+
   return (
     <div className="space-y-6">
       {/* Header */}
-      <div>
-        <h1 className="text-2xl font-semibold tracking-tight text-foreground">
-          Spool Swap Calculator
-        </h1>
-        <p className="text-sm text-muted-foreground">
-          Figure out where to pause &amp; swap partial spools
-        </p>
+      <div className="flex items-start justify-between">
+        <div>
+          <h1 className="bg-linear-to-r from-emerald-400 to-teal-400 bg-clip-text text-2xl font-bold tracking-tight text-transparent">
+            Spool Swap Calculator
+          </h1>
+          <p className="text-sm text-muted-foreground">
+            Figure out exactly where to pause &amp; swap partial spools
+          </p>
+        </div>
+      </div>
+
+      {/* Slicer Compatibility Notice */}
+      <div className="flex items-start gap-3 rounded-xl border border-primary/20 bg-linear-to-r from-primary/5 to-teal-500/5 px-4 py-3">
+        <Info className="mt-0.5 size-4 shrink-0 text-primary" />
+        <div className="text-sm">
+          <span className="font-medium text-primary">
+            Currently optimized for EufyMake Studio / AnkerMake G-code.
+          </span>{" "}
+          <span className="text-muted-foreground">
+            Support for PrusaSlicer, OrcaSlicer, and Cura is coming soon. Manual
+            entry mode works with any slicer.
+          </span>
+        </div>
       </div>
 
       {/* Mode Toggle */}
       <Tabs
         value={mode}
-        onValueChange={(v) => setMode(v as "gcode" | "manual")}
+        onValueChange={(v) => {
+          setMode(v as "gcode" | "manual");
+          setResults(null);
+          setError(null);
+        }}
       >
         <TabsList>
           <TabsTrigger value="gcode">
@@ -212,7 +324,7 @@ export function CalculatorClient({ inventorySpools }: Props) {
         {/* G-code Upload Tab */}
         <TabsContent value="gcode" className="mt-4 space-y-4">
           {!gcodeData ? (
-            <label className="flex cursor-pointer flex-col items-center justify-center gap-2 rounded-xl border-2 border-dashed border-border px-6 py-10 transition-colors hover:border-primary/50 hover:bg-card/50">
+            <label className="group flex cursor-pointer flex-col items-center justify-center gap-3 rounded-xl border-2 border-dashed border-border px-6 py-12 transition-all hover:border-primary/50 hover:bg-linear-to-b hover:from-primary/5 hover:to-transparent">
               <input
                 ref={fileRef}
                 type="file"
@@ -222,102 +334,79 @@ export function CalculatorClient({ inventorySpools }: Props) {
               />
               {gcodeLoading ? (
                 <>
-                  <div className="size-6 animate-spin rounded-full border-2 border-primary border-t-transparent" />
+                  <div className="size-8 animate-spin rounded-full border-2 border-primary border-t-transparent" />
                   <span className="text-sm text-muted-foreground">
                     Parsing G-code...
                   </span>
                 </>
               ) : (
                 <>
-                  <Upload className="size-8 text-muted-foreground" />
-                  <span className="text-sm font-medium text-foreground">
-                    Click to select <span className="text-primary">.gcode</span>{" "}
-                    file
-                  </span>
-                  <span className="text-xs text-muted-foreground">
-                    Parses per-layer extrusion for accurate swap points
-                  </span>
+                  <div className="rounded-xl bg-primary/10 p-3 transition-colors group-hover:bg-primary/20">
+                    <Upload className="size-6 text-primary" />
+                  </div>
+                  <div className="text-center">
+                    <span className="text-sm font-medium text-foreground">
+                      Drop or click to select{" "}
+                      <span className="text-primary">.gcode</span> file
+                    </span>
+                    <p className="mt-1 text-xs text-muted-foreground">
+                      Parses per-layer extrusion for accurate swap points
+                    </p>
+                  </div>
                 </>
               )}
             </label>
           ) : (
-            <Card>
-              <CardContent className="space-y-4">
-                {/* File info */}
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-2">
+            <div className="rounded-xl border border-primary/20 bg-linear-to-r from-primary/5 to-transparent p-4">
+              {/* File info */}
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-2.5">
+                  <div className="rounded-lg bg-primary/15 p-1.5">
                     <FileCode2 className="size-4 text-primary" />
+                  </div>
+                  <div>
                     <span className="text-sm font-medium">{gcodeName}</span>
-                  </div>
-                  <Button variant="ghost" size="icon-xs" onClick={clearGcode}>
-                    <X className="size-3.5" />
-                  </Button>
-                </div>
-
-                {/* Parsed stats */}
-                <div className="flex items-center gap-3 text-sm">
-                  <span className="text-primary font-medium">
-                    {gcodeData.totalLayers} layers
-                  </span>
-                  <span className="text-muted-foreground">•</span>
-                  <span className="text-primary font-medium">
-                    {gcodeData.totalGrams.toFixed(1)}g total
-                  </span>
-                  {gcodeData.headerGrams && (
-                    <>
-                      <span className="text-muted-foreground">•</span>
-                      <span className="flex items-center gap-1 text-emerald-accent">
-                        <CheckCircle2 className="size-3" />
-                        matched slicer header
+                    <div className="flex items-center gap-2 text-xs">
+                      <span className="font-mono font-medium text-primary">
+                        {gcodeData.totalLayers} layers
                       </span>
-                    </>
-                  )}
-                </div>
-
-                {/* Material selector */}
-                <div className="space-y-2">
-                  <Label className="text-xs text-muted-foreground">
-                    Filament type
-                  </Label>
-                  <div className="flex flex-wrap gap-1.5">
-                    {DEFAULT_MATERIALS.map((mat) => (
-                      <Button
-                        key={mat}
-                        variant={
-                          selectedMaterial === mat ? "default" : "outline"
-                        }
-                        size="xs"
-                        onClick={() => changeMaterial(mat)}
-                      >
-                        {mat}
-                      </Button>
-                    ))}
+                      <span className="text-muted-foreground">·</span>
+                      <span className="font-mono font-medium text-primary">
+                        {gcodeData.totalGrams.toFixed(1)}g
+                      </span>
+                      {gcodeData.headerGrams && (
+                        <>
+                          <span className="text-muted-foreground">·</span>
+                          <span className="flex items-center gap-0.5 text-emerald-400">
+                            <CheckCircle2 className="size-3" />
+                            slicer verified
+                          </span>
+                        </>
+                      )}
+                    </div>
                   </div>
-                  <p className="text-xs text-muted-foreground">
-                    Density: {density} g/cm³
-                  </p>
                 </div>
-              </CardContent>
-            </Card>
-          )}
-
-          {/* Parsed print info (read-only) */}
-          {gcodeData && (
-            <div className="grid grid-cols-2 gap-3">
-              <div className="space-y-1.5">
-                <Label className="text-xs text-muted-foreground">
-                  Total filament
-                </Label>
-                <div className="flex h-10 items-center rounded-lg border border-border bg-card px-3 text-sm font-medium text-primary">
-                  {totalGrams}g
-                </div>
+                <Button variant="ghost" size="icon-xs" onClick={clearGcode}>
+                  <X className="size-3.5" />
+                </Button>
               </div>
-              <div className="space-y-1.5">
+
+              {/* Material selector */}
+              <div className="mt-4 space-y-2">
                 <Label className="text-xs text-muted-foreground">
-                  Total layers
+                  Filament type ({density} g/cm³)
                 </Label>
-                <div className="flex h-10 items-center rounded-lg border border-border bg-card px-3 text-sm font-medium text-primary">
-                  {totalLayers}
+                <div className="flex flex-wrap gap-1.5">
+                  {DEFAULT_MATERIALS.map((mat) => (
+                    <Button
+                      key={mat}
+                      variant={selectedMaterial === mat ? "default" : "outline"}
+                      size="xs"
+                      onClick={() => changeMaterial(mat)}
+                    >
+                      {mat}
+                    </Button>
+                  ))}
                 </div>
               </div>
             </div>
@@ -335,6 +424,7 @@ export function CalculatorClient({ inventorySpools }: Props) {
                 placeholder="e.g. 245"
                 value={totalGrams}
                 onChange={(e) => setTotalGrams(e.target.value)}
+                className="font-mono"
               />
               <p className="text-xs text-muted-foreground">
                 From your slicer estimate
@@ -348,6 +438,7 @@ export function CalculatorClient({ inventorySpools }: Props) {
                 placeholder="e.g. 380"
                 value={totalLayers}
                 onChange={(e) => setTotalLayers(e.target.value)}
+                className="font-mono"
               />
               <p className="text-xs text-muted-foreground">
                 From your slicer preview
@@ -357,79 +448,133 @@ export function CalculatorClient({ inventorySpools }: Props) {
         </TabsContent>
       </Tabs>
 
-      {/* Spools Section */}
-      <div className="space-y-3">
+      {/* ─── Spool Selection ───────────────────────────── */}
+      <div className="space-y-4">
         <div className="flex items-center justify-between">
           <div>
             <h2 className="text-sm font-semibold uppercase tracking-wider text-muted-foreground">
-              Your Spools
+              Selected Spools
             </h2>
             <p className="text-xs text-muted-foreground">
-              In print order — first spool loads first
+              First spool loads first — reorder by changing sort
             </p>
           </div>
-          <Button variant="outline" size="sm" onClick={addSpool}>
-            <Plus className="mr-1 size-3.5" />
-            Add Spool
-          </Button>
+          {selectedSpools.length > 1 && (
+            <div className="flex items-center gap-1.5">
+              <Label className="text-xs text-muted-foreground">Sort:</Label>
+              <select
+                value={sortOption}
+                onChange={(e) => setSortOption(e.target.value as SortOption)}
+                className="h-7 rounded-md border border-input bg-transparent px-2 text-xs text-foreground outline-none focus-visible:border-ring focus-visible:ring-2 focus-visible:ring-ring/50 dark:bg-input/30"
+              >
+                <option value="custom">Custom Order</option>
+                <option value="least-first">Least Filament First</option>
+                <option value="most-first">Most Filament First</option>
+                <option value="name">Alphabetical</option>
+              </select>
+            </div>
+          )}
         </div>
 
-        <div className="grid gap-2 sm:grid-cols-2 lg:grid-cols-3">
-          {spools.map((sp, i) => (
-            <Card key={sp.id} size="sm">
-              <CardContent className="space-y-2">
-                <div className="flex items-center justify-between">
-                  <span className="text-xs font-semibold text-muted-foreground">
-                    Spool {i + 1}
-                    {sp.label && (
-                      <span className="ml-1.5 font-normal text-primary">
-                        — {sp.label}
+        {/* Selected spool cards */}
+        {sortedSpools.length > 0 ? (
+          <div className="grid gap-2 sm:grid-cols-2 lg:grid-cols-3">
+            {sortedSpools.map((sp, i) => (
+              <div
+                key={sp.entryId}
+                className="group relative overflow-hidden rounded-xl border border-border bg-card p-3 transition-colors hover:border-primary/30"
+              >
+                {/* Color accent bar */}
+                <div
+                  className="absolute inset-y-0 left-0 w-1 rounded-l-xl"
+                  style={{ backgroundColor: sp.color }}
+                />
+                <div className="ml-2">
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-2">
+                      <span
+                        className="inline-block size-3 rounded-full ring-1 ring-white/10"
+                        style={{ backgroundColor: sp.color }}
+                      />
+                      <span className="text-[10px] font-medium text-muted-foreground">
+                        {ordinal(i + 1)}
                       </span>
-                    )}
-                  </span>
-                  {spools.length > 1 && (
+                    </div>
                     <Button
                       variant="ghost"
                       size="icon-xs"
-                      onClick={() => removeSpool(sp.id)}
+                      className="opacity-0 transition-opacity group-hover:opacity-100"
+                      onClick={() => removeSpool(sp.entryId)}
                     >
                       <Trash2 className="size-3" />
                     </Button>
-                  )}
+                  </div>
+                  <p className="mt-1 text-sm font-medium text-foreground">
+                    <span className="font-mono text-primary">
+                      #{sp.spoolNumber}
+                    </span>{" "}
+                    {sp.brand ? `${sp.brand} ` : ""}
+                    {sp.name}
+                  </p>
+                  <div className="mt-1 flex items-center gap-2 text-xs text-muted-foreground">
+                    <Badge
+                      variant="outline"
+                      className="h-5 border-transparent px-1.5 text-[10px]"
+                      style={{
+                        backgroundColor: `color-mix(in srgb, ${sp.color} 15%, transparent)`,
+                        color: sp.color,
+                      }}
+                    >
+                      {sp.material}
+                    </Badge>
+                    <span className="font-mono font-semibold text-foreground">
+                      {sp.grams}g
+                    </span>
+                  </div>
                 </div>
-                <Input
-                  type="number"
-                  placeholder="grams remaining"
-                  value={sp.grams}
-                  onChange={(e) => updateSpoolGrams(sp.id, e.target.value)}
-                />
-              </CardContent>
-            </Card>
-          ))}
-        </div>
+              </div>
+            ))}
+          </div>
+        ) : (
+          <div className="flex flex-col items-center justify-center rounded-xl border-2 border-dashed border-border px-6 py-8 text-center">
+            <Disc className="mb-2 size-8 text-muted-foreground/50" />
+            <p className="text-sm font-medium text-muted-foreground">
+              No spools selected
+            </p>
+            <p className="mt-1 text-xs text-muted-foreground/70">
+              {inventorySpools.length > 0
+                ? "Select spools from your inventory below"
+                : "Create spools in the Spools tab first"}
+            </p>
+          </div>
+        )}
 
-        {/* Inventory Picker */}
-        {inventorySpools.length > 0 && (
+        {/* Available inventory spools */}
+        {availableSpools.length > 0 && (
           <div className="space-y-2">
-            <p className="text-xs font-medium text-muted-foreground">
-              Or add from your inventory:
+            <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+              Add from inventory
             </p>
             <div className="flex flex-wrap gap-1.5">
-              {inventorySpools.map((inv) => (
+              {availableSpools.map((inv) => (
                 <Button
                   key={inv.id}
                   variant="outline"
                   size="xs"
-                  onClick={() => addFromInventory(inv)}
-                  className="gap-1.5"
+                  onClick={() => addSpool(inv)}
+                  className="gap-1.5 border-dashed"
                 >
+                  <Plus className="size-3 text-primary" />
                   <span
-                    className="inline-block size-2.5 rounded-full"
+                    className="inline-block size-2.5 rounded-full ring-1 ring-white/10"
                     style={{ backgroundColor: inv.color }}
                   />
+                  <span className="font-mono text-xs text-primary">
+                    #{inv.spoolNumber}
+                  </span>
                   {inv.brand ? `${inv.brand} ` : ""}
                   {inv.name}
-                  <span className="text-muted-foreground">
+                  <span className="font-mono text-muted-foreground">
                     {inv.currentMass}g
                   </span>
                 </Button>
@@ -439,7 +584,7 @@ export function CalculatorClient({ inventorySpools }: Props) {
         )}
       </div>
 
-      {/* Purge Config */}
+      {/* ─── Purge Config ──────────────────────────────── */}
       <div className="space-y-2">
         <h2 className="text-sm font-semibold uppercase tracking-wider text-muted-foreground">
           Purge Per Swap
@@ -453,18 +598,25 @@ export function CalculatorClient({ inventorySpools }: Props) {
               placeholder="100"
               value={purgeLength}
               onChange={(e) => setPurgeLength(e.target.value)}
+              className="font-mono"
             />
           </div>
           <p className="pb-2 text-xs text-muted-foreground">
-            ≈ {purgeGramsDisplay}g per spool load — filament extruded each time
-            you load/swap a spool
+            ≈{" "}
+            <span className="font-mono font-medium text-foreground">
+              {purgeGramsDisplay}g
+            </span>{" "}
+            per spool load — filament extruded each time you load/swap
           </p>
         </div>
       </div>
 
-      {/* Actions */}
+      {/* ─── Actions ───────────────────────────────────── */}
       <div className="flex gap-3">
-        <Button onClick={calculate} className="gap-2">
+        <Button
+          onClick={calculate}
+          className="gap-2 bg-linear-to-r from-emerald-600 to-teal-600 text-white shadow-lg shadow-emerald-500/20 hover:from-emerald-500 hover:to-teal-500"
+        >
           <Calculator className="size-4" />
           Calculate Stop Points
         </Button>
@@ -474,18 +626,49 @@ export function CalculatorClient({ inventorySpools }: Props) {
         </Button>
       </div>
 
-      {/* Results */}
-      {results && <ResultsDisplay results={results} />}
+      {/* ─── Error Message ────────────────────────────── */}
+      {error && (
+        <div className="flex items-start gap-2 rounded-xl border border-amber-500/30 bg-amber-500/10 px-4 py-3 text-sm text-amber-300">
+          <AlertTriangle className="mt-0.5 size-4 shrink-0" />
+          <span>{error}</span>
+        </div>
+      )}
+
+      {/* ─── Results ──────────────────────────────────── */}
+      {results && (
+        <ResultsDisplay
+          results={results}
+          sortedSpools={sortedSpools}
+          recommendations={recommendations}
+          onAddSpool={addSpool}
+        />
+      )}
     </div>
   );
 }
 
-function ResultsDisplay({ results }: { results: SwapResult }) {
+// ─── Results Component ────────────────────────────────
+
+function ResultsDisplay({
+  results,
+  sortedSpools,
+  recommendations,
+  onAddSpool,
+}: {
+  results: SwapResult;
+  sortedSpools: SelectedSpool[];
+  recommendations: {
+    deficit: number;
+    spools: InventorySpool[];
+    canCover: boolean;
+  } | null;
+  onAddSpool: (inv: InventorySpool) => void;
+}) {
   return (
     <div className="space-y-6 border-t border-border pt-6">
       {/* Results header */}
       <div className="flex items-center justify-between">
-        <h2 className="text-sm font-semibold uppercase tracking-wider text-muted-foreground">
+        <h2 className="bg-linear-to-r from-emerald-400 to-teal-400 bg-clip-text text-lg font-bold text-transparent">
           Results
         </h2>
         <Badge
@@ -505,13 +688,21 @@ function ResultsDisplay({ results }: { results: SwapResult }) {
         {results.gramsPerLayer && (
           <StatBox value={`${results.gramsPerLayer}g`} label="avg per layer" />
         )}
-        <StatBox value={`${results.totalAvailable}g`} label="available" />
-        <StatBox value={`${results.totalNeeded}g`} label="print needs" />
+        <StatBox
+          value={`${results.totalAvailable}g`}
+          label="available"
+          accent="emerald"
+        />
+        <StatBox
+          value={`${results.totalNeeded}g`}
+          label="print needs"
+          accent="teal"
+        />
         {results.totalPurgeWaste > 0 && (
           <StatBox
             value={`+${results.totalPurgeWaste}g`}
-            label={`purge waste (${results.numSwaps + 1} loads × ${results.purgePerSwap}g)`}
-            className="text-amber-400"
+            label={`purge waste (${results.numSwaps + 1} loads)`}
+            accent="amber"
           />
         )}
         <StatBox
@@ -522,132 +713,251 @@ function ResultsDisplay({ results }: { results: SwapResult }) {
               : `need ${Math.round(results.totalWithPurge - results.totalAvailable)}g more`
           }
           icon={results.enough ? CheckCircle2 : XCircle}
-          className={results.enough ? "text-emerald-400" : "text-red-400"}
-          borderColor={
-            results.enough ? "border-emerald-500/30" : "border-red-500/30"
-          }
+          accent={results.enough ? "green" : "red"}
         />
       </div>
 
+      {/* Not enough filament — recommendations */}
+      {!results.enough && recommendations && (
+        <div className="space-y-3 rounded-xl border border-red-500/20 bg-linear-to-r from-red-500/5 to-transparent p-4">
+          <div className="flex items-start gap-2 text-sm">
+            <AlertTriangle className="mt-0.5 size-4 shrink-0 text-red-400" />
+            <div>
+              <p className="font-medium text-red-300">
+                Not enough filament — you need{" "}
+                <span className="font-mono">{recommendations.deficit}g</span>{" "}
+                more.
+              </p>
+              {recommendations.spools.length > 0 ? (
+                <p className="mt-1 text-muted-foreground">
+                  {recommendations.canCover
+                    ? `Adding ${recommendations.spools.length === 1 ? "this spool" : "these spools"} would cover the deficit:`
+                    : "These spools would help, but you still won't have enough:"}
+                </p>
+              ) : (
+                <p className="mt-1 text-muted-foreground">
+                  You don&apos;t have any more spools in your inventory to add.
+                  Create more spools in the Spools tab.
+                </p>
+              )}
+            </div>
+          </div>
+
+          {recommendations.spools.length > 0 && (
+            <div className="flex flex-wrap gap-2">
+              {recommendations.spools.map((spool) => (
+                <Button
+                  key={spool.id}
+                  variant="outline"
+                  size="sm"
+                  className="gap-1.5 border-red-500/30 hover:border-emerald-500/30 hover:bg-emerald-500/10"
+                  onClick={() => onAddSpool(spool)}
+                >
+                  <Plus className="size-3 text-emerald-400" />
+                  <span
+                    className="inline-block size-2.5 rounded-full ring-1 ring-white/10"
+                    style={{ backgroundColor: spool.color }}
+                  />
+                  {spool.brand ? `${spool.brand} ` : ""}
+                  {spool.name}
+                  <span className="font-mono text-muted-foreground">
+                    {spool.currentMass}g
+                  </span>
+                </Button>
+              ))}
+            </div>
+          )}
+        </div>
+      )}
+
+      {/* Layers not fully covered */}
+      {results.enough && results.layersCovered < results.totalLayers && (
+        <div className="flex items-start gap-2 rounded-xl border border-amber-500/30 bg-amber-500/10 px-4 py-3 text-sm text-amber-300">
+          <AlertTriangle className="mt-0.5 size-4 shrink-0" />
+          <span>
+            Only covers {results.layersCovered} of {results.totalLayers} layers.
+            Layers {results.layersCovered + 1}–{results.totalLayers} need more
+            filament.
+          </span>
+        </div>
+      )}
+
       {/* Pause Schedule */}
-      <div className="space-y-2">
+      <div className="space-y-3">
         <h3 className="text-sm font-semibold uppercase tracking-wider text-muted-foreground">
-          Pause Schedule
+          Swap Schedule
         </h3>
         <div className="space-y-2">
-          {results.schedule.map((s, i) => (
-            <Card key={i} size="sm">
-              <CardContent>
-                <div className="flex flex-wrap items-center gap-x-4 gap-y-2">
-                  <div className="min-w-35 flex-1">
-                    <span className="text-sm font-semibold text-primary">
-                      Spool {s.spool}
-                    </span>
-                    <p className="text-xs text-muted-foreground">
-                      {s.gramsAvailable}g available → {s.gramsUsed}g print
-                      {s.purgeGrams > 0 ? ` + ${s.purgeGrams}g purge` : ""}
+          {results.schedule.map((s, i) => {
+            const spool = sortedSpools[i];
+            return (
+              <div
+                key={i}
+                className="group relative overflow-hidden rounded-xl border border-border bg-card transition-colors hover:border-primary/20"
+              >
+                {/* Color bar */}
+                {spool && (
+                  <div
+                    className="absolute inset-y-0 left-0 w-1"
+                    style={{ backgroundColor: spool.color }}
+                  />
+                )}
+                <div className="flex flex-wrap items-center gap-x-4 gap-y-2 p-3 pl-4">
+                  <div className="min-w-32 flex-1">
+                    <div className="flex items-center gap-2">
+                      {spool && (
+                        <span
+                          className="inline-block size-3 rounded-full ring-1 ring-white/10"
+                          style={{ backgroundColor: spool.color }}
+                        />
+                      )}
+                      <span className="text-sm font-semibold text-primary">
+                        Spool {s.spool}
+                        {spool && (
+                          <span className="ml-1 font-normal text-foreground">
+                            — {spool.brand ? `${spool.brand} ` : ""}
+                            {spool.name}
+                          </span>
+                        )}
+                      </span>
+                    </div>
+                    <p className="mt-0.5 text-xs text-muted-foreground">
+                      <span className="font-mono">{s.gramsAvailable}g</span>{" "}
+                      available →{" "}
+                      <span className="font-mono">{s.gramsUsed}g</span> print
+                      {s.purgeGrams > 0 && (
+                        <>
+                          {" "}
+                          + <span className="font-mono">
+                            {s.purgeGrams}g
+                          </span>{" "}
+                          purge
+                        </>
+                      )}
                     </p>
                   </div>
-                  <span className="text-sm font-medium text-secondary-foreground">
-                    Layer {s.startLayer} – {s.endLayer}
+                  <span className="font-mono text-sm font-medium text-secondary-foreground">
+                    Layers {s.startLayer}–{s.endLayer}
                   </span>
                   <div className="ml-auto">
                     {s.pauseBeforeLayer ? (
-                      <Badge className="gap-1 bg-amber-500/15 text-amber-400 border-amber-500/30">
+                      <Badge className="gap-1.5 border-amber-500/30 bg-amber-500/15 text-amber-400">
                         <Pause className="size-3" />
-                        PAUSE before layer {s.pauseBeforeLayer}
+                        Swap at layer {s.pauseBeforeLayer}
                       </Badge>
                     ) : (
-                      <Badge className="gap-1 bg-emerald-500/15 text-emerald-400 border-emerald-500/30">
+                      <Badge className="gap-1.5 border-emerald-500/30 bg-emerald-500/15 text-emerald-400">
                         <CheckCircle2 className="size-3" />
-                        DONE
+                        Print complete
                       </Badge>
                     )}
                   </div>
                 </div>
-              </CardContent>
-            </Card>
-          ))}
+              </div>
+            );
+          })}
         </div>
-
-        {results.layersCovered < results.totalLayers && (
-          <div className="flex items-start gap-2 rounded-lg border border-red-500/30 bg-red-500/10 px-4 py-3 text-sm text-red-300">
-            <AlertTriangle className="mt-0.5 size-4 shrink-0" />
-            <span>
-              Only covers {results.layersCovered} of {results.totalLayers}{" "}
-              layers. You need more filament for layers{" "}
-              {results.layersCovered + 1}–{results.totalLayers}.
-            </span>
-          </div>
-        )}
       </div>
 
-      {/* Quick Reference */}
-      <Card>
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2 text-sm uppercase tracking-wider text-muted-foreground">
-            <Zap className="size-4 text-primary" />
-            Quick Ref — Set these markers in EufyMake Studio
-          </CardTitle>
-        </CardHeader>
-        <CardContent className="space-y-3">
-          {results.schedule.filter((s) => s.pauseBeforeLayer).length > 0 ? (
-            <>
-              {results.schedule
-                .filter((s) => s.pauseBeforeLayer)
-                .map((s, i) => (
-                  <div key={i} className="flex items-center gap-2 text-sm">
-                    <span className="text-muted-foreground">Set marker on</span>
-                    <span className="font-bold text-amber-400">
-                      layer {s.pauseBeforeLayer}
+      {/* Quick Reference — EufyMake markers */}
+      {results.schedule.some((s) => s.pauseBeforeLayer) && (
+        <div className="overflow-hidden rounded-xl border border-primary/20 bg-linear-to-br from-primary/5 via-transparent to-teal-500/5">
+          <div className="border-b border-primary/10 px-4 py-3">
+            <h3 className="flex items-center gap-2 text-sm font-semibold uppercase tracking-wider text-primary">
+              <Zap className="size-4" />
+              EufyMake Studio — Set These Markers
+            </h3>
+          </div>
+          <div className="space-y-3 p-4">
+            {results.schedule
+              .filter((s) => s.pauseBeforeLayer)
+              .map((s, i) => (
+                <div
+                  key={i}
+                  className="flex flex-wrap items-center gap-2 text-sm"
+                >
+                  <span className="rounded-md bg-amber-500/15 px-2 py-0.5 font-mono font-bold text-amber-400">
+                    Layer {s.pauseBeforeLayer}
+                  </span>
+                  <ArrowRight className="size-3.5 text-muted-foreground" />
+                  <span className="text-foreground">
+                    Swap from{" "}
+                    <span className="font-semibold text-primary">
+                      Spool {s.spool}
+                    </span>{" "}
+                    to{" "}
+                    <span className="font-semibold text-primary">
+                      Spool {s.spool + 1}
                     </span>
-                    <ChevronRight className="size-3 text-muted-foreground" />
-                    <span className="text-secondary-foreground">
-                      Swap Spool {s.spool} → Spool {s.spool + 1}
-                    </span>
-                  </div>
-                ))}
-              <p className="flex items-start gap-1.5 text-xs text-muted-foreground">
-                <Info className="mt-0.5 size-3 shrink-0" />
-                EufyMake pauses <em>before</em> printing the marked layer — set
-                the marker on the first layer of the next spool.
-              </p>
-            </>
-          ) : (
-            <p className="text-sm text-muted-foreground">
-              No pauses needed — single spool covers the whole print.
-            </p>
-          )}
-        </CardContent>
-      </Card>
+                  </span>
+                </div>
+              ))}
+            <div className="mt-2 flex items-start gap-2 rounded-lg bg-card/50 px-3 py-2 text-xs text-muted-foreground">
+              <Info className="mt-0.5 size-3.5 shrink-0 text-primary/60" />
+              <span>
+                In EufyMake Studio, drag the layer slider to the layer number
+                shown above and click the <strong>+</strong> button to set a
+                marker. The printer will <strong>pause before printing</strong>{" "}
+                that layer, giving you time to swap the spool.
+              </span>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* No swaps needed */}
+      {results.enough && !results.schedule.some((s) => s.pauseBeforeLayer) && (
+        <div className="flex items-center gap-2 rounded-xl border border-emerald-500/20 bg-emerald-500/10 px-4 py-3 text-sm text-emerald-400">
+          <CheckCircle2 className="size-4 shrink-0" />
+          <span className="font-medium">
+            No spool swaps needed — your spool covers the entire print!
+          </span>
+        </div>
+      )}
     </div>
   );
 }
 
+// ─── Stat Box ─────────────────────────────────────────
+
 function StatBox({
   value,
   label,
-  className,
-  borderColor,
+  accent,
   icon: Icon,
 }: {
   value: string;
   label: string;
-  className?: string;
-  borderColor?: string;
+  accent?: "emerald" | "teal" | "amber" | "green" | "red";
   icon?: React.ComponentType<{ className?: string }>;
 }) {
+  const colors = {
+    emerald: "border-emerald-500/20 from-emerald-500/10 text-emerald-400",
+    teal: "border-teal-500/20 from-teal-500/10 text-teal-400",
+    amber: "border-amber-500/20 from-amber-500/10 text-amber-400",
+    green: "border-emerald-500/30 from-emerald-500/10 text-emerald-400",
+    red: "border-red-500/30 from-red-500/10 text-red-400",
+  };
+
+  const colorClass = accent
+    ? colors[accent]
+    : "border-border from-card text-foreground";
+
   return (
     <div
-      className={`rounded-lg border bg-card p-3 text-center ${borderColor ?? "border-border"}`}
+      className={`rounded-xl border bg-linear-to-b to-card p-3 text-center ${colorClass}`}
     >
-      <div
-        className={`flex items-center justify-center gap-1 text-lg font-bold ${className ?? "text-foreground"}`}
-      >
+      <div className="flex items-center justify-center gap-1 font-mono text-lg font-bold">
         {Icon && <Icon className="size-4" />}
         {value}
       </div>
       <div className="mt-0.5 text-xs text-muted-foreground">{label}</div>
     </div>
   );
+}
+
+function ordinal(n: number): string {
+  const s = ["th", "st", "nd", "rd"];
+  const v = n % 100;
+  return n + (s[(v - 20) % 10] || s[v] || s[0]);
 }

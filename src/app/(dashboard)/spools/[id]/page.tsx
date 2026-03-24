@@ -1,6 +1,11 @@
 import { notFound } from "next/navigation";
 import Link from "next/link";
-import { getSpool, getSpools, getBoxesForSelect, getFilamentColors } from "../actions";
+import {
+  getSpool,
+  getSpools,
+  getBoxesForSelect,
+  getFilamentColors,
+} from "../actions";
 import { ProgressBar } from "@/components/shared/progress-bar";
 import { UsageTimeline } from "@/components/spools/usage-timeline";
 import { SimilarColors } from "@/components/spools/similar-colors";
@@ -36,15 +41,17 @@ export default async function SpoolDetailPage({ params }: Props) {
     light: "var(--text-secondary)",
   };
 
-  const percentage = spool.startingMass > 0
-    ? Math.round((spool.currentMass / spool.startingMass) * 100)
-    : 0;
+  const percentage =
+    spool.startingMass > 0
+      ? Math.round((spool.currentMass / spool.startingMass) * 100)
+      : 0;
 
   const totalUsed = spool.startingMass - spool.currentMass;
   const timesUsed = spool.logs.length;
-  const costPerGram = spool.cost && spool.startingMass > 0
-    ? (spool.cost / spool.startingMass / 100).toFixed(3)
-    : null;
+  const costPerGram =
+    spool.cost && spool.startingMass > 0
+      ? (spool.cost / spool.startingMass / 100).toFixed(3)
+      : null;
 
   return (
     <div className="space-y-8">
@@ -66,7 +73,7 @@ export default async function SpoolDetailPage({ params }: Props) {
             style={{ backgroundColor: spool.color }}
           />
           <div>
-            <h1 className="text-2xl font-semibold tracking-tight text-foreground">
+            <h1 className="bg-linear-to-r from-emerald-400 to-teal-400 bg-clip-text text-2xl font-bold tracking-tight text-transparent">
               {spool.name}
             </h1>
             <p className="text-sm text-muted-foreground">{spool.brand}</p>
@@ -87,7 +94,10 @@ export default async function SpoolDetailPage({ params }: Props) {
                 </Badge>
               )}
               {spool.archived && (
-                <Badge variant="outline" className="border-[var(--color-warning)] text-xs text-[var(--color-warning)]">
+                <Badge
+                  variant="outline"
+                  className="border-(--color-warning) text-xs text-(--color-warning)"
+                >
                   Archived
                 </Badge>
               )}
@@ -134,32 +144,32 @@ export default async function SpoolDetailPage({ params }: Props) {
           <p className="font-mono text-lg font-bold text-foreground">
             {totalUsed}g
           </p>
-          <p className="text-[10px] text-[var(--text-faint)]">total used</p>
+          <p className="text-[10px] text-(--text-faint)">total used</p>
         </div>
         <div className="rounded-lg border border-border bg-card p-4 text-center">
           <p className="font-mono text-lg font-bold text-foreground">
             {timesUsed}
           </p>
-          <p className="text-[10px] text-[var(--text-faint)]">times used</p>
+          <p className="text-[10px] text-(--text-faint)">times used</p>
         </div>
         <div className="rounded-lg border border-border bg-card p-4 text-center">
           <p className="font-mono text-lg font-bold text-foreground">
             {spool.cost ? `$${(spool.cost / 100).toFixed(2)}` : "—"}
           </p>
-          <p className="text-[10px] text-[var(--text-faint)]">cost</p>
+          <p className="text-[10px] text-(--text-faint)">cost</p>
         </div>
         <div className="rounded-lg border border-border bg-card p-4 text-center">
           <p className="font-mono text-lg font-bold text-foreground">
             {costPerGram ? `$${costPerGram}` : "—"}
           </p>
-          <p className="text-[10px] text-[var(--text-faint)]">per gram</p>
+          <p className="text-[10px] text-(--text-faint)">per gram</p>
         </div>
       </div>
 
       {/* Details */}
       {(spool.diameter || spool.printingTemperature || spool.note) && (
         <div className="rounded-xl border border-border bg-card p-5">
-          <p className="mb-3 text-[10px] font-bold uppercase tracking-[0.12em] text-[var(--text-faint)]">
+          <p className="mb-3 text-[10px] font-bold uppercase tracking-[0.12em] text-(--text-faint)">
             Details
           </p>
           <div className="grid grid-cols-2 gap-4 text-sm sm:grid-cols-3">
@@ -202,7 +212,7 @@ export default async function SpoolDetailPage({ params }: Props) {
 
       {/* Usage Timeline */}
       <div>
-        <p className="mb-3 text-[10px] font-bold uppercase tracking-[0.12em] text-[var(--text-faint)]">
+        <p className="mb-3 text-[10px] font-bold uppercase tracking-[0.12em] text-(--text-faint)">
           Usage History
         </p>
         <UsageTimeline logs={spool.logs} />
