@@ -29,6 +29,7 @@ import {
   DEFAULT_FILAMENT_DIAMETER,
 } from "@/lib/constants";
 import { toast } from "sonner";
+import { StyledSelect } from "@/components/ui/styled-select";
 import { Loader2, Plus } from "lucide-react";
 
 interface FilamentColor {
@@ -50,6 +51,7 @@ interface SpoolFormProps {
     name: string;
     brand: string;
     color: string;
+    colorSecondary?: string | null;
     material: string;
     currentMass: number;
     startingMass: number;
@@ -77,6 +79,9 @@ export function SpoolForm({
   const [loading, setLoading] = useState(false);
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [selectedColor, setSelectedColor] = useState(spool?.color ?? "#808080");
+  const [selectedColorSecondary, setSelectedColorSecondary] = useState<
+    string | null
+  >(spool?.colorSecondary ?? null);
   const [selectedColorId, setSelectedColorId] = useState<string | null>(
     spool?.filamentColorId ?? null,
   );
@@ -89,6 +94,8 @@ export function SpoolForm({
 
     const formData = new FormData(e.currentTarget);
     formData.set("color", selectedColor);
+    if (selectedColorSecondary)
+      formData.set("colorSecondary", selectedColorSecondary);
     if (selectedColorId) formData.set("filamentColorId", selectedColorId);
 
     const raw = Object.fromEntries(formData);
@@ -152,9 +159,7 @@ export function SpoolForm({
                 placeholder="Generic White PLA"
               />
               {errors.name && (
-                <p className="text-xs text-[var(--color-error)]">
-                  {errors.name}
-                </p>
+                <p className="text-xs text-(--color-error)">{errors.name}</p>
               )}
             </div>
             <div className="space-y-1.5">
@@ -166,9 +171,7 @@ export function SpoolForm({
                 placeholder="Hatchbox"
               />
               {errors.brand && (
-                <p className="text-xs text-[var(--color-error)]">
-                  {errors.brand}
-                </p>
+                <p className="text-xs text-(--color-error)">{errors.brand}</p>
               )}
             </div>
           </div>
@@ -176,18 +179,12 @@ export function SpoolForm({
           {/* Material */}
           <div className="space-y-1.5">
             <Label htmlFor="material">Material</Label>
-            <select
+            <StyledSelect
               id="material"
               name="material"
               defaultValue={spool?.material ?? materials[0]}
-              className="h-10 w-full rounded-lg border border-input bg-transparent px-3 text-sm text-foreground outline-none transition-colors focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50 dark:bg-input/30"
-            >
-              {materials.map((m) => (
-                <option key={m} value={m}>
-                  {m}
-                </option>
-              ))}
-            </select>
+              options={materials.map((m) => ({ value: m, label: m }))}
+            />
           </div>
 
           {/* Color */}
@@ -197,8 +194,9 @@ export function SpoolForm({
               value={selectedColor}
               filamentColorId={selectedColorId}
               colors={colors}
-              onChange={(hex, id) => {
+              onChange={(hex, id, hexSecondary) => {
                 setSelectedColor(hex);
+                setSelectedColorSecondary(hexSecondary);
                 setSelectedColorId(id);
               }}
             />
@@ -253,19 +251,16 @@ export function SpoolForm({
           {/* Box */}
           <div className="space-y-1.5">
             <Label htmlFor="boxId">Box</Label>
-            <select
+            <StyledSelect
               id="boxId"
               name="boxId"
               defaultValue={spool?.boxId ?? ""}
-              className="h-10 w-full rounded-lg border border-input bg-transparent px-3 text-sm text-foreground outline-none transition-colors focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50 dark:bg-input/30"
-            >
-              <option value="">No box</option>
-              {boxes.map((b) => (
-                <option key={b.id} value={b.id}>
-                  {b.name}
-                </option>
-              ))}
-            </select>
+              placeholder="No box"
+              options={[
+                { value: "", label: "No box" },
+                ...boxes.map((b) => ({ value: b.id, label: b.name })),
+              ]}
+            />
           </div>
 
           {/* Note */}

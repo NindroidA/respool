@@ -4,13 +4,7 @@ import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
+import { StyledSelect } from "@/components/ui/styled-select";
 import { Badge } from "@/components/ui/badge";
 import { MATERIAL_COLORS } from "@/lib/constants";
 import { Plus, X } from "lucide-react";
@@ -135,18 +129,19 @@ export function SpoolSelector({ spools, value, onChange }: SpoolSelectorProps) {
       {/* Add spool */}
       {availableSpools.length > 0 && (
         <div className="flex gap-2">
-          <select
+          <StyledSelect
             value={addingSpoolId}
-            onChange={(e) => setAddingSpoolId(e.target.value)}
-            className="h-10 flex-1 rounded-lg border border-input bg-transparent px-3 text-sm text-foreground outline-none transition-colors focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50 dark:bg-input/30"
-          >
-            <option value="">Select a spool...</option>
-            {availableSpools.map((spool) => (
-              <option key={spool.id} value={spool.id}>
-                {spool.name} ({spool.currentMass}g)
-              </option>
-            ))}
-          </select>
+            onChange={(v) => setAddingSpoolId(v)}
+            placeholder="Select a spool..."
+            className="flex-1"
+            options={[
+              { value: "", label: "Select a spool..." },
+              ...availableSpools.map((spool) => ({
+                value: spool.id,
+                label: `${spool.name} (${spool.currentMass}g)`,
+              })),
+            ]}
+          />
           <Button
             type="button"
             variant="outline"

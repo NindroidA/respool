@@ -33,9 +33,13 @@ export default async function BoxesPage() {
           ))}
         </div>
       ) : (
-        <div className="flex flex-col items-center justify-center rounded-xl border border-dashed border-border py-16 text-center">
-          <Package className="mb-3 h-10 w-10 text-muted-foreground" />
-          <p className="text-sm font-medium text-foreground">No boxes yet</p>
+        <div className="flex flex-col items-center justify-center rounded-xl border-2 border-dashed border-primary/20 bg-linear-to-b from-primary/5 to-transparent px-6 py-16 text-center">
+          <div className="rounded-xl bg-primary/10 p-3">
+            <Package className="h-8 w-8 text-primary" />
+          </div>
+          <p className="mt-4 text-sm font-medium text-foreground">
+            No boxes yet
+          </p>
           <p className="mt-1 text-xs text-muted-foreground">
             Create a box to organize your spools
           </p>
@@ -48,7 +52,7 @@ export default async function BoxesPage() {
       {/* Unboxed spools */}
       {unboxedSpools.length > 0 && (
         <div>
-          <p className="mb-3 text-[10px] font-bold uppercase tracking-[0.12em] text-[var(--text-faint)]">
+          <p className="mb-3 text-[10px] font-bold uppercase tracking-[0.12em] text-(--text-faint)">
             Unboxed Spools
           </p>
           <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">

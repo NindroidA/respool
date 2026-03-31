@@ -2,7 +2,13 @@
 
 import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
-import { Disc, Weight, TrendingDown, Percent, type LucideIcon } from "lucide-react";
+import {
+  Disc,
+  Weight,
+  TrendingDown,
+  Percent,
+  type LucideIcon,
+} from "lucide-react";
 
 const ICON_MAP: Record<string, LucideIcon> = {
   disc: Disc,
@@ -19,7 +25,13 @@ interface StatCardProps {
   color?: string;
 }
 
-export function StatCard({ label, value, suffix = "", iconName, color }: StatCardProps) {
+export function StatCard({
+  label,
+  value,
+  suffix = "",
+  iconName,
+  color,
+}: StatCardProps) {
   const [displayed, setDisplayed] = useState(0);
   const Icon = ICON_MAP[iconName] ?? Disc;
 
@@ -44,7 +56,7 @@ export function StatCard({ label, value, suffix = "", iconName, color }: StatCar
     <motion.div
       initial={{ opacity: 0, y: 8 }}
       animate={{ opacity: 1, y: 0 }}
-      className="rounded-xl border border-border bg-card p-4"
+      className="rounded-xl border border-border bg-card p-4 ring-1 ring-primary/5 transition-all hover:border-primary/20 hover:shadow-lg hover:shadow-primary/5"
     >
       <div className="flex items-center gap-3">
         <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-(--accent-jade-muted)">

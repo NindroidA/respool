@@ -90,7 +90,8 @@ model Spool {
   spoolNumber Int    // per-user sequential number (e.g. #1, #2, #3)
   name        String
   brand       String
-  color       String  // hex, e.g. "#FF5733"
+  color          String  // primary hex, e.g. "#FF5733"
+  colorSecondary String? // secondary hex for dual-color filaments
   material    String  // e.g. "PLA", "PETG"
   note        String  @default("")
 
@@ -109,7 +110,7 @@ model Spool {
 
   archived     Boolean  @default(false)
   displayOrder Int      @default(0)
-  lastUsed     DateTime @default(now())
+  lastUsed     DateTime?
   createdAt    DateTime @default(now())
   updatedAt    DateTime @updatedAt
 

@@ -17,16 +17,30 @@ export const registerSchema = z
     path: ["confirmPassword"],
   });
 
+// Coerce empty strings to undefined so optional number fields don't fail
+const optionalPositiveNumber = z.preprocess(
+  (val) => (val === "" || val === undefined || val === null ? undefined : val),
+  z.coerce.number().positive().optional(),
+);
+const optionalPositiveInt = z.preprocess(
+  (val) => (val === "" || val === undefined || val === null ? undefined : val),
+  z.coerce.number().int().positive().optional(),
+);
+
 export const createSpoolSchema = z.object({
   name: z.string().min(1, "Name is required").max(200),
   brand: z.string().min(1, "Brand is required").max(200),
   color: z.string().regex(/^#[0-9A-Fa-f]{6}$/, "Invalid hex color"),
+  colorSecondary: z
+    .string()
+    .regex(/^#[0-9A-Fa-f]{6}$/)
+    .optional()
+    .nullable(),
   material: z.string().min(1, "Material is required"),
   currentMass: z.coerce.number().int().min(0, "Must be 0 or more"),
   startingMass: z.coerce.number().int().min(1, "Must be at least 1g"),
-  diameter: z.coerce.number().positive().optional(),
-  printingTemperature: z.coerce.number().int().positive().optional(),
-  cost: z.coerce.number().int().min(0).optional(),
+  diameter: optionalPositiveNumber,
+  printingTemperature: optionalPositiveInt,
   note: z.string().max(2000).optional().default(""),
   boxId: z.string().optional().nullable(),
   filamentColorId: z.string().optional().nullable(),
@@ -50,12 +64,14 @@ export const createPrintSchema = z.object({
   printTimeMinutes: z.coerce.number().int().min(0).optional(),
   estimatedGrams: z.coerce.number().int().min(0).optional(),
   estimatedLayers: z.coerce.number().int().min(0).optional(),
-  filaments: z.array(
-    z.object({
-      spoolId: z.string().min(1),
-      gramsUsed: z.coerce.number().int().min(1),
-    })
-  ).min(1, "At least one spool is required"),
+  filaments: z
+    .array(
+      z.object({
+        spoolId: z.string().min(1),
+        gramsUsed: z.coerce.number().int().min(1),
+      }),
+    )
+    .min(1, "At least one spool is required"),
 });
 
 export const userSettingsSchema = z.object({

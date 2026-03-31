@@ -97,7 +97,8 @@ export function calculateSwapPointsGcode(
 
   const totalNeeded = layers.reduce((s, l) => s + l.grams, 0);
   const totalAvailable = spoolWeights.reduce((a, b) => a + b, 0);
-  const layersCovered = schedule.length > 0 ? schedule[schedule.length - 1].endLayer : 0;
+  const layersCovered =
+    schedule.length > 0 ? schedule[schedule.length - 1].endLayer : 0;
 
   return {
     mode: "gcode",
@@ -153,7 +154,8 @@ export function calculateSwapPointsLinear(
   }
 
   const totalAvailable = spoolWeights.reduce((a, b) => a + b, 0);
-  const layersCovered = schedule.length > 0 ? schedule[schedule.length - 1].endLayer : 0;
+  const layersCovered =
+    schedule.length > 0 ? schedule[schedule.length - 1].endLayer : 0;
 
   return {
     mode: "linear",
@@ -173,4 +175,121 @@ export function calculateSwapPointsLinear(
 
 function round1(n: number): number {
   return Math.round(n * 10) / 10;
+}
+
+// ─── Color Distance (CIE76 Delta-E in LAB space) ────────
+
+/** Convert hex (#RRGGBB) to [R, G, B] in 0–255. */
+function hexToRgb(hex: string): [number, number, number] {
+  const h = hex.replace("#", "");
+  return [
+    parseInt(h.slice(0, 2), 16),
+    parseInt(h.slice(2, 4), 16),
+    parseInt(h.slice(4, 6), 16),
+  ];
+}
+
+/** Convert sRGB (0–255) to CIELAB [L, a, b]. */
+function rgbToLab(r: number, g: number, b: number): [number, number, number] {
+  // sRGB → linear
+  let rr = r / 255,
+    gg = g / 255,
+    bb = b / 255;
+  rr = rr > 0.04045 ? ((rr + 0.055) / 1.055) ** 2.4 : rr / 12.92;
+  gg = gg > 0.04045 ? ((gg + 0.055) / 1.055) ** 2.4 : gg / 12.92;
+  bb = bb > 0.04045 ? ((bb + 0.055) / 1.055) ** 2.4 : bb / 12.92;
+  // linear → XYZ (D65)
+  let x = (rr * 0.4124564 + gg * 0.3575761 + bb * 0.1804375) / 0.95047;
+  let y = rr * 0.2126729 + gg * 0.7151522 + bb * 0.072175;
+  let z = (rr * 0.0193339 + gg * 0.119192 + bb * 0.9503041) / 1.08883;
+  // XYZ → LAB
+  const f = (t: number) => (t > 0.008856 ? t ** (1 / 3) : 7.787 * t + 16 / 116);
+  x = f(x);
+  y = f(y);
+  z = f(z);
+  return [116 * y - 16, 500 * (x - y), 200 * (y - z)];
+}
+
+/** CIE76 Delta-E between two hex colors. Lower = more similar. <15 is very close. */
+export function colorDistance(hex1: string, hex2: string): number {
+  const lab1 = rgbToLab(...hexToRgb(hex1));
+  const lab2 = rgbToLab(...hexToRgb(hex2));
+  return Math.sqrt(
+    (lab1[0] - lab2[0]) ** 2 +
+      (lab1[1] - lab2[1]) ** 2 +
+      (lab1[2] - lab2[2]) ** 2,
+  );
+}
+
+/** Check if two spools have similar colors (handles dual-color). */
+export function areColorsSimilar(
+  color1: string,
+  secondary1: string | null,
+  color2: string,
+  secondary2: string | null,
+  threshold = 20,
+): boolean {
+  const bothDual = secondary1 && secondary2;
+  const bothSolid = !secondary1 && !secondary2;
+
+  if (bothSolid) {
+    return colorDistance(color1, color2) < threshold;
+  }
+  if (bothDual) {
+    // Both duals: compare primary-to-primary and secondary-to-secondary (or swapped)
+    const d1 =
+      colorDistance(color1, color2) + colorDistance(secondary1!, secondary2!);
+    const d2 =
+      colorDistance(color1, secondary2!) + colorDistance(secondary1!, color2);
+    return Math.min(d1, d2) / 2 < threshold;
+  }
+  // One dual, one solid — don't group
+  return false;
+}
+
+/** Generate a descriptive name for a color group. */
+export function colorGroupName(
+  hex: string,
+  hexSecondary: string | null,
+): string {
+  const [r, g, b] = hexToRgb(hex);
+  const name = closestColorName(r, g, b);
+  if (hexSecondary) {
+    const [r2, g2, b2] = hexToRgb(hexSecondary);
+    const name2 = closestColorName(r2, g2, b2);
+    return `${name} / ${name2}`;
+  }
+  return name;
+}
+
+const COLOR_NAMES: [string, number, number, number][] = [
+  ["White", 255, 255, 255],
+  ["Black", 0, 0, 0],
+  ["Red", 220, 40, 40],
+  ["Blue", 50, 80, 220],
+  ["Green", 40, 180, 60],
+  ["Yellow", 240, 220, 40],
+  ["Orange", 240, 130, 30],
+  ["Purple", 140, 50, 180],
+  ["Pink", 240, 120, 160],
+  ["Brown", 140, 80, 40],
+  ["Gray", 140, 140, 140],
+  ["Cyan", 40, 200, 200],
+  ["Teal", 0, 140, 130],
+  ["Gold", 200, 170, 50],
+  ["Silver", 190, 190, 200],
+  ["Navy", 30, 30, 100],
+];
+
+function closestColorName(r: number, g: number, b: number): string {
+  let minDist = Infinity;
+  let name = "Custom";
+  for (const [n, cr, cg, cb] of COLOR_NAMES) {
+    const d = (r - cr) ** 2 + (g - cg) ** 2 + (b - cb) ** 2;
+    if (d < minDist) {
+      minDist = d;
+      name = n;
+    }
+  }
+  return name;
 }

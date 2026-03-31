@@ -4,13 +4,7 @@ import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
+import { StyledSelect } from "@/components/ui/styled-select";
 import { Separator } from "@/components/ui/separator";
 import { MaterialManager } from "./material-manager";
 import { updateSettings } from "@/app/(dashboard)/settings/actions";
@@ -70,18 +64,12 @@ export function SettingsForm({ settings }: SettingsFormProps) {
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
           <div className="space-y-1.5">
             <Label htmlFor="defaultMaterial">Default Material</Label>
-            <select
+            <StyledSelect
               id="defaultMaterial"
               name="defaultMaterial"
               defaultValue={settings.defaultMaterial}
-              className="h-10 w-full rounded-lg border border-input bg-transparent px-3 text-sm text-foreground outline-none transition-colors focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50 dark:bg-input/30"
-            >
-              {settings.materialOptions.map((m) => (
-                <option key={m} value={m}>
-                  {m}
-                </option>
-              ))}
-            </select>
+              options={settings.materialOptions.map((m) => ({ value: m, label: m }))}
+            />
           </div>
 
           <div className="space-y-1.5">
@@ -127,42 +115,42 @@ export function SettingsForm({ settings }: SettingsFormProps) {
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
           <div className="space-y-1.5">
             <Label htmlFor="dateFormat">Date Format</Label>
-            <select
+            <StyledSelect
               id="dateFormat"
               name="dateFormat"
               defaultValue={settings.dateFormat}
-              className="h-10 w-full rounded-lg border border-input bg-transparent px-3 text-sm text-foreground outline-none transition-colors focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50 dark:bg-input/30"
-            >
-              <option value="MM/dd/yyyy">MM/DD/YYYY</option>
-              <option value="dd/MM/yyyy">DD/MM/YYYY</option>
-              <option value="yyyy-MM-dd">YYYY-MM-DD</option>
-            </select>
+              options={[
+                { value: "MM/dd/yyyy", label: "MM/DD/YYYY" },
+                { value: "dd/MM/yyyy", label: "DD/MM/YYYY" },
+                { value: "yyyy-MM-dd", label: "YYYY-MM-DD" },
+              ]}
+            />
           </div>
 
           <div className="space-y-1.5">
             <Label htmlFor="timeFormat">Time Format</Label>
-            <select
+            <StyledSelect
               id="timeFormat"
               name="timeFormat"
               defaultValue={settings.timeFormat}
-              className="h-10 w-full rounded-lg border border-input bg-transparent px-3 text-sm text-foreground outline-none transition-colors focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50 dark:bg-input/30"
-            >
-              <option value="12h">12-hour</option>
-              <option value="24h">24-hour</option>
-            </select>
+              options={[
+                { value: "12h", label: "12-hour" },
+                { value: "24h", label: "24-hour" },
+              ]}
+            />
           </div>
 
           <div className="space-y-1.5">
             <Label htmlFor="unitPreference">Unit Preference</Label>
-            <select
+            <StyledSelect
               id="unitPreference"
               name="unitPreference"
               defaultValue={settings.unitPreference}
-              className="h-10 w-full rounded-lg border border-input bg-transparent px-3 text-sm text-foreground outline-none transition-colors focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50 dark:bg-input/30"
-            >
-              <option value="grams">Grams (g)</option>
-              <option value="oz">Ounces (oz)</option>
-            </select>
+              options={[
+                { value: "grams", label: "Grams (g)" },
+                { value: "oz", label: "Ounces (oz)" },
+              ]}
+            />
           </div>
         </div>
       </div>

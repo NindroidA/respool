@@ -30,7 +30,7 @@ export function BoxCard({ box, index = 0 }: BoxCardProps) {
     >
       <Link
         href={`/boxes/${box.id}`}
-        className="block rounded-xl border border-border bg-card p-4 transition-colors hover:bg-[var(--bg-card-hover)]"
+        className="block rounded-xl border border-border bg-card p-4 transition-all hover:border-primary/30 hover:bg-(--bg-card-hover) hover:shadow-lg hover:shadow-primary/5"
       >
         <div className="flex items-center gap-3">
           <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-(--accent-jade-muted)">
@@ -39,7 +39,8 @@ export function BoxCard({ box, index = 0 }: BoxCardProps) {
           <div>
             <p className="text-sm font-semibold text-foreground">{box.name}</p>
             <p className="font-mono text-xs text-muted-foreground">
-              {box.spools.length} spool{box.spools.length !== 1 ? "s" : ""} · {totalMass}g
+              {box.spools.length} spool{box.spools.length !== 1 ? "s" : ""} ·{" "}
+              {totalMass}g
             </p>
           </div>
         </div>

@@ -34,6 +34,7 @@ import {
   Plus,
   Disc,
 } from "lucide-react";
+import { StyledSelect } from "@/components/ui/styled-select";
 
 // ─── Types ──────────────────────────────────────────
 
@@ -462,16 +463,18 @@ export function CalculatorClient({ inventorySpools }: Props) {
           {selectedSpools.length > 1 && (
             <div className="flex items-center gap-1.5">
               <Label className="text-xs text-muted-foreground">Sort:</Label>
-              <select
+              <StyledSelect
                 value={sortOption}
-                onChange={(e) => setSortOption(e.target.value as SortOption)}
-                className="h-7 rounded-md border border-input bg-transparent px-2 text-xs text-foreground outline-none focus-visible:border-ring focus-visible:ring-2 focus-visible:ring-ring/50 dark:bg-input/30"
-              >
-                <option value="custom">Custom Order</option>
-                <option value="least-first">Least Filament First</option>
-                <option value="most-first">Most Filament First</option>
-                <option value="name">Alphabetical</option>
-              </select>
+                onChange={(v) => setSortOption(v as SortOption)}
+                size="sm"
+                className="w-44"
+                options={[
+                  { value: "custom", label: "Custom Order" },
+                  { value: "least-first", label: "Least Filament First" },
+                  { value: "most-first", label: "Most Filament First" },
+                  { value: "name", label: "Alphabetical" },
+                ]}
+              />
             </div>
           )}
         </div>

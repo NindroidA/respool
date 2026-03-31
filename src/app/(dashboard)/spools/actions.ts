@@ -9,6 +9,7 @@ import {
   updateSpoolSchema,
   logUsageSchema,
 } from "@/lib/validators";
+import { areColorsSimilar, colorGroupName } from "@/lib/filament-utils";
 
 async function requireUser() {
   const session = await getSession(await headers());
@@ -52,7 +53,7 @@ export async function getSpools(filters?: {
   ];
   const sortField = ALLOWED_SORT_FIELDS.includes(filters?.sort ?? "")
     ? filters!.sort!
-    : "lastUsed";
+    : "createdAt";
   const sortOrder = filters?.order === "asc" ? "asc" : "desc";
   const orderBy: Record<string, string> = { [sortField]: sortOrder };
 
@@ -90,6 +91,16 @@ export async function createSpool(data: FormData) {
 
   const shortId = Math.random().toString(36).substring(2, 10);
 
+  // Auto-box: if no box selected, find or create one based on color similarity
+  let autoBoxId: string | null = validated.boxId || null;
+  if (!autoBoxId) {
+    autoBoxId = await findOrCreateColorBox(
+      user.id,
+      validated.color,
+      validated.colorSecondary || null,
+    );
+  }
+
   // Atomic: assign spool number and increment user's counter in one transaction
   const spool = await prisma.$transaction(async (tx) => {
     const currentUser = await tx.user.findUniqueOrThrow({
@@ -110,16 +121,55 @@ export async function createSpool(data: FormData) {
         shortId,
         spoolNumber,
         userId: user.id,
-        boxId: validated.boxId || null,
+        boxId: autoBoxId,
         filamentColorId: validated.filamentColorId || null,
+        colorSecondary: validated.colorSecondary || null,
         note: validated.note ?? "",
       },
     });
   });
 
   revalidatePath("/spools");
+  revalidatePath("/boxes");
   revalidatePath("/dashboard");
   return spool;
+}
+
+/** Find an existing box with similar-colored spools, or create a new one. */
+async function findOrCreateColorBox(
+  userId: string,
+  color: string,
+  colorSecondary: string | null,
+): Promise<string> {
+  // Get all user's boxes with their spools' colors
+  const boxes = await prisma.box.findMany({
+    where: { userId },
+    include: {
+      spools: {
+        where: { archived: false },
+        select: { color: true, colorSecondary: true },
+        take: 10,
+      },
+    },
+  });
+
+  // Check each box for color similarity
+  for (const box of boxes) {
+    if (box.spools.length === 0) continue;
+    // A box matches if ANY spool in it has a similar color
+    const matches = box.spools.some((s) =>
+      areColorsSimilar(color, colorSecondary, s.color, s.colorSecondary),
+    );
+    if (matches) return box.id;
+  }
+
+  // No matching box — create a new one named after the color
+  const name = colorGroupName(color, colorSecondary);
+  const newBox = await prisma.box.create({
+    data: { userId, name },
+  });
+
+  return newBox.id;
 }
 
 export async function updateSpool(id: string, data: FormData) {
@@ -184,6 +234,7 @@ export async function duplicateSpool(id: string) {
         name: existing.name,
         brand: existing.brand,
         color: existing.color,
+        colorSecondary: existing.colorSecondary,
         material: existing.material,
         note: existing.note,
         currentMass: existing.startingMass,

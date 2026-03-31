@@ -69,7 +69,7 @@ export default async function SpoolDetailPage({ params }: Props) {
         <div className="flex items-start gap-4">
           {/* Large color swatch */}
           <div
-            className="h-14 w-14 shrink-0 rounded-xl border border-border shadow-lg"
+            className="h-14 w-14 shrink-0 rounded-xl border border-white/10 shadow-lg ring-2 ring-white/5"
             style={{ backgroundColor: spool.color }}
           />
           <div>
@@ -122,7 +122,7 @@ export default async function SpoolDetailPage({ params }: Props) {
       </div>
 
       {/* Progress */}
-      <div className="rounded-xl border border-border bg-card p-5">
+      <div className="rounded-xl border border-primary/20 bg-linear-to-br from-primary/5 to-transparent p-5 ring-1 ring-primary/5">
         <div className="mb-3 flex items-baseline justify-between">
           <span className="font-mono text-2xl font-bold text-neon">
             {spool.currentMass}g
@@ -140,35 +140,43 @@ export default async function SpoolDetailPage({ params }: Props) {
 
       {/* Stats row */}
       <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
-        <div className="rounded-lg border border-border bg-card p-4 text-center">
-          <p className="font-mono text-lg font-bold text-foreground">
+        <div className="rounded-xl border border-teal-500/20 bg-linear-to-br from-teal-500/10 to-transparent p-4 text-center ring-1 ring-teal-500/5">
+          <p className="font-mono text-lg font-bold text-teal-400">
             {totalUsed}g
           </p>
-          <p className="text-[10px] text-(--text-faint)">total used</p>
+          <p className="text-[10px] font-medium uppercase tracking-wider text-(--text-faint)">
+            total used
+          </p>
         </div>
-        <div className="rounded-lg border border-border bg-card p-4 text-center">
-          <p className="font-mono text-lg font-bold text-foreground">
+        <div className="rounded-xl border border-primary/20 bg-linear-to-br from-primary/10 to-transparent p-4 text-center ring-1 ring-primary/5">
+          <p className="font-mono text-lg font-bold text-primary">
             {timesUsed}
           </p>
-          <p className="text-[10px] text-(--text-faint)">times used</p>
+          <p className="text-[10px] font-medium uppercase tracking-wider text-(--text-faint)">
+            times used
+          </p>
         </div>
-        <div className="rounded-lg border border-border bg-card p-4 text-center">
-          <p className="font-mono text-lg font-bold text-foreground">
+        <div className="rounded-xl border border-amber-500/20 bg-linear-to-br from-amber-500/10 to-transparent p-4 text-center ring-1 ring-amber-500/5">
+          <p className="font-mono text-lg font-bold text-amber-400">
             {spool.cost ? `$${(spool.cost / 100).toFixed(2)}` : "—"}
           </p>
-          <p className="text-[10px] text-(--text-faint)">cost</p>
+          <p className="text-[10px] font-medium uppercase tracking-wider text-(--text-faint)">
+            cost
+          </p>
         </div>
-        <div className="rounded-lg border border-border bg-card p-4 text-center">
-          <p className="font-mono text-lg font-bold text-foreground">
+        <div className="rounded-xl border border-violet-500/20 bg-linear-to-br from-violet-500/10 to-transparent p-4 text-center ring-1 ring-violet-500/5">
+          <p className="font-mono text-lg font-bold text-violet-400">
             {costPerGram ? `$${costPerGram}` : "—"}
           </p>
-          <p className="text-[10px] text-(--text-faint)">per gram</p>
+          <p className="text-[10px] font-medium uppercase tracking-wider text-(--text-faint)">
+            per gram
+          </p>
         </div>
       </div>
 
       {/* Details */}
       {(spool.diameter || spool.printingTemperature || spool.note) && (
-        <div className="rounded-xl border border-border bg-card p-5">
+        <div className="rounded-xl border border-border bg-card p-5 ring-1 ring-primary/5">
           <p className="mb-3 text-[10px] font-bold uppercase tracking-[0.12em] text-(--text-faint)">
             Details
           </p>

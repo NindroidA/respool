@@ -1,0 +1,3 @@
+-- AlterTable
+ALTER TABLE "Spool" ALTER COLUMN "lastUsed" DROP NOT NULL,
+ALTER COLUMN "lastUsed" DROP DEFAULT;

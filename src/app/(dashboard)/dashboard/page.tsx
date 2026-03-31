@@ -75,8 +75,14 @@ async function getDashboardData(userId: string) {
     .filter((s) => s.currentMass <= threshold && s.currentMass > 0)
     .sort((a, b) => a.currentMass - b.currentMass);
 
-  // Recently used (top 4)
-  const recentlyUsed = spools.slice(0, 4);
+  // Recently used (top 4, only spools that have actually been used)
+  const recentlyUsed = spools
+    .filter((s) => s.lastUsed !== null)
+    .sort(
+      (a, b) =>
+        new Date(b.lastUsed!).getTime() - new Date(a.lastUsed!).getTime(),
+    )
+    .slice(0, 4);
 
   // Activity feed
   const activities = [
@@ -160,11 +166,11 @@ export default async function DashboardPage() {
 
       {/* Charts */}
       <div className="grid grid-cols-1 gap-3 lg:grid-cols-2">
-        <div className="rounded-xl border border-border bg-card p-4 ring-1 ring-primary/5">
+        <div className="rounded-xl border border-primary/15 bg-linear-to-br from-primary/5 to-transparent p-4 ring-1 ring-primary/5">
           <p className="mb-2 text-[10px] font-bold uppercase tracking-[0.12em] text-(--text-faint)">
             Filament by Material
           </p>
-          <div className="h-[200px]">
+          <div className="h-50">
             <MaterialChart data={data.materialData} />
           </div>
           {/* Legend */}
@@ -185,11 +191,11 @@ export default async function DashboardPage() {
             ))}
           </div>
         </div>
-        <div className="rounded-xl border border-border bg-card p-4 ring-1 ring-primary/5">
+        <div className="rounded-xl border border-teal-500/15 bg-linear-to-br from-teal-500/5 to-transparent p-4 ring-1 ring-teal-500/5">
           <p className="mb-2 text-[10px] font-bold uppercase tracking-[0.12em] text-(--text-faint)">
             Usage (Last 30 Days)
           </p>
-          <div className="h-[200px]">
+          <div className="h-50">
             <UsageChart data={data.usageData} />
           </div>
         </div>
@@ -199,7 +205,7 @@ export default async function DashboardPage() {
       <LowFilamentAlerts spools={data.lowSpools} />
 
       {/* Activity Feed */}
-      <div className="rounded-xl border border-border bg-card p-4">
+      <div className="rounded-xl border border-border bg-card p-4 ring-1 ring-primary/5">
         <p className="mb-3 text-[10px] font-bold uppercase tracking-[0.12em] text-(--text-faint)">
           Recent Activity
         </p>

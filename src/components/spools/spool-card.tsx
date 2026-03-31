@@ -78,11 +78,9 @@ export function SpoolCard({ spool, index = 0 }: SpoolCardProps) {
       initial={{ opacity: 0, y: 12 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ delay: index * 0.05, duration: 0.25 }}
-      whileHover={{ scale: 1.015 }}
-      whileTap={{ scale: 0.985 }}
       className="group"
     >
-      <div className="relative rounded-xl border border-border bg-card p-4 transition-colors hover:bg-[var(--bg-card-hover)]">
+      <div className="relative rounded-xl border border-border bg-card p-4 transition-all hover:border-primary/20 hover:bg-(--bg-card-hover) hover:shadow-lg hover:shadow-primary/5">
         {/* Top row: color dot + name + menu */}
         <div className="flex items-start justify-between gap-3">
           <Link
@@ -116,7 +114,7 @@ export function SpoolCard({ spool, index = 0 }: SpoolCardProps) {
               spoolName={spool.name}
             />
             <DropdownMenu>
-              <DropdownMenuTrigger className="rounded p-1 opacity-0 transition-opacity group-hover:opacity-100 hover:bg-(--bg-card-hover)">
+              <DropdownMenuTrigger className="rounded p-1.5 opacity-0 transition-all group-hover:opacity-100 hover:bg-white/10">
                 <MoreHorizontal className="h-4 w-4 text-muted-foreground" />
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end">

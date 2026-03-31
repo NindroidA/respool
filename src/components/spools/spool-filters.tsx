@@ -3,6 +3,7 @@
 import { useRouter, useSearchParams } from "next/navigation";
 import { useCallback, useState, useTransition } from "react";
 import { Input } from "@/components/ui/input";
+import { StyledSelect } from "@/components/ui/styled-select";
 import { Search } from "lucide-react";
 import { DEFAULT_MATERIALS } from "@/lib/constants";
 
@@ -13,6 +14,11 @@ const SORT_OPTIONS = [
   { value: "material", label: "Material" },
   { value: "currentMass", label: "Remaining" },
   { value: "createdAt", label: "Date Added" },
+];
+
+const ARCHIVED_OPTIONS = [
+  { value: "false", label: "Active" },
+  { value: "true", label: "Archived" },
 ];
 
 interface SpoolFiltersProps {
@@ -55,10 +61,15 @@ export function SpoolFilters({
   const currentMaterial = searchParams.get("material") ?? "all";
   const currentArchived = searchParams.get("archived") ?? "false";
 
+  const materialOptions = [
+    { value: "all", label: "All Materials" },
+    ...materials.map((m) => ({ value: m, label: m })),
+  ];
+
   return (
     <div className="flex flex-wrap items-center gap-3">
       {/* Search */}
-      <div className="relative min-w-[200px] flex-1">
+      <div className="relative min-w-50 flex-1">
         <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
         <Input
           placeholder="Search spools..."
@@ -69,41 +80,28 @@ export function SpoolFilters({
       </div>
 
       {/* Material filter */}
-      <select
+      <StyledSelect
+        options={materialOptions}
         value={currentMaterial}
-        onChange={(e) => updateParams("material", e.target.value)}
-        className="h-10 rounded-lg border border-input bg-transparent px-3 text-sm text-foreground outline-none transition-colors focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50 dark:bg-input/30"
-      >
-        <option value="all">All Materials</option>
-        {materials.map((m) => (
-          <option key={m} value={m}>
-            {m}
-          </option>
-        ))}
-      </select>
+        onChange={(v) => updateParams("material", v)}
+        className="w-40"
+      />
 
       {/* Sort */}
-      <select
+      <StyledSelect
+        options={SORT_OPTIONS}
         value={currentSort}
-        onChange={(e) => updateParams("sort", e.target.value)}
-        className="h-10 rounded-lg border border-input bg-transparent px-3 text-sm text-foreground outline-none transition-colors focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50 dark:bg-input/30"
-      >
-        {SORT_OPTIONS.map((opt) => (
-          <option key={opt.value} value={opt.value}>
-            {opt.label}
-          </option>
-        ))}
-      </select>
+        onChange={(v) => updateParams("sort", v)}
+        className="w-36"
+      />
 
       {/* Archived toggle */}
-      <select
+      <StyledSelect
+        options={ARCHIVED_OPTIONS}
         value={currentArchived}
-        onChange={(e) => updateParams("archived", e.target.value)}
-        className="h-10 rounded-lg border border-input bg-transparent px-3 text-sm text-foreground outline-none transition-colors focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50 dark:bg-input/30"
-      >
-        <option value="false">Active</option>
-        <option value="true">Archived</option>
-      </select>
+        onChange={(v) => updateParams("archived", v)}
+        className="w-28"
+      />
     </div>
   );
 }

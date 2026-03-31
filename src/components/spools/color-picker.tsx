@@ -19,7 +19,11 @@ interface ColorPickerProps {
   value: string;
   filamentColorId?: string | null;
   colors: FilamentColor[];
-  onChange: (hex: string, filamentColorId: string | null) => void;
+  onChange: (
+    hex: string,
+    filamentColorId: string | null,
+    hexSecondary: string | null,
+  ) => void;
 }
 
 const CATEGORIES = [
@@ -103,7 +107,9 @@ export function ColorPicker({
                   <button
                     key={color.id}
                     type="button"
-                    onClick={() => onChange(color.hex, color.id)}
+                    onClick={() =>
+                      onChange(color.hex, color.id, color.hexSecondary)
+                    }
                     className={cn(
                       "group relative flex h-10 w-full items-center justify-center rounded-lg border-2 transition-all",
                       filamentColorId === color.id
@@ -143,13 +149,13 @@ export function ColorPicker({
           <Input
             placeholder="#FF5733"
             value={value}
-            onChange={(e) => onChange(e.target.value, null)}
+            onChange={(e) => onChange(e.target.value, null, null)}
             className="font-mono"
           />
           <input
             type="color"
             value={value || "#808080"}
-            onChange={(e) => onChange(e.target.value, null)}
+            onChange={(e) => onChange(e.target.value, null, null)}
             className="h-9 w-12 cursor-pointer rounded border border-border bg-transparent"
           />
         </div>

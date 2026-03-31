@@ -15,7 +15,7 @@ export default async function SettingsPage() {
         </p>
       </div>
 
-      <div className="rounded-xl border border-border bg-card p-6">
+      <div className="rounded-xl border border-border bg-card p-6 ring-1 ring-primary/5">
         <SettingsForm settings={settings} />
       </div>
     </div>
