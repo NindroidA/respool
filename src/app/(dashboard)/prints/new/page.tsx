@@ -10,7 +10,7 @@ export default async function NewPrintPage() {
     <div className="mx-auto max-w-xl space-y-6">
       <Link
         href="/prints"
-        className="inline-flex items-center gap-1.5 text-sm text-muted-foreground transition-colors hover:text-foreground"
+        className="inline-flex items-center gap-1.5 rounded-lg border border-border bg-card px-3 py-1.5 text-sm font-medium text-muted-foreground transition-all hover:border-primary/30 hover:bg-(--bg-card-hover) hover:text-foreground"
       >
         <ArrowLeft className="h-4 w-4" />
         Back to prints

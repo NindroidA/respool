@@ -114,7 +114,7 @@ export function SpoolCard({ spool, index = 0 }: SpoolCardProps) {
               spoolName={spool.name}
             />
             <DropdownMenu>
-              <DropdownMenuTrigger className="rounded p-1.5 opacity-0 transition-all group-hover:opacity-100 hover:bg-white/10">
+              <DropdownMenuTrigger className="rounded-md p-1.5 text-muted-foreground opacity-0 transition-all group-hover:opacity-100 hover:bg-(--bg-card-hover) hover:text-foreground">
                 <MoreHorizontal className="h-4 w-4 text-muted-foreground" />
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end">
