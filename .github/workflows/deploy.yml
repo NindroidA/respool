@@ -5,6 +5,10 @@ on:
     branches: [main]
   workflow_dispatch:
 
+concurrency:
+  group: deploy-prizmo
+  cancel-in-progress: false  # let the running deploy finish, queue the next
+
 jobs:
   build-and-deploy:
     runs-on: self-hosted
@@ -14,7 +18,7 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Build and deploy with Docker Compose
+      - name: Write .env
         env:
           DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
           BETTER_AUTH_SECRET: ${{ secrets.BETTER_AUTH_SECRET }}
@@ -25,8 +29,7 @@ jobs:
           OAUTH_GOOGLE_CLIENT_SECRET: ${{ secrets.OAUTH_GOOGLE_CLIENT_SECRET }}
           APP_URL: ${{ secrets.NEXT_PUBLIC_APP_URL }}
         run: |
-          # Write .env for docker-compose
-          cat > .env << EOF
+          cat > .env <<EOF
           DB_PASSWORD=${DB_PASSWORD}
           DATABASE_URL=postgresql://respool:${DB_PASSWORD}@db:5432/respool
           BETTER_AUTH_SECRET=${BETTER_AUTH_SECRET}
@@ -37,15 +40,30 @@ jobs:
           GOOGLE_CLIENT_SECRET=${OAUTH_GOOGLE_CLIENT_SECRET}
           NEXT_PUBLIC_APP_URL=${APP_URL}
           EOF
+          # Strip leading whitespace from heredoc
+          sed -i 's/^[[:space:]]*//' .env
 
-          # Build and restart
-          docker compose build --no-cache
-          docker compose up -d
+      - name: Tag previous image for rollback
+        run: |
+          if docker image inspect respool-app:latest > /dev/null 2>&1; then
+            docker tag respool-app:latest respool-app:rollback
+            echo "Tagged previous image as rollback"
+          else
+            echo "No previous image to tag"
+          fi
 
-          # Clean up dangling images
-          docker image prune -f
+      - name: Build new image
+        run: docker compose build --no-cache
+
+      - name: Deploy
+        id: deploy
+        run: docker compose up -d
+
+      - name: Run migrations
+        run: docker compose exec -T app sh -c "npx prisma migrate deploy"
 
       - name: Health check
+        id: healthcheck
         run: |
           echo "Waiting for app to start..."
           for i in $(seq 1 30); do
@@ -55,6 +73,22 @@ jobs:
             fi
             sleep 2
           done
-          echo "Health check failed"
+          echo "Health check failed after 60s"
           docker compose logs app --tail 50
           exit 1
+
+      - name: Rollback on failure
+        if: failure() && steps.deploy.outcome == 'success'
+        run: |
+          echo "Deploy failed — rolling back..."
+          if docker image inspect respool-app:rollback > /dev/null 2>&1; then
+            docker tag respool-app:rollback respool-app:latest
+            docker compose up -d
+            echo "Rolled back to previous image"
+          else
+            echo "No rollback image available"
+          fi
+
+      - name: Cleanup
+        if: always()
+        run: docker image prune -f
