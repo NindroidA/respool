@@ -1,14 +1,7 @@
 "use server";
 
-import { headers } from "next/headers";
 import { prisma } from "@/lib/prisma";
-import { getSession } from "@/lib/auth";
-
-async function requireUser() {
-  const session = await getSession(await headers());
-  if (!session?.user) throw new Error("Unauthorized");
-  return session.user;
-}
+import { requireUser } from "@/lib/auth-helpers";
 
 /** Fetch active (non-archived) spools for the calculator spool picker. */
 export async function getSpoolsForCalculator() {

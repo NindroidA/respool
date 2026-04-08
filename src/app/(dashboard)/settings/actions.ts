@@ -1,16 +1,9 @@
 "use server";
 
-import { headers } from "next/headers";
 import { revalidatePath } from "next/cache";
 import { prisma } from "@/lib/prisma";
-import { getSession } from "@/lib/auth";
+import { requireUser } from "@/lib/auth-helpers";
 import { userSettingsSchema } from "@/lib/validators";
-
-async function requireUser() {
-  const session = await getSession(await headers());
-  if (!session?.user) throw new Error("Unauthorized");
-  return session.user;
-}
 
 export async function getSettings() {
   const user = await requireUser();

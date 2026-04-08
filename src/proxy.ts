@@ -10,6 +10,7 @@ const PROTECTED_PREFIXES = [
   "/calculator",
   "/settings",
   "/admin",
+  "/profile",
 ];
 
 export function proxy(request: NextRequest) {

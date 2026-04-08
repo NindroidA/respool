@@ -1,8 +1,8 @@
 "use client";
 
 import Link from "next/link";
+import Image from "next/image";
 import { usePathname } from "next/navigation";
-// Command palette (⌘K) search will be wired up in a future session
 import { cn } from "@/lib/utils";
 import { mainNavItems, toolNavItems, adminNavItems } from "./nav-items";
 import { UserMenu } from "./user-menu";
@@ -23,11 +23,11 @@ export function Sidebar({ user }: SidebarProps) {
     pathname === href || pathname.startsWith(href + "/");
 
   return (
-    <aside className="fixed inset-y-0 left-0 z-30 hidden w-[220px] flex-col border-r border-border bg-[var(--bg-raised)] lg:flex">
+    <aside className="fixed inset-y-0 left-0 z-30 hidden w-55 flex-col border-r border-border bg-(--bg-raised) lg:flex">
       {/* Logo */}
       <div className="px-5 py-5">
         <Link href="/dashboard" className="flex items-center gap-2">
-          <span className="text-xl text-jade">⬡</span>
+          <Image src="/logo.png" alt="Respool" width={28} height={28} />
           <span className="text-lg font-semibold tracking-tight text-foreground">
             Respool
           </span>

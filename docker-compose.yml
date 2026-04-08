@@ -3,16 +3,16 @@ services:
     build: .
     container_name: respool-app
     ports:
-      - "3000:3000"
+      - "127.0.0.1:3847:3847"
     env_file: .env
     environment:
-      - DATABASE_URL=postgresql://respool:${DB_PASSWORD}@db:5432/respool
+      - DATABASE_URL=postgresql://respool:${DB_PASSWORD}@respool-db:5432/respool
     depends_on:
       db:
         condition: service_healthy
     restart: unless-stopped
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:3000/api/health"]
+      test: ["CMD", "curl", "-f", "http://localhost:3847/api/health"]
       interval: 30s
       timeout: 10s
       retries: 3

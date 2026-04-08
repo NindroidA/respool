@@ -1,21 +1,14 @@
 "use server";
 
-import { headers } from "next/headers";
 import { revalidatePath } from "next/cache";
 import { prisma } from "@/lib/prisma";
-import { getSession } from "@/lib/auth";
+import { requireUser } from "@/lib/auth-helpers";
 import {
   createSpoolSchema,
   updateSpoolSchema,
   logUsageSchema,
 } from "@/lib/validators";
 import { areColorsSimilar, colorGroupName } from "@/lib/filament-utils";
-
-async function requireUser() {
-  const session = await getSession(await headers());
-  if (!session?.user) throw new Error("Unauthorized");
-  return session.user;
-}
 
 export async function getSpools(filters?: {
   material?: string;
@@ -374,6 +367,7 @@ export async function getBoxesForSelect() {
 }
 
 export async function getFilamentColors() {
+  await requireUser();
   return prisma.filamentColor.findMany({
     orderBy: [{ category: "asc" }, { sortOrder: "asc" }],
   });

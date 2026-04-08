@@ -1,8 +1,9 @@
 "use client";
 
 import Link from "next/link";
+import Image from "next/image";
 import { usePathname, useRouter } from "next/navigation";
-import { Search, MoreHorizontal, Settings, Shield, LogOut } from "lucide-react";
+import { Search, MoreHorizontal, LogOut } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import {
   Sheet,
@@ -51,7 +52,7 @@ export function MobileNav({ user }: MobileNavProps) {
       {/* Top bar */}
       <header className="fixed inset-x-0 top-0 z-30 flex h-14 items-center justify-between border-b border-border bg-[var(--bg-raised)] px-4 lg:hidden">
         <Link href="/dashboard" className="flex items-center gap-2">
-          <span className="text-lg text-jade">⬡</span>
+          <Image src="/logo.png" alt="Respool" width={24} height={24} />
           <span className="text-base font-semibold text-foreground">
             Respool
           </span>

@@ -1,6 +1,6 @@
 import { notFound } from "next/navigation";
 import Link from "next/link";
-import { getBox, getBoxes, getUnboxedSpools, deleteBox } from "../actions";
+import { getBox, getBoxes, getUnboxedSpools } from "../actions";
 import { BoxForm } from "@/components/boxes/box-form";
 import { BoxContents } from "@/components/boxes/box-contents";
 import { BoxDetailActions } from "@/components/boxes/box-detail-actions";

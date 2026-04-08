@@ -1,4 +1,5 @@
 import { headers } from "next/headers";
+import { redirect } from "next/navigation";
 import { getSession } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { StatCard } from "@/components/dashboard/stat-card";
@@ -120,7 +121,7 @@ async function getDashboardData(userId: string) {
 
 export default async function DashboardPage() {
   const session = await getSession(await headers());
-  if (!session?.user) return null;
+  if (!session?.user) redirect("/login");
 
   const data = await getDashboardData(session.user.id);
 

@@ -1,4 +1,5 @@
 import Link from "next/link";
+import Image from "next/image";
 import { headers } from "next/headers";
 import { redirect } from "next/navigation";
 import { getSession } from "@/lib/auth";
@@ -41,11 +42,15 @@ export default async function LandingPage() {
         {/* Hero */}
         <div className="text-center">
           {/* Animated gradient border card */}
-          <div className="mx-auto mb-8 inline-block rounded-2xl p-[2px]" style={{
-            background: "conic-gradient(from 0deg, #6ee7b7, #34d399, #10b981, #4ade80, #2dd4bf, #6ee7b7)",
-          }}>
+          <div
+            className="mx-auto mb-8 inline-block rounded-2xl p-[2px]"
+            style={{
+              background:
+                "conic-gradient(from 0deg, #6ee7b7, #34d399, #10b981, #4ade80, #2dd4bf, #6ee7b7)",
+            }}
+          >
             <div className="rounded-2xl bg-[var(--bg-surface)] px-8 py-6">
-              <span className="text-4xl">⬡</span>
+              <Image src="/logo.png" alt="Respool" width={64} height={64} />
             </div>
           </div>
 

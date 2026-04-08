@@ -1,8 +1,8 @@
 import Link from "next/link";
-import { getPrints, getPrintStats } from "./actions";
+import { getPrints, getPrintStats, getActiveSpools } from "./actions";
 import { PrintCard } from "@/components/prints/print-card";
 import { Button } from "@/components/ui/button";
-import { Printer, Plus } from "lucide-react";
+import { Printer, Plus, Disc } from "lucide-react";
 
 interface Props {
   searchParams: Promise<{
@@ -21,13 +21,16 @@ function formatTime(minutes: number): string {
 export default async function PrintsPage({ searchParams }: Props) {
   const params = await searchParams;
 
-  const [prints, stats] = await Promise.all([
+  const [prints, stats, spools] = await Promise.all([
     getPrints({
       search: params.search,
       status: params.status,
     }),
     getPrintStats(),
+    getActiveSpools(),
   ]);
+
+  const hasSpools = spools.length > 0;
 
   return (
     <div className="space-y-6">
@@ -41,12 +44,21 @@ export default async function PrintsPage({ searchParams }: Props) {
             {stats.totalPrints} print{stats.totalPrints !== 1 ? "s" : ""}
           </p>
         </div>
-        <Link href="/prints/new">
-          <Button className="gap-2 bg-linear-to-r from-emerald-600 to-teal-600 text-white shadow-lg shadow-emerald-500/20 hover:from-emerald-500 hover:to-teal-500">
-            <Plus className="h-4 w-4" />
-            Log a Print
-          </Button>
-        </Link>
+        {hasSpools ? (
+          <Link href="/prints/new">
+            <Button className="gap-2 bg-linear-to-r from-emerald-600 to-teal-600 text-white shadow-lg shadow-emerald-500/20 hover:from-emerald-500 hover:to-teal-500">
+              <Plus className="h-4 w-4" />
+              Log a Print
+            </Button>
+          </Link>
+        ) : (
+          <Link href="/spools">
+            <Button variant="outline" className="gap-2">
+              <Disc className="h-4 w-4" />
+              Add a Spool First
+            </Button>
+          </Link>
+        )}
       </div>
 
       {/* Stats row */}
@@ -93,14 +105,25 @@ export default async function PrintsPage({ searchParams }: Props) {
             No prints yet
           </p>
           <p className="mt-1 text-xs text-muted-foreground">
-            Log your first print to start tracking
+            {hasSpools
+              ? "Log your first print to start tracking"
+              : "Add a spool first before logging prints"}
           </p>
-          <Link href="/prints/new" className="mt-4">
-            <Button className="gap-2 bg-linear-to-r from-emerald-600 to-teal-600 text-white shadow-lg shadow-emerald-500/20 hover:from-emerald-500 hover:to-teal-500">
-              <Plus className="h-4 w-4" />
-              Log a Print
-            </Button>
-          </Link>
+          {hasSpools ? (
+            <Link href="/prints/new" className="mt-4">
+              <Button className="gap-2 bg-linear-to-r from-emerald-600 to-teal-600 text-white shadow-lg shadow-emerald-500/20 hover:from-emerald-500 hover:to-teal-500">
+                <Plus className="h-4 w-4" />
+                Log a Print
+              </Button>
+            </Link>
+          ) : (
+            <Link href="/spools" className="mt-4">
+              <Button variant="outline" className="gap-2">
+                <Disc className="h-4 w-4" />
+                Go to Spools
+              </Button>
+            </Link>
+          )}
         </div>
       )}
     </div>

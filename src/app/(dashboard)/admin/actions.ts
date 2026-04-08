@@ -1,22 +1,8 @@
 "use server";
 
-import { headers } from "next/headers";
 import { revalidatePath } from "next/cache";
 import { prisma } from "@/lib/prisma";
-import { getSession } from "@/lib/auth";
-
-async function requireAdmin() {
-  const session = await getSession(await headers());
-  if (!session?.user) throw new Error("Unauthorized");
-
-  const user = await prisma.user.findUnique({
-    where: { id: session.user.id },
-    select: { role: true },
-  });
-
-  if (user?.role !== "admin") throw new Error("Forbidden");
-  return session.user;
-}
+import { requireAdmin } from "@/lib/auth-helpers";
 
 export async function getUsers() {
   await requireAdmin();
@@ -88,9 +74,7 @@ export async function toggleUserBan(userId: string) {
       data: { banned: !user.banned },
     }),
     // Delete all sessions if banning
-    ...(!user.banned
-      ? [prisma.session.deleteMany({ where: { userId } })]
-      : []),
+    ...(!user.banned ? [prisma.session.deleteMany({ where: { userId } })] : []),
   ]);
 
   revalidatePath("/admin");
