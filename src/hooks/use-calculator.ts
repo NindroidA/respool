@@ -107,7 +107,9 @@ export function useCalculator(inventorySpools: InventorySpool[]): {
   const [nextEntryId, setNextEntryId] = useState(1);
   const [gcodeData, setGcodeData] = useState<ParseResult | null>(null);
   const [gcodeError, setGcodeError] = useState<ParseError | null>(null);
-  const [gcodeMetadata, setGcodeMetadata] = useState<GcodeMetadata | null>(null);
+  const [gcodeMetadata, setGcodeMetadata] = useState<GcodeMetadata | null>(
+    null,
+  );
   const [gcodeWarnings, setGcodeWarnings] = useState<string[]>([]);
   const [gcodeName, setGcodeName] = useState("");
   const [gcodeLoading, setGcodeLoading] = useState(false);
@@ -117,14 +119,18 @@ export function useCalculator(inventorySpools: InventorySpool[]): {
   const [sortOption, setSortOption] = useState<SortOption>("custom");
   const [results, setResults] = useState<SwapResult | null>(null);
   const [error, setError] = useState<string | null>(null);
-  const [slicerOverride, setSlicerOverrideState] = useState<SlicerProfile | null>(null);
+  const [slicerOverride, setSlicerOverrideState] =
+    useState<SlicerProfile | null>(null);
   const [gcodeRaw, setGcodeRaw] = useState<string | null>(null);
   const fileRef = useRef<HTMLInputElement | null>(null);
 
   // ─── Derived State ──────────────────────────────────
 
   const availableSpools = useMemo(
-    () => inventorySpools.filter((inv) => !selectedSpools.some((s) => s.inventoryId === inv.id)),
+    () =>
+      inventorySpools.filter(
+        (inv) => !selectedSpools.some((s) => s.inventoryId === inv.id),
+      ),
     [inventorySpools, selectedSpools],
   );
 
@@ -144,7 +150,10 @@ export function useCalculator(inventorySpools: InventorySpool[]): {
     return sorted;
   }, [selectedSpools, sortOption]);
 
-  const purgeGramsDisplay = mmToGrams(parseFloat(purgeLength) || 0, density).toFixed(1);
+  const purgeGramsDisplay = mmToGrams(
+    parseFloat(purgeLength) || 0,
+    density,
+  ).toFixed(1);
 
   const recommendations = useMemo(() => {
     if (!results || results.enough) return null;
@@ -153,7 +162,8 @@ export function useCalculator(inventorySpools: InventorySpool[]): {
       .filter((s) => s.currentMass > 0)
       .sort((a, b) => b.currentMass - a.currentMass);
 
-    if (candidates.length === 0) return { deficit: Math.round(deficit), spools: [], canCover: false };
+    if (candidates.length === 0)
+      return { deficit: Math.round(deficit), spools: [], canCover: false };
 
     const recommended: InventorySpool[] = [];
     let remaining = deficit;
@@ -163,7 +173,11 @@ export function useCalculator(inventorySpools: InventorySpool[]): {
       remaining -= spool.currentMass;
     }
 
-    return { deficit: Math.round(deficit), spools: recommended, canCover: remaining <= 0 };
+    return {
+      deficit: Math.round(deficit),
+      spools: recommended,
+      canCover: remaining <= 0,
+    };
   }, [results, availableSpools]);
 
   // ─── Actions ────────────────────────────────────────
@@ -192,7 +206,12 @@ export function useCalculator(inventorySpools: InventorySpool[]): {
     setResults(null);
   };
 
-  const runParse = (raw: string, d: number, fileName: string, override?: SlicerProfile | null) => {
+  const runParse = (
+    raw: string,
+    d: number,
+    fileName: string,
+    override?: SlicerProfile | null,
+  ) => {
     const result = parseGcode(raw, d, {
       slicerOverride: override ?? undefined,
       fileName,
@@ -301,22 +320,36 @@ export function useCalculator(inventorySpools: InventorySpool[]): {
 
     let result: SwapResult;
     if (gcodeData && mode === "gcode") {
-      result = calculateSwapPointsGcode(gcodeData.layers, spoolWeights, purgeGrams, layers);
+      result = calculateSwapPointsGcode(
+        gcodeData.layers,
+        spoolWeights,
+        purgeGrams,
+        layers,
+      );
     } else {
-      result = calculateSwapPointsLinear(total, layers, spoolWeights, purgeGrams);
+      result = calculateSwapPointsLinear(
+        total,
+        layers,
+        spoolWeights,
+        purgeGrams,
+      );
     }
 
     setResults(result);
-  }, [totalGrams, totalLayers, sortedSpools, gcodeData, mode, purgeLength, density]);
+  }, [
+    totalGrams,
+    totalLayers,
+    sortedSpools,
+    gcodeData,
+    mode,
+    purgeLength,
+    density,
+  ]);
 
   const reset = () => {
-    setTotalGrams("");
-    setTotalLayers("");
+    clearGcode(); // clears gcode state, totalGrams, totalLayers, results, error
     setSelectedSpools([]);
-    setResults(null);
-    setError(null);
     setSlicerOverrideState(null);
-    clearGcode();
     setMode("gcode");
     setPurgeLength("100");
     setSelectedMaterial("PLA");
@@ -345,7 +378,11 @@ export function useCalculator(inventorySpools: InventorySpool[]): {
       slicerOverride,
     },
     actions: {
-      setMode: (m) => { setMode(m); setResults(null); setError(null); },
+      setMode: (m) => {
+        setMode(m);
+        setResults(null);
+        setError(null);
+      },
       setTotalGrams,
       setTotalLayers,
       addSpool,

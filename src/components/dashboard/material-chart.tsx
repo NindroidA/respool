@@ -2,6 +2,7 @@
 
 import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip } from "recharts";
 import { MATERIAL_COLORS } from "@/lib/constants";
+import { CHART_TOOLTIP_STYLE } from "./chart-styles";
 
 interface MaterialData {
   material: string;
@@ -41,11 +42,7 @@ export function MaterialChart({ data }: MaterialChartProps) {
         </Pie>
         <Tooltip
           contentStyle={{
-            background: "var(--bg-card)",
-            border: "1px solid var(--border-default)",
-            borderRadius: "8px",
-            color: "var(--text-primary)",
-            fontSize: "12px",
+            ...CHART_TOOLTIP_STYLE,
             fontFamily: "var(--font-geist-mono)",
           }}
           formatter={(value) => [`${value}g`, ""]}
