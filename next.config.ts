@@ -1,7 +1,12 @@
 import type { NextConfig } from "next";
 
+const { version } = require("./package.json");
+
 const nextConfig: NextConfig = {
   output: "standalone",
+  env: {
+    APP_VERSION: version,
+  },
   headers: async () => [
     {
       source: "/(.*)",
@@ -9,7 +14,10 @@ const nextConfig: NextConfig = {
         { key: "X-Frame-Options", value: "DENY" },
         { key: "X-Content-Type-Options", value: "nosniff" },
         { key: "Referrer-Policy", value: "strict-origin-when-cross-origin" },
-        { key: "Permissions-Policy", value: "camera=(), microphone=(), geolocation=()" },
+        {
+          key: "Permissions-Policy",
+          value: "camera=(), microphone=(), geolocation=()",
+        },
       ],
     },
   ],

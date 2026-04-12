@@ -3,6 +3,7 @@ import { redirect } from "next/navigation";
 import { getSession } from "@/lib/auth";
 import { Sidebar } from "@/components/layout/sidebar";
 import { MobileNav } from "@/components/layout/mobile-nav";
+import { Footer } from "@/components/layout/footer";
 
 export default async function DashboardLayout({
   children,
@@ -23,16 +24,20 @@ export default async function DashboardLayout({
   };
 
   return (
-    <div className="min-h-screen">
+    <div className="flex min-h-screen flex-col">
       <Sidebar user={user} />
       <MobileNav user={user} />
 
       {/* Main content — offset by sidebar on desktop, by top/bottom nav on mobile */}
-      <main className="lg:pl-[220px]">
+      <main className="flex-1 lg:pl-55">
         <div className="mx-auto max-w-6xl px-4 py-6 pt-20 pb-20 sm:px-6 lg:px-8 lg:pt-6 lg:pb-6">
           {children}
         </div>
       </main>
+
+      <div className="lg:pl-55">
+        <Footer />
+      </div>
     </div>
   );
 }

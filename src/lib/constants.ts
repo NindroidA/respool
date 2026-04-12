@@ -5,12 +5,15 @@ export const MATERIAL_DENSITIES: Record<string, number> = {
   ABS: 1.04,
   TPU: 1.21,
   ASA: 1.07,
-  PC: 1.20,
+  PC: 1.2,
   HIPS: 1.04,
   PVA: 1.23,
 };
 
-export const MATERIAL_COLORS: Record<string, { primary: string; light: string }> = {
+export const MATERIAL_COLORS: Record<
+  string,
+  { primary: string; light: string }
+> = {
   PLA: { primary: "#10b981", light: "#6ee7b7" },
   "PLA+": { primary: "#10b981", light: "#6ee7b7" },
   PETG: { primary: "#0ea5e9", light: "#7dd3fc" },
@@ -22,8 +25,34 @@ export const MATERIAL_COLORS: Record<string, { primary: string; light: string }>
   PVA: { primary: "#06b6d4", light: "#67e8f9" },
 };
 
-export const DEFAULT_MATERIALS = ["PLA", "PETG", "ABS", "TPU", "ASA", "PC", "HIPS", "PVA"];
+export const DEFAULT_MATERIALS = [
+  "PLA",
+  "PETG",
+  "ABS",
+  "TPU",
+  "ASA",
+  "PC",
+  "HIPS",
+  "PVA",
+];
 
 export const DEFAULT_SPOOL_MASS = 1000; // grams
 
 export const DEFAULT_FILAMENT_DIAMETER = 1.75; // mm
+
+// ─── Nindroid Systems / Footer Links ────────────────────
+
+export const NINDROID_PROJECTS = [
+  { name: "NinSys Homepage", url: "https://nindroidsystems.com" },
+  { name: "Cogworks", url: "https://cogworks.nindroidsystems.com" },
+  { name: "Pluginator", url: "https://pluginator.nindroidsystems.com" },
+] as const;
+
+export const FOOTER_LINKS = {
+  github: "https://github.com/NindroidA/respool",
+  coffee: "https://buymeacoffee.com/NindroidA",
+  contributing:
+    "https://github.com/NindroidA/respool/blob/main/CONTRIBUTING.md",
+  issues: "https://github.com/NindroidA/respool/issues",
+  license: "https://github.com/NindroidA/respool/blob/main/LICENSE",
+} as const;
