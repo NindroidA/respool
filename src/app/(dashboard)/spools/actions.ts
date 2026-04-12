@@ -8,6 +8,7 @@ import {
   updateSpoolSchema,
   logUsageSchema,
 } from "@/lib/validators";
+import type { Prisma } from "@prisma/client";
 import { areColorsSimilar, colorGroupName } from "@/lib/filament-utils";
 import { audit } from "@/lib/audit";
 
@@ -21,7 +22,7 @@ export async function getSpools(filters?: {
 }) {
   const user = await requireUser();
 
-  const where: Record<string, unknown> = { userId: user.id };
+  const where: Prisma.SpoolWhereInput = { userId: user.id };
 
   if (filters?.material) where.material = filters.material;
   if (filters?.boxId !== undefined) where.boxId = filters.boxId;
@@ -49,7 +50,9 @@ export async function getSpools(filters?: {
     ? filters!.sort!
     : "createdAt";
   const sortOrder = filters?.order === "asc" ? "asc" : "desc";
-  const orderBy: Record<string, string> = { [sortField]: sortOrder };
+  const orderBy: Prisma.SpoolOrderByWithRelationInput = {
+    [sortField]: sortOrder,
+  };
 
   return prisma.spool.findMany({
     where,

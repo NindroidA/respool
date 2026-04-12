@@ -9,7 +9,10 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { deletePrint, updatePrintStatus } from "@/app/(dashboard)/prints/actions";
+import {
+  deletePrint,
+  updatePrintStatus,
+} from "@/app/(dashboard)/prints/actions";
 import { toast } from "sonner";
 import { MoreHorizontal, Trash2, Play, CheckCircle } from "lucide-react";
 
@@ -45,22 +48,36 @@ function formatDate(date: Date): string {
   return new Date(date).toLocaleDateString();
 }
 
-const STATUS_STYLES: Record<string, { bg: string; text: string; label: string }> = {
+const STATUS_STYLES: Record<
+  string,
+  { bg: string; text: string; label: string }
+> = {
   planned: { bg: "rgba(96,165,250,0.12)", text: "#60a5fa", label: "Planned" },
-  in_progress: { bg: "rgba(251,191,36,0.12)", text: "#fbbf24", label: "In Progress" },
-  completed: { bg: "rgba(16,185,129,0.12)", text: "#6ee7b7", label: "Completed" },
+  in_progress: {
+    bg: "rgba(251,191,36,0.12)",
+    text: "#fbbf24",
+    label: "In Progress",
+  },
+  completed: {
+    bg: "rgba(16,185,129,0.12)",
+    text: "#6ee7b7",
+    label: "Completed",
+  },
 };
 
 export function PrintCard({ print, index = 0 }: PrintCardProps) {
   const statusStyle = STATUS_STYLES[print.status] ?? STATUS_STYLES.completed;
 
   async function handleDelete() {
-    if (!confirm("Delete this print? Filament will be restored to spools.")) return;
+    if (!confirm("Delete this print? Filament will be restored to spools."))
+      return;
     try {
       await deletePrint(print.id);
       toast.success("Print deleted");
-    } catch {
-      toast.error("Failed to delete print");
+    } catch (err) {
+      toast.error(
+        err instanceof Error ? err.message : "Failed to delete print",
+      );
     }
   }
 
@@ -68,8 +85,10 @@ export function PrintCard({ print, index = 0 }: PrintCardProps) {
     try {
       await updatePrintStatus(print.id, status);
       toast.success(`Marked as ${status.replace("_", " ")}`);
-    } catch {
-      toast.error("Failed to update status");
+    } catch (err) {
+      toast.error(
+        err instanceof Error ? err.message : "Failed to update status",
+      );
     }
   }
 
@@ -137,7 +156,9 @@ export function PrintCard({ print, index = 0 }: PrintCardProps) {
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end">
             {print.status === "planned" && (
-              <DropdownMenuItem onClick={() => handleStatusChange("in_progress")}>
+              <DropdownMenuItem
+                onClick={() => handleStatusChange("in_progress")}
+              >
                 <Play className="mr-2 h-4 w-4" />
                 Start Printing
               </DropdownMenuItem>
@@ -149,7 +170,10 @@ export function PrintCard({ print, index = 0 }: PrintCardProps) {
               </DropdownMenuItem>
             )}
             <DropdownMenuSeparator />
-            <DropdownMenuItem onClick={handleDelete} className="text-destructive-foreground">
+            <DropdownMenuItem
+              onClick={handleDelete}
+              className="text-destructive-foreground"
+            >
               <Trash2 className="mr-2 h-4 w-4" />
               Delete
             </DropdownMenuItem>

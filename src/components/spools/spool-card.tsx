@@ -49,8 +49,10 @@ export function SpoolCard({ spool, index = 0 }: SpoolCardProps) {
     try {
       await duplicateSpool(spool.id);
       toast.success("Spool duplicated");
-    } catch {
-      toast.error("Failed to duplicate spool");
+    } catch (err) {
+      toast.error(
+        err instanceof Error ? err.message : "Failed to duplicate spool",
+      );
     }
   }
 
@@ -58,8 +60,10 @@ export function SpoolCard({ spool, index = 0 }: SpoolCardProps) {
     try {
       await archiveSpool(spool.id);
       toast.success("Spool archived");
-    } catch {
-      toast.error("Failed to archive spool");
+    } catch (err) {
+      toast.error(
+        err instanceof Error ? err.message : "Failed to archive spool",
+      );
     }
   }
 
@@ -68,8 +72,10 @@ export function SpoolCard({ spool, index = 0 }: SpoolCardProps) {
     try {
       await deleteSpool(spool.id);
       toast.success("Spool deleted");
-    } catch {
-      toast.error("Failed to delete spool");
+    } catch (err) {
+      toast.error(
+        err instanceof Error ? err.message : "Failed to delete spool",
+      );
     }
   }
 
