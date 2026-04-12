@@ -33,6 +33,7 @@ model User {
   settings   UserSettings?
   twoFactors TwoFactor[]
   filamentPresets FilamentPreset[]
+  purchaseRecords PurchaseRecord[]
 }
 
 model Session {
@@ -123,8 +124,9 @@ model Spool {
   createdAt    DateTime @default(now())
   updatedAt    DateTime @updatedAt
 
-  logs           SpoolLog[]
-  printFilaments PrintFilament[]
+  logs            SpoolLog[]
+  printFilaments  PrintFilament[]
+  purchaseRecords PurchaseRecord[]
 }
 
 model SpoolLog {
@@ -244,9 +246,37 @@ model FilamentPreset {
   createdAt  DateTime  @default(now())
   updatedAt  DateTime  @updatedAt
 
-  spools Spool[]
+  spools          Spool[]
+  purchaseRecords PurchaseRecord[]
 
   @@unique([userId, name])
   @@index([userId])
   @@index([brand, material])
+}
+
+// ─── Purchase Records ───────────────────────────────────
+
+model PurchaseRecord {
+  id     String @id @default(cuid())
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  spoolId  String?
+  spool    Spool?          @relation(fields: [spoolId], references: [id], onDelete: SetNull)
+  presetId String?
+  preset   FilamentPreset? @relation(fields: [presetId], references: [id], onDelete: SetNull)
+
+  vendor      String
+  price       Int      // cents
+  quantity    Int      @default(1)
+  currency    String   @default("USD")
+  purchaseUrl String?
+  orderNumber String?
+  notes       String?
+
+  purchasedAt DateTime @default(now())
+  createdAt   DateTime @default(now())
+
+  @@index([userId])
+  @@index([presetId])
 }

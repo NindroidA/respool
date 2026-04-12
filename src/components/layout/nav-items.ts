@@ -8,6 +8,7 @@ import {
   Shield,
   Bookmark,
   QrCode,
+  ShoppingCart,
   type LucideIcon,
 } from "lucide-react";
 
@@ -28,6 +29,7 @@ export const toolNavItems: NavItem[] = [
   { label: "Calculator", href: "/calculator", icon: Calculator },
   { label: "Presets", href: "/presets", icon: Bookmark },
   { label: "Labels", href: "/labels", icon: QrCode },
+  { label: "Reorder", href: "/reorder", icon: ShoppingCart },
   { label: "Settings", href: "/settings", icon: Settings },
 ];
 

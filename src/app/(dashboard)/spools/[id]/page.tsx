@@ -14,7 +14,7 @@ import { SpoolForm } from "@/components/spools/spool-form";
 import { SpoolDetailActions } from "@/components/spools/spool-detail-actions";
 import { Badge } from "@/components/ui/badge";
 import { MATERIAL_COLORS } from "@/lib/constants";
-import { ArrowLeft, QrCode } from "lucide-react";
+import { ArrowLeft, QrCode, ExternalLink } from "lucide-react";
 
 interface Props {
   params: Promise<{ id: string }>;
@@ -222,6 +222,47 @@ export default async function SpoolDetailPage({ params }: Props) {
               <p className="mt-1 text-sm text-foreground">{spool.note}</p>
             </div>
           )}
+        </div>
+      )}
+
+      {/* Purchase Info */}
+      {(spool.purchaseLink || spool.purchasePrice || spool.purchaseDate) && (
+        <div className="rounded-xl border border-border bg-card p-5 ring-1 ring-primary/5">
+          <p className="mb-3 text-2xs font-bold uppercase tracking-widest text-(--text-faint)">
+            Purchase Info
+          </p>
+          <div className="grid grid-cols-2 gap-4 text-sm sm:grid-cols-3">
+            {spool.purchasePrice && (
+              <div>
+                <p className="text-xs text-muted-foreground">Price Paid</p>
+                <p className="font-mono font-medium text-foreground">
+                  ${(spool.purchasePrice / 100).toFixed(2)}
+                </p>
+              </div>
+            )}
+            {spool.purchaseDate && (
+              <div>
+                <p className="text-xs text-muted-foreground">Purchase Date</p>
+                <p className="font-medium text-foreground">
+                  {new Date(spool.purchaseDate).toLocaleDateString()}
+                </p>
+              </div>
+            )}
+            {spool.purchaseLink && (
+              <div>
+                <p className="text-xs text-muted-foreground">Purchase Link</p>
+                <a
+                  href={spool.purchaseLink}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center gap-1 text-sm font-medium text-jade hover:underline"
+                >
+                  Reorder
+                  <ExternalLink className="h-3 w-3" />
+                </a>
+              </div>
+            )}
+          </div>
         </div>
       )}
 
