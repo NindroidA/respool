@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -14,6 +14,7 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { ColorPicker } from "./color-picker";
+import { PresetSelector } from "./preset-selector";
 import { createSpool, updateSpool } from "@/app/(dashboard)/spools/actions";
 import { createSpoolSchema } from "@/lib/validators";
 import {
@@ -79,7 +80,55 @@ export function SpoolForm({
     spool?.filamentColorId ?? null,
   );
 
+  const formRef = useRef<HTMLFormElement>(null);
   const isEdit = !!spool;
+
+  function handlePresetSelect(preset: {
+    name: string;
+    brand: string;
+    material: string;
+    color: string;
+    colorSecondary: string | null;
+    filamentColorId: string | null;
+    startingMass: number;
+    diameter: number | null;
+    printingTemperature: number | null;
+  }) {
+    const form = formRef.current;
+    if (!form) return;
+
+    const setInput = (name: string, value: string) => {
+      const input = form.elements.namedItem(name) as
+        | HTMLInputElement
+        | HTMLTextAreaElement
+        | HTMLSelectElement
+        | null;
+      if (input) {
+        const nativeInputValueSetter = Object.getOwnPropertyDescriptor(
+          window.HTMLInputElement.prototype,
+          "value",
+        )?.set;
+        nativeInputValueSetter?.call(input, value);
+        input.dispatchEvent(new Event("input", { bubbles: true }));
+        input.dispatchEvent(new Event("change", { bubbles: true }));
+      }
+    };
+
+    setInput("name", preset.name);
+    setInput("brand", preset.brand);
+    setInput("material", preset.material);
+    setInput("startingMass", String(preset.startingMass));
+    setInput("currentMass", String(preset.startingMass));
+    if (preset.diameter) setInput("diameter", String(preset.diameter));
+    if (preset.printingTemperature)
+      setInput("printingTemperature", String(preset.printingTemperature));
+
+    setSelectedColor(preset.color);
+    setSelectedColorSecondary(preset.colorSecondary);
+    setSelectedColorId(preset.filamentColorId);
+
+    toast.success(`Preset "${preset.name}" applied`);
+  }
 
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -140,7 +189,10 @@ export function SpoolForm({
           <DialogTitle>{isEdit ? "Edit Spool" : "Add New Spool"}</DialogTitle>
         </DialogHeader>
 
-        <form onSubmit={handleSubmit} className="space-y-4">
+        <form ref={formRef} onSubmit={handleSubmit} className="space-y-4">
+          {/* Preset Selector — only show for new spools */}
+          {!isEdit && <PresetSelector onSelect={handlePresetSelect} />}
+
           {/* Name + Brand */}
           <div className="grid grid-cols-2 gap-3">
             <div className="space-y-1.5">

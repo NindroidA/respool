@@ -32,6 +32,7 @@ model User {
   prints     Print[]
   settings   UserSettings?
   twoFactors TwoFactor[]
+  filamentPresets FilamentPreset[]
 }
 
 model Session {
@@ -101,10 +102,17 @@ model Spool {
 
   diameter            Float? // mm, e.g. 1.75
   printingTemperature Int?   // °C
+  bedTemperature      Int?   // °C
   cost                Int?   // cents (e.g. 2499 = $24.99)
+  purchaseLink        String?
+  purchaseDate        DateTime?
+  purchasePrice       Int?   // cents
 
   filamentColorId String?
   filamentColor   FilamentColor? @relation(fields: [filamentColorId], references: [id], onDelete: SetNull)
+
+  presetId String?
+  preset   FilamentPreset? @relation(fields: [presetId], references: [id], onDelete: SetNull)
 
   boxId    String?
   box      Box?    @relation(fields: [boxId], references: [id], onDelete: SetNull)
@@ -184,6 +192,8 @@ model UserSettings {
   defaultMass          Int      @default(1000) // grams
   unitPreference       String   @default("grams") // "grams" | "oz"
   lowFilamentThreshold Int      @default(100) // grams remaining to trigger warnings
+  labelTemplate        String   @default("compact")
+  labelFields          Json     @default("{}")
 }
 
 model FilamentColor {
@@ -194,7 +204,49 @@ model FilamentColor {
   category     String  // "solid" | "silk" | "matte" | "dual" | "translucent" | "glow" | "marble"
   sortOrder    Int     @default(0)
 
-  spools Spool[]
+  spools  Spool[]
+  presets FilamentPreset[]
 
   @@unique([name, category])
+}
+
+// ─── Filament Presets ───────────────────────────────────
+
+model FilamentPreset {
+  id     String  @id @default(cuid())
+  userId String? // null = community/global preset
+  user   User?   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  // Identity
+  name   String // e.g. "Hatchbox White PLA 1kg"
+  source String @default("user") // "user" | "community" | "imported"
+
+  // Filament properties
+  brand          String
+  material       String
+  color          String  // primary hex
+  colorSecondary String? // dual-color hex
+
+  filamentColorId String?
+  filamentColor   FilamentColor? @relation(fields: [filamentColorId], references: [id], onDelete: SetNull)
+
+  // Defaults
+  startingMass        Int    // grams (e.g. 1000)
+  diameter            Float? // mm (e.g. 1.75)
+  printingTemperature Int?   // °C (e.g. 200)
+  bedTemperature      Int?   // °C (e.g. 60)
+  purchaseLink        String?
+  estimatedCost       Int?   // cents — typical price
+
+  // Metadata
+  timesUsed  Int       @default(0)
+  lastUsedAt DateTime?
+  createdAt  DateTime  @default(now())
+  updatedAt  DateTime  @updatedAt
+
+  spools Spool[]
+
+  @@unique([userId, name])
+  @@index([userId])
+  @@index([brand, material])
 }
