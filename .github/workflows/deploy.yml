@@ -67,14 +67,22 @@ jobs:
         run: |
           echo "Waiting for app to start..."
           for i in $(seq 1 30); do
-            if curl -sf http://localhost:3847/api/health > /dev/null 2>&1; then
-              echo "App is healthy!"
+            # Try from host first, then from inside container
+            if curl -sf http://127.0.0.1:3847/api/health > /dev/null 2>&1; then
+              echo "App is healthy (host check)!"
+              exit 0
+            fi
+            if docker-compose exec -T app curl -sf http://localhost:3847/api/health > /dev/null 2>&1; then
+              echo "App is healthy (container check)!"
               exit 0
             fi
             sleep 2
           done
           echo "Health check failed after 60s"
+          echo "--- Container logs ---"
           docker-compose logs app --tail 50
+          echo "--- Port check ---"
+          docker-compose exec -T app sh -c "curl -v http://localhost:3847/api/health 2>&1" || true
           exit 1
 
       - name: Rollback on failure
