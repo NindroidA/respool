@@ -14,7 +14,7 @@ import { SpoolForm } from "@/components/spools/spool-form";
 import { SpoolDetailActions } from "@/components/spools/spool-detail-actions";
 import { Badge } from "@/components/ui/badge";
 import { MATERIAL_COLORS } from "@/lib/constants";
-import { ArrowLeft } from "lucide-react";
+import { ArrowLeft, QrCode } from "lucide-react";
 
 interface Props {
   params: Promise<{ id: string }>;
@@ -117,6 +117,13 @@ export default async function SpoolDetailPage({ params }: Props) {
             colors={colors}
             trigger={<span className="text-sm">Edit</span>}
           />
+          <Link
+            href={`/labels?spool=${spool.id}`}
+            className="inline-flex items-center gap-1.5 rounded-lg border border-border bg-card px-3 py-2 text-sm font-medium text-muted-foreground transition-colors hover:bg-(--bg-card-hover) hover:text-foreground"
+          >
+            <QrCode className="h-4 w-4" />
+            Label
+          </Link>
           <SpoolDetailActions spoolId={spool.id} archived={spool.archived} />
         </div>
       </div>

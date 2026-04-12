@@ -7,6 +7,7 @@ import {
   Settings,
   Shield,
   Bookmark,
+  QrCode,
   type LucideIcon,
 } from "lucide-react";
 
@@ -26,6 +27,7 @@ export const mainNavItems: NavItem[] = [
 export const toolNavItems: NavItem[] = [
   { label: "Calculator", href: "/calculator", icon: Calculator },
   { label: "Presets", href: "/presets", icon: Bookmark },
+  { label: "Labels", href: "/labels", icon: QrCode },
   { label: "Settings", href: "/settings", icon: Settings },
 ];
 
