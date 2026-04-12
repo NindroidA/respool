@@ -4,6 +4,7 @@ import { revalidatePath } from "next/cache";
 import { prisma } from "@/lib/prisma";
 import { requireUser } from "@/lib/auth-helpers";
 import { createBoxSchema } from "@/lib/validators";
+import { audit } from "@/lib/audit";
 
 export async function getBoxes() {
   const user = await requireUser();
@@ -68,6 +69,17 @@ export async function createBox(data: FormData) {
     },
   });
 
+  audit({
+    userId: user.id,
+    userEmail: user.email,
+    userName: user.name,
+    action: "box.create",
+    category: "box",
+    targetType: "Box",
+    targetId: box.id,
+    targetName: box.name,
+  });
+
   revalidatePath("/boxes");
   return box;
 }
@@ -104,6 +116,18 @@ export async function deleteBox(id: string) {
   });
 
   await prisma.box.delete({ where: { id } });
+
+  audit({
+    userId: user.id,
+    userEmail: user.email,
+    userName: user.name,
+    action: "box.delete",
+    category: "box",
+    severity: "warning",
+    targetType: "Box",
+    targetId: id,
+    targetName: existing.name,
+  });
 
   revalidatePath("/boxes");
   revalidatePath("/spools");

@@ -9,6 +9,7 @@ import {
   logUsageSchema,
 } from "@/lib/validators";
 import { areColorsSimilar, colorGroupName } from "@/lib/filament-utils";
+import { audit } from "@/lib/audit";
 
 export async function getSpools(filters?: {
   material?: string;
@@ -122,6 +123,22 @@ export async function createSpool(data: FormData) {
     });
   });
 
+  audit({
+    userId: user.id,
+    userEmail: user.email,
+    userName: user.name,
+    action: "spool.create",
+    category: "spool",
+    targetType: "Spool",
+    targetId: spool.id,
+    targetName: spool.name,
+    metadata: {
+      brand: validated.brand,
+      material: validated.material,
+      startingMass: validated.startingMass,
+    },
+  });
+
   revalidatePath("/spools");
   revalidatePath("/boxes");
   revalidatePath("/dashboard");
@@ -183,6 +200,17 @@ export async function updateSpool(id: string, data: FormData) {
     },
   });
 
+  audit({
+    userId: user.id,
+    userEmail: user.email,
+    userName: user.name,
+    action: "spool.update",
+    category: "spool",
+    targetType: "Spool",
+    targetId: id,
+    targetName: spool.name,
+  });
+
   revalidatePath("/spools");
   revalidatePath(`/spools/${id}`);
   revalidatePath("/dashboard");
@@ -196,6 +224,18 @@ export async function deleteSpool(id: string) {
   if (!existing || existing.userId !== user.id) throw new Error("Not found");
 
   await prisma.spool.delete({ where: { id } });
+
+  audit({
+    userId: user.id,
+    userEmail: user.email,
+    userName: user.name,
+    action: "spool.delete",
+    category: "spool",
+    severity: "warning",
+    targetType: "Spool",
+    targetId: id,
+    targetName: existing.name,
+  });
 
   revalidatePath("/spools");
   revalidatePath("/dashboard");
@@ -244,6 +284,18 @@ export async function duplicateSpool(id: string) {
     });
   });
 
+  audit({
+    userId: user.id,
+    userEmail: user.email,
+    userName: user.name,
+    action: "spool.duplicate",
+    category: "spool",
+    targetType: "Spool",
+    targetId: spool.id,
+    targetName: spool.name,
+    metadata: { originalId: id },
+  });
+
   revalidatePath("/spools");
   return spool;
 }
@@ -259,6 +311,17 @@ export async function archiveSpool(id: string) {
     data: { archived: true },
   });
 
+  audit({
+    userId: user.id,
+    userEmail: user.email,
+    userName: user.name,
+    action: "spool.archive",
+    category: "spool",
+    targetType: "Spool",
+    targetId: id,
+    targetName: existing.name,
+  });
+
   revalidatePath("/spools");
   revalidatePath("/dashboard");
 }
@@ -272,6 +335,17 @@ export async function unarchiveSpool(id: string) {
   await prisma.spool.update({
     where: { id },
     data: { archived: false },
+  });
+
+  audit({
+    userId: user.id,
+    userEmail: user.email,
+    userName: user.name,
+    action: "spool.unarchive",
+    category: "spool",
+    targetType: "Spool",
+    targetId: id,
+    targetName: existing.name,
   });
 
   revalidatePath("/spools");
@@ -314,6 +388,18 @@ export async function logUsage(
     }),
   ]);
 
+  audit({
+    userId: user.id,
+    userEmail: user.email,
+    userName: user.name,
+    action: "spool.log_usage",
+    category: "spool",
+    targetType: "Spool",
+    targetId: spoolId,
+    targetName: spool.name,
+    metadata: { gramsUsed: validated.gramsUsed, newMass },
+  });
+
   revalidatePath("/spools");
   revalidatePath(`/spools/${spoolId}`);
   revalidatePath("/dashboard");
@@ -351,6 +437,19 @@ export async function deleteLog(logId: string) {
       },
     }),
   ]);
+
+  audit({
+    userId: user.id,
+    userEmail: user.email,
+    userName: user.name,
+    action: "spool.log_delete",
+    category: "spool",
+    severity: "warning",
+    targetType: "Spool",
+    targetId: log.spoolId,
+    targetName: log.spool.name,
+    metadata: { gramsRestored: log.gramsUsed },
+  });
 
   revalidatePath("/spools");
   revalidatePath(`/spools/${log.spoolId}`);

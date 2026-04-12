@@ -34,6 +34,7 @@ model User {
   twoFactors TwoFactor[]
   filamentPresets FilamentPreset[]
   purchaseRecords PurchaseRecord[]
+  auditLogs       AuditLog[]
 }
 
 model Session {
@@ -279,4 +280,40 @@ model PurchaseRecord {
 
   @@index([userId])
   @@index([presetId])
+}
+
+// ─── Audit Logs ─────────────────────────────────────────
+
+model AuditLog {
+  id String @id @default(cuid())
+
+  // Who
+  userId    String?
+  user      User?   @relation(fields: [userId], references: [id], onDelete: SetNull)
+  userEmail String?
+  userName  String?
+  ipAddress String?
+  userAgent String?
+
+  // What
+  action   String // e.g. "spool.create", "auth.login"
+  category String // "auth" | "spool" | "print" | "box" | "admin" | "system"
+  severity String @default("info") // "info" | "warning" | "error" | "critical"
+
+  // Target
+  targetType String?
+  targetId   String?
+  targetName String?
+
+  // Details
+  metadata Json?
+
+  createdAt DateTime @default(now())
+
+  @@index([userId])
+  @@index([action])
+  @@index([category])
+  @@index([severity])
+  @@index([createdAt])
+  @@index([targetType, targetId])
 }

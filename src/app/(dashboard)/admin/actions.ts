@@ -3,6 +3,7 @@
 import { revalidatePath } from "next/cache";
 import { prisma } from "@/lib/prisma";
 import { requireAdmin } from "@/lib/auth-helpers";
+import { audit } from "@/lib/audit";
 
 export async function getUsers() {
   await requireAdmin();
@@ -53,6 +54,18 @@ export async function toggleUserRole(userId: string) {
     data: { role: newRole },
   });
 
+  audit({
+    userId: admin.id,
+    userEmail: admin.email,
+    userName: admin.name,
+    action: "admin.user_role_changed",
+    category: "admin",
+    severity: "warning",
+    targetType: "User",
+    targetId: userId,
+    metadata: { from: user.role, to: newRole },
+  });
+
   revalidatePath("/admin");
 }
 
@@ -63,19 +76,33 @@ export async function toggleUserBan(userId: string) {
 
   const user = await prisma.user.findUnique({
     where: { id: userId },
-    select: { banned: true },
+    select: { banned: true, name: true },
   });
 
   if (!user) throw new Error("User not found");
 
+  const nowBanned = !user.banned;
+
   await prisma.$transaction([
     prisma.user.update({
       where: { id: userId },
-      data: { banned: !user.banned },
+      data: { banned: nowBanned },
     }),
     // Delete all sessions if banning
-    ...(!user.banned ? [prisma.session.deleteMany({ where: { userId } })] : []),
+    ...(nowBanned ? [prisma.session.deleteMany({ where: { userId } })] : []),
   ]);
+
+  audit({
+    userId: admin.id,
+    userEmail: admin.email,
+    userName: admin.name,
+    action: nowBanned ? "admin.user_banned" : "admin.user_unbanned",
+    category: "admin",
+    severity: nowBanned ? "critical" : "warning",
+    targetType: "User",
+    targetId: userId,
+    targetName: user.name,
+  });
 
   revalidatePath("/admin");
 }
@@ -85,7 +112,25 @@ export async function deleteUser(userId: string) {
 
   if (userId === admin.id) throw new Error("Cannot delete yourself");
 
+  const user = await prisma.user.findUnique({
+    where: { id: userId },
+    select: { name: true, email: true },
+  });
+
   await prisma.user.delete({ where: { id: userId } });
+
+  audit({
+    userId: admin.id,
+    userEmail: admin.email,
+    userName: admin.name,
+    action: "admin.user_deleted",
+    category: "admin",
+    severity: "critical",
+    targetType: "User",
+    targetId: userId,
+    targetName: user?.name ?? undefined,
+    metadata: { deletedEmail: user?.email },
+  });
 
   revalidatePath("/admin");
 }

@@ -4,6 +4,7 @@ import { revalidatePath } from "next/cache";
 import { prisma } from "@/lib/prisma";
 import { requireUser } from "@/lib/auth-helpers";
 import { createPrintSchema } from "@/lib/validators";
+import { audit } from "@/lib/audit";
 
 export async function getPrints(filters?: {
   search?: string;
@@ -125,6 +126,18 @@ export async function createPrint(data: {
     return newPrint;
   });
 
+  audit({
+    userId: user.id,
+    userEmail: user.email,
+    userName: user.name,
+    action: "print.create",
+    category: "print",
+    targetType: "Print",
+    targetId: print.id,
+    targetName: validated.name,
+    metadata: { totalGrams, filamentCount: validated.filaments.length },
+  });
+
   revalidatePath("/prints");
   revalidatePath("/spools");
   revalidatePath("/dashboard");
@@ -146,6 +159,18 @@ export async function updatePrintStatus(id: string, status: string) {
   await prisma.print.update({
     where: { id },
     data: { status },
+  });
+
+  audit({
+    userId: user.id,
+    userEmail: user.email,
+    userName: user.name,
+    action: "print.status_change",
+    category: "print",
+    targetType: "Print",
+    targetId: id,
+    targetName: print.name,
+    metadata: { from: print.status, to: status },
   });
 
   revalidatePath("/prints");
@@ -173,6 +198,18 @@ export async function deletePrint(id: string) {
     }
 
     await tx.print.delete({ where: { id } });
+  });
+
+  audit({
+    userId: user.id,
+    userEmail: user.email,
+    userName: user.name,
+    action: "print.delete",
+    category: "print",
+    severity: "warning",
+    targetType: "Print",
+    targetId: id,
+    targetName: print.name,
   });
 
   revalidatePath("/prints");
