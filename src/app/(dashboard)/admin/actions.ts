@@ -55,9 +55,7 @@ export async function toggleUserRole(userId: string) {
   });
 
   audit({
-    userId: admin.id,
-    userEmail: admin.email,
-    userName: admin.name,
+    user: { id: admin.id, email: admin.email, name: admin.name },
     action: "admin.user_role_changed",
     category: "admin",
     severity: "warning",
@@ -93,9 +91,7 @@ export async function toggleUserBan(userId: string) {
   ]);
 
   audit({
-    userId: admin.id,
-    userEmail: admin.email,
-    userName: admin.name,
+    user: { id: admin.id, email: admin.email, name: admin.name },
     action: nowBanned ? "admin.user_banned" : "admin.user_unbanned",
     category: "admin",
     severity: nowBanned ? "critical" : "warning",
@@ -120,9 +116,7 @@ export async function deleteUser(userId: string) {
   await prisma.user.delete({ where: { id: userId } });
 
   audit({
-    userId: admin.id,
-    userEmail: admin.email,
-    userName: admin.name,
+    user: { id: admin.id, email: admin.email, name: admin.name },
     action: "admin.user_deleted",
     category: "admin",
     severity: "critical",

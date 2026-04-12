@@ -4,7 +4,14 @@ import { prisma } from "./prisma";
 import { headers } from "next/headers";
 import type { Prisma } from "@prisma/client";
 
+interface AuditUser {
+  id: string;
+  email: string;
+  name: string;
+}
+
 interface AuditEntry {
+  user?: AuditUser;
   userId?: string;
   userEmail?: string;
   userName?: string;
@@ -33,9 +40,9 @@ export async function audit(entry: AuditEntry) {
   prisma.auditLog
     .create({
       data: {
-        userId: entry.userId ?? null,
-        userEmail: entry.userEmail ?? null,
-        userName: entry.userName ?? null,
+        userId: entry.user?.id ?? entry.userId ?? null,
+        userEmail: entry.user?.email ?? entry.userEmail ?? null,
+        userName: entry.user?.name ?? entry.userName ?? null,
         action: entry.action,
         category: entry.category,
         severity: entry.severity ?? "info",

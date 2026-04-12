@@ -128,9 +128,7 @@ export async function createPrint(data: {
   });
 
   audit({
-    userId: user.id,
-    userEmail: user.email,
-    userName: user.name,
+    user: { id: user.id, email: user.email, name: user.name },
     action: "print.create",
     category: "print",
     targetType: "Print",
@@ -163,9 +161,7 @@ export async function updatePrintStatus(id: string, status: string) {
   });
 
   audit({
-    userId: user.id,
-    userEmail: user.email,
-    userName: user.name,
+    user: { id: user.id, email: user.email, name: user.name },
     action: "print.status_change",
     category: "print",
     targetType: "Print",
@@ -202,9 +198,7 @@ export async function deletePrint(id: string) {
   });
 
   audit({
-    userId: user.id,
-    userEmail: user.email,
-    userName: user.name,
+    user: { id: user.id, email: user.email, name: user.name },
     action: "print.delete",
     category: "print",
     severity: "warning",

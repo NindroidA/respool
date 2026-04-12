@@ -1,77 +1,4 @@
-import { prisma } from "@/lib/prisma";
-import { requireAdmin } from "@/lib/auth-helpers";
-
-async function getAnalytics() {
-  await requireAdmin();
-
-  const sevenDaysAgo = new Date();
-  sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
-  const thirtyDaysAgo = new Date();
-  thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
-
-  const [
-    dailyActiveUsers,
-    userEngagement,
-    spoolsByMaterial,
-    totalFilament,
-    topUsers,
-  ] = await Promise.all([
-    prisma.session.findMany({
-      where: { createdAt: { gte: sevenDaysAgo } },
-      select: { userId: true, createdAt: true },
-    }),
-    prisma.auditLog.groupBy({
-      by: ["category"],
-      where: { createdAt: { gte: thirtyDaysAgo } },
-      _count: true,
-      orderBy: { _count: { category: "desc" } },
-    }),
-    prisma.spool.groupBy({
-      by: ["material"],
-      where: { archived: false },
-      _count: true,
-      orderBy: { _count: { material: "desc" } },
-    }),
-    prisma.spoolLog.aggregate({
-      where: { createdAt: { gte: thirtyDaysAgo } },
-      _sum: { gramsUsed: true },
-    }),
-    prisma.auditLog.groupBy({
-      by: ["userId", "userName"],
-      where: { createdAt: { gte: sevenDaysAgo }, userId: { not: null } },
-      _count: true,
-      orderBy: { _count: { userId: "desc" } },
-      take: 10,
-    }),
-  ]);
-
-  // DAU by day
-  const dauByDay: Record<string, Set<string>> = {};
-  for (const s of dailyActiveUsers) {
-    const day = s.createdAt.toISOString().slice(0, 10);
-    if (!dauByDay[day]) dauByDay[day] = new Set();
-    dauByDay[day].add(s.userId);
-  }
-
-  return {
-    dauByDay: Object.entries(dauByDay)
-      .map(([day, users]) => ({ day: day.slice(5), count: users.size }))
-      .sort((a, b) => a.day.localeCompare(b.day)),
-    userEngagement: userEngagement.map((e) => ({
-      category: e.category,
-      count: e._count,
-    })),
-    spoolsByMaterial: spoolsByMaterial.map((s) => ({
-      material: s.material,
-      count: s._count,
-    })),
-    filamentUsed30d: totalFilament._sum.gramsUsed ?? 0,
-    topUsers: topUsers.map((u) => ({
-      name: u.userName ?? "Unknown",
-      count: u._count,
-    })),
-  };
-}
+import { getAnalytics } from "./actions";
 
 export default async function AnalyticsPage() {
   const data = await getAnalytics();
@@ -96,11 +23,19 @@ export default async function AnalyticsPage() {
               const max = Math.max(...data.dauByDay.map((x) => x.count), 1);
               const heightPct = (d.count / max) * 100;
               return (
-                <div key={d.day} className="flex flex-1 flex-col items-center gap-1">
-                  <span className="font-mono text-2xs text-(--text-muted)">{d.count}</span>
+                <div
+                  key={d.day}
+                  className="flex flex-1 flex-col items-center gap-1"
+                >
+                  <span className="font-mono text-2xs text-(--text-muted)">
+                    {d.count}
+                  </span>
                   <div
                     className="w-full rounded-t bg-jade"
-                    style={{ height: `${Math.max(heightPct * 0.8, 4)}px`, maxHeight: "80px" }}
+                    style={{
+                      height: `${Math.max(heightPct * 0.8, 4)}px`,
+                      maxHeight: "80px",
+                    }}
                   />
                   <span className="text-2xs text-(--text-faint)">{d.day}</span>
                 </div>
@@ -116,12 +51,19 @@ export default async function AnalyticsPage() {
           </p>
           <div className="space-y-2">
             {data.userEngagement.map((e) => {
-              const max = Math.max(...data.userEngagement.map((x) => x.count), 1);
+              const max = Math.max(
+                ...data.userEngagement.map((x) => x.count),
+                1,
+              );
               return (
                 <div key={e.category}>
                   <div className="flex justify-between text-xs">
-                    <span className="capitalize text-foreground">{e.category}</span>
-                    <span className="font-mono text-(--text-muted)">{e.count}</span>
+                    <span className="capitalize text-foreground">
+                      {e.category}
+                    </span>
+                    <span className="font-mono text-(--text-muted)">
+                      {e.count}
+                    </span>
                   </div>
                   <div className="mt-1 h-1.5 w-full overflow-hidden rounded-full bg-(--bg-surface)">
                     <div
@@ -142,7 +84,10 @@ export default async function AnalyticsPage() {
           </p>
           <div className="space-y-2">
             {data.spoolsByMaterial.map((s) => (
-              <div key={s.material} className="flex items-center justify-between text-sm">
+              <div
+                key={s.material}
+                className="flex items-center justify-between text-sm"
+              >
                 <span className="text-foreground">{s.material}</span>
                 <span className="font-mono text-(--text-muted)">{s.count}</span>
               </div>
@@ -157,13 +102,22 @@ export default async function AnalyticsPage() {
           </p>
           <div className="space-y-2">
             {data.topUsers.map((u, i) => (
-              <div key={i} className="flex items-center justify-between text-sm">
-                <span className="text-foreground">{i + 1}. {u.name}</span>
-                <span className="font-mono text-(--text-muted)">{u.count} actions</span>
+              <div
+                key={i}
+                className="flex items-center justify-between text-sm"
+              >
+                <span className="text-foreground">
+                  {i + 1}. {u.name}
+                </span>
+                <span className="font-mono text-(--text-muted)">
+                  {u.count} actions
+                </span>
               </div>
             ))}
             {data.topUsers.length === 0 && (
-              <p className="text-sm text-(--text-muted)">No activity data yet</p>
+              <p className="text-sm text-(--text-muted)">
+                No activity data yet
+              </p>
             )}
           </div>
         </div>

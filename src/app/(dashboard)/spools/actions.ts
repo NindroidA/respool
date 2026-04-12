@@ -127,9 +127,7 @@ export async function createSpool(data: FormData) {
   });
 
   audit({
-    userId: user.id,
-    userEmail: user.email,
-    userName: user.name,
+    user: { id: user.id, email: user.email, name: user.name },
     action: "spool.create",
     category: "spool",
     targetType: "Spool",
@@ -204,9 +202,7 @@ export async function updateSpool(id: string, data: FormData) {
   });
 
   audit({
-    userId: user.id,
-    userEmail: user.email,
-    userName: user.name,
+    user: { id: user.id, email: user.email, name: user.name },
     action: "spool.update",
     category: "spool",
     targetType: "Spool",
@@ -229,9 +225,7 @@ export async function deleteSpool(id: string) {
   await prisma.spool.delete({ where: { id } });
 
   audit({
-    userId: user.id,
-    userEmail: user.email,
-    userName: user.name,
+    user: { id: user.id, email: user.email, name: user.name },
     action: "spool.delete",
     category: "spool",
     severity: "warning",
@@ -288,9 +282,7 @@ export async function duplicateSpool(id: string) {
   });
 
   audit({
-    userId: user.id,
-    userEmail: user.email,
-    userName: user.name,
+    user: { id: user.id, email: user.email, name: user.name },
     action: "spool.duplicate",
     category: "spool",
     targetType: "Spool",
@@ -315,9 +307,7 @@ export async function archiveSpool(id: string) {
   });
 
   audit({
-    userId: user.id,
-    userEmail: user.email,
-    userName: user.name,
+    user: { id: user.id, email: user.email, name: user.name },
     action: "spool.archive",
     category: "spool",
     targetType: "Spool",
@@ -341,9 +331,7 @@ export async function unarchiveSpool(id: string) {
   });
 
   audit({
-    userId: user.id,
-    userEmail: user.email,
-    userName: user.name,
+    user: { id: user.id, email: user.email, name: user.name },
     action: "spool.unarchive",
     category: "spool",
     targetType: "Spool",
@@ -392,9 +380,7 @@ export async function logUsage(
   ]);
 
   audit({
-    userId: user.id,
-    userEmail: user.email,
-    userName: user.name,
+    user: { id: user.id, email: user.email, name: user.name },
     action: "spool.log_usage",
     category: "spool",
     targetType: "Spool",
@@ -442,9 +428,7 @@ export async function deleteLog(logId: string) {
   ]);
 
   audit({
-    userId: user.id,
-    userEmail: user.email,
-    userName: user.name,
+    user: { id: user.id, email: user.email, name: user.name },
     action: "spool.log_delete",
     category: "spool",
     severity: "warning",

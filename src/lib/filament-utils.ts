@@ -2,8 +2,12 @@ import { DEFAULT_FILAMENT_DIAMETER, MATERIAL_DENSITIES } from "@/lib/constants";
 import type { ParsedLayer } from "@/lib/gcode-parser";
 
 /** Convert mm of extruded filament to grams given a material density (g/cm³). */
-export function mmToGrams(mm: number, density: number): number {
-  const area = Math.PI * (DEFAULT_FILAMENT_DIAMETER / 2) ** 2; // mm²
+export function mmToGrams(
+  mm: number,
+  density: number,
+  diameter: number = DEFAULT_FILAMENT_DIAMETER,
+): number {
+  const area = Math.PI * (diameter / 2) ** 2; // mm²
   return (mm * area * density) / 1000;
 }
 

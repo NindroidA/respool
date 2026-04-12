@@ -36,7 +36,7 @@ export async function createFilamentColor(data: FormData) {
   });
 
   audit({
-    userId: admin.id, userEmail: admin.email, userName: admin.name,
+    user: { id: admin.id, email: admin.email, name: admin.name },
     action: "admin.color_created", category: "admin",
     targetType: "FilamentColor", targetId: color.id, targetName: color.name,
   });
@@ -59,7 +59,7 @@ export async function updateFilamentColor(id: string, data: FormData) {
   });
 
   audit({
-    userId: admin.id, userEmail: admin.email, userName: admin.name,
+    user: { id: admin.id, email: admin.email, name: admin.name },
     action: "admin.color_updated", category: "admin",
     targetType: "FilamentColor", targetId: id, targetName: color.name,
   });
@@ -84,7 +84,7 @@ export async function deleteFilamentColor(id: string) {
   await prisma.filamentColor.delete({ where: { id } });
 
   audit({
-    userId: admin.id, userEmail: admin.email, userName: admin.name,
+    user: { id: admin.id, email: admin.email, name: admin.name },
     action: "admin.color_deleted", category: "admin", severity: "warning",
     targetType: "FilamentColor", targetId: id, targetName: color.name,
   });

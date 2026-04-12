@@ -70,9 +70,7 @@ export async function createBox(data: FormData) {
   });
 
   audit({
-    userId: user.id,
-    userEmail: user.email,
-    userName: user.name,
+    user: { id: user.id, email: user.email, name: user.name },
     action: "box.create",
     category: "box",
     targetType: "Box",
@@ -118,9 +116,7 @@ export async function deleteBox(id: string) {
   await prisma.box.delete({ where: { id } });
 
   audit({
-    userId: user.id,
-    userEmail: user.email,
-    userName: user.name,
+    user: { id: user.id, email: user.email, name: user.name },
     action: "box.delete",
     category: "box",
     severity: "warning",
