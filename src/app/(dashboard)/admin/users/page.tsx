@@ -1,8 +1,8 @@
-import { getEnhancedUsers } from "./actions";
-import { EnhancedUserTable } from "@/components/admin/enhanced-user-table";
+import { getAdminUsers } from "./actions";
+import { AdminUserTable } from "@/components/admin/admin-user-table";
 
 export default async function AdminUsersPage() {
-  const data = await getEnhancedUsers();
+  const data = await getAdminUsers();
 
   return (
     <div className="space-y-6">
@@ -13,7 +13,7 @@ export default async function AdminUsersPage() {
         </p>
       </div>
 
-      <EnhancedUserTable initialData={data} />
+      <AdminUserTable initialData={data} />
     </div>
   );
 }

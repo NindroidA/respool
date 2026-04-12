@@ -4,7 +4,7 @@ import { prisma } from "@/lib/prisma";
 import { requireAdmin } from "@/lib/auth-helpers";
 import type { Prisma } from "@prisma/client";
 
-export async function getEnhancedUsers(filters?: {
+export async function getAdminUsers(filters?: {
   search?: string;
   role?: string;
   status?: string;

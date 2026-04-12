@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { StyledSelect } from "@/components/ui/styled-select";
 import { toggleUserRole, toggleUserBan, deleteUser } from "@/app/(dashboard)/admin/actions";
-import { getEnhancedUsers } from "@/app/(dashboard)/admin/users/actions";
+import { getAdminUsers } from "@/app/(dashboard)/admin/users/actions";
 import { toast } from "sonner";
 import {
   Search,
@@ -33,7 +33,7 @@ interface UserRow {
   sessionCount: number;
 }
 
-interface EnhancedUserTableProps {
+interface AdminUserTableProps {
   initialData: {
     users: UserRow[];
     total: number;
@@ -43,7 +43,7 @@ interface EnhancedUserTableProps {
   };
 }
 
-export function EnhancedUserTable({ initialData }: EnhancedUserTableProps) {
+export function AdminUserTable({ initialData }: AdminUserTableProps) {
   const router = useRouter();
   const [data, setData] = useState(initialData);
   const [search, setSearch] = useState("");
@@ -54,7 +54,7 @@ export function EnhancedUserTable({ initialData }: EnhancedUserTableProps) {
   async function fetchUsers(page = 1) {
     setLoading(true);
     try {
-      const result = await getEnhancedUsers({
+      const result = await getAdminUsers({
         search: search || undefined,
         role: roleFilter,
         status: statusFilter,

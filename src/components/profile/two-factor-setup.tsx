@@ -23,8 +23,6 @@ import {
   Loader2,
   Copy,
   RefreshCw,
-  Eye,
-  EyeOff,
 } from "lucide-react";
 
 interface TwoFactorSetupProps {
@@ -471,9 +469,7 @@ function TwoFactorManage() {
                   disabled={loading}
                   className="w-full"
                 >
-                  {loading && (
-                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                  )}
+                  {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
                   Generate New Codes
                 </Button>
               </div>
