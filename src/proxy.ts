@@ -14,7 +14,10 @@ const PROTECTED_PREFIXES = [
 ];
 
 export function proxy(request: NextRequest) {
-  const sessionCookie = request.cookies.get("better-auth.session_token");
+  const sessionCookie =
+    request.cookies.get("better-auth.session_token") ||
+    request.cookies.get("Secure-better-auth.session_token") ||
+    request.cookies.get("__Secure-better-auth.session_token");
   const { pathname } = request.nextUrl;
 
   const isAuthPage = AUTH_PAGES.some((p) => pathname.startsWith(p));
