@@ -40,7 +40,7 @@ export function LoginForm() {
     }
 
     setLoading(true);
-    const { error } = await signIn.email({
+    const { data: signInData, error } = await signIn.email({
       email: data.email,
       password: data.password,
     });
@@ -48,6 +48,13 @@ export function LoginForm() {
     if (error) {
       toast.error(error.message || "Invalid email or password");
       setLoading(false);
+      return;
+    }
+
+    // If 2FA is required, the twoFactorClient plugin handles the redirect
+    // via window.location.href — only push to dashboard if we actually got a session
+    if (signInData && "twoFactorRedirect" in signInData) {
+      // Plugin will handle redirect, just keep loading state
       return;
     }
 
@@ -97,9 +104,7 @@ export function LoginForm() {
             autoComplete="current-password"
           />
           {errors.password && (
-            <p className="text-xs text-(--color-error)">
-              {errors.password}
-            </p>
+            <p className="text-xs text-(--color-error)">{errors.password}</p>
           )}
         </div>
 

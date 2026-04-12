@@ -18,6 +18,7 @@ import {
   Mail,
   Save,
 } from "lucide-react";
+import { TwoFactorSetup } from "./two-factor-setup";
 
 interface ProfileClientProps {
   user: {
@@ -252,33 +253,7 @@ export function ProfileClient({ user, stats, providers }: ProfileClientProps) {
           Security
         </h3>
 
-        <div className="flex items-center justify-between rounded-lg border border-border bg-(--bg-card) p-3">
-          <div className="flex items-center gap-3">
-            <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-(--accent-jade-muted) text-jade">
-              <Shield className="h-4 w-4" />
-            </div>
-            <div>
-              <p className="text-sm font-medium text-foreground">
-                Two-Factor Authentication
-              </p>
-              <p className="text-xs text-muted-foreground">
-                {user.twoFactorEnabled
-                  ? "Enabled — your account is secured with TOTP"
-                  : "Not enabled — add an extra layer of security"}
-              </p>
-            </div>
-          </div>
-          <Badge
-            variant="outline"
-            className={
-              user.twoFactorEnabled
-                ? "border-primary/30 bg-primary/10 text-xs text-primary"
-                : "border-amber-500/30 bg-amber-500/10 text-xs text-amber-400"
-            }
-          >
-            {user.twoFactorEnabled ? "Active" : "Inactive"}
-          </Badge>
-        </div>
+        <TwoFactorSetup enabled={user.twoFactorEnabled} />
       </div>
     </div>
   );

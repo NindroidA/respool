@@ -11,6 +11,9 @@ const PROTECTED_PREFIXES = [
   "/settings",
   "/admin",
   "/profile",
+  "/presets",
+  "/labels",
+  "/reorder",
 ];
 
 export function proxy(request: NextRequest) {
