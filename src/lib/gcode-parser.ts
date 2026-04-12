@@ -1,4 +1,16 @@
 import { DEFAULT_FILAMENT_DIAMETER } from "@/lib/constants";
+import {
+  type SlicerProfile,
+  type DetectionResult,
+  type GcodeMetadata,
+  detectSlicer,
+  extractMetadata,
+  convertToGrams,
+  validateGcodeFile,
+  SLICER_PROFILES,
+} from "./slicer-profiles";
+
+// ─── Types ──────────────────────────────────────────────
 
 export interface ParsedLayer {
   layer: number;
@@ -12,18 +24,97 @@ export interface ParseResult {
   totalLayers: number;
   headerGrams: number | null;
   parsedGrams: number;
+  metadata: GcodeMetadata;
+  warnings: string[];
 }
+
+export interface ParseError {
+  type: "validation" | "parse" | "no_layers" | "no_extrusion";
+  message: string;
+}
+
+// ─── Main Parser ────────────────────────────────────────
 
 /**
  * Parse G-code text and extract per-layer filament extrusion data.
  * Runs entirely client-side — no G-code data is sent to the server.
  *
- * Currently optimized for AnkerMake / EufyMake Studio G-code.
- * See docs/GCODE_PARSER.md for critical parsing rules.
+ * Supports auto-detection of slicer type, or accepts a manual override.
+ * See docs/GCODE_PARSER.md for parsing rules per slicer.
  */
-export function parseGcode(text: string, density: number): ParseResult {
+export function parseGcode(
+  text: string,
+  density: number,
+  options?: {
+    slicerOverride?: SlicerProfile;
+    diameter?: number;
+    fileName?: string;
+  },
+): ParseResult | ParseError {
+  const fileName = options?.fileName ?? "unknown.gcode";
+  const diameter = options?.diameter ?? DEFAULT_FILAMENT_DIAMETER;
+  const warnings: string[] = [];
+
+  // Validate file content
+  const validation = validateGcodeFile(text, fileName);
+  if (!validation.valid) {
+    return { type: "validation", message: validation.error! };
+  }
+  if (validation.warning) {
+    warnings.push(validation.warning);
+  }
+
+  // Detect slicer or use override
+  const metadata = extractMetadata(text);
+  const profile = options?.slicerOverride ?? metadata.slicer.profile;
+
+  // Use detected density/diameter if available and not overridden
+  const effectiveDensity = metadata.density ?? density;
+  const effectiveDiameter = metadata.diameter ?? diameter;
+
+  if (metadata.density && metadata.density !== density) {
+    warnings.push(
+      `Density auto-detected from G-code: ${metadata.density} g/cm³ (${metadata.material ?? "unknown material"})`,
+    );
+  }
+
+  if (metadata.isMultiMaterial) {
+    warnings.push(
+      `Multi-material print detected (${metadata.toolChangeCount} tool changes). If using AMS, filament swaps are handled automatically.`,
+    );
+  }
+
+  if (metadata.slicer.confidence === "low") {
+    warnings.push(
+      "Could not identify the slicer. Using generic parsing — results may be less accurate. Consider selecting your slicer manually.",
+    );
+  }
+
+  // Parse layers
+  const result = parseWithProfile(
+    text,
+    profile,
+    effectiveDensity,
+    effectiveDiameter,
+    warnings,
+  );
+
+  if ("type" in result) return result;
+
+  return { ...result, metadata, warnings };
+}
+
+// ─── Profile-Based Parsing ──────────────────────────────
+
+function parseWithProfile(
+  text: string,
+  profile: SlicerProfile,
+  density: number,
+  diameter: number,
+  warnings: string[],
+): Omit<ParseResult, "metadata" | "warnings"> | ParseError {
   const lines = text.split("\n");
-  const filamentArea = Math.PI * (DEFAULT_FILAMENT_DIAMETER / 2) ** 2;
+  const filamentArea = Math.PI * (diameter / 2) ** 2;
 
   const rawLayers: { layer: number; extrusion: number }[] = [];
   let currentLayer = -1;
@@ -34,19 +125,28 @@ export function parseGcode(text: string, density: number): ParseResult {
 
   for (const rawLine of lines) {
     const line = rawLine.trim();
+    if (!line) continue;
 
-    // Read slicer-reported weight from header comments
-    const weightMatch =
-      line.match(/^;Filament weight:\s*([\d.]+)\s*g/i) ||
-      line.match(/^;\s*filament\s*used\s*\[g\]\s*=\s*([\d.]+)/i);
-    if (weightMatch) headerGrams = parseFloat(weightMatch[1]);
+    // Extract weight from header comments using profile patterns
+    if (headerGrams === null) {
+      for (const wp of profile.weightPatterns) {
+        const match = line.match(wp.pattern);
+        if (match) {
+          const value = parseFloat(match[1]);
+          if (!isNaN(value) && value > 0) {
+            headerGrams = convertToGrams(value, wp.unit, density, diameter);
+            break;
+          }
+        }
+      }
+    }
 
-    // Extrusion mode — word boundary for trailing comments (M83 ; comment)
+    // Extrusion mode — universal across all slicers
     if (/^M83\b/.test(line)) isRelative = true;
     if (/^M82\b/.test(line)) isRelative = false;
 
-    // Layer detection — ONLY ;LAYER:N (skip ;LAYER_CHANGE, Z-hops, arcs)
-    const isLayerChange = /^;LAYER:\d+/i.test(line);
+    // Layer detection — profile-specific pattern
+    const isLayerChange = profile.layerMarker.test(line);
 
     if (isLayerChange && currentLayer >= 0) {
       rawLayers.push({ layer: currentLayer, extrusion: layerExtrusion });
@@ -77,7 +177,16 @@ export function parseGcode(text: string, density: number): ParseResult {
     rawLayers.push({ layer: currentLayer, extrusion: layerExtrusion });
   }
 
-  // Convert mm of extrusion to grams: volume = length × area (mm³), ÷1000 for cm³, × density
+  // Error: no layers found
+  if (rawLayers.length === 0) {
+    return {
+      type: "no_layers",
+      message:
+        "No layer markers found in the G-code. This may not be a sliced file, or the slicer format isn't recognized. Try selecting your slicer manually.",
+    };
+  }
+
+  // Convert mm of extrusion to grams
   const gramsLayers = rawLayers.map((l) => ({
     ...l,
     grams: (l.extrusion * filamentArea * density) / 1000,
@@ -85,8 +194,28 @@ export function parseGcode(text: string, density: number): ParseResult {
 
   const parsedGrams = gramsLayers.reduce((sum, l) => sum + l.grams, 0);
 
+  // Error: no extrusion
+  if (parsedGrams <= 0) {
+    return {
+      type: "no_extrusion",
+      message:
+        "Layers were detected but no filament extrusion found. The file may be a travel-only test or uses an unsupported extrusion format.",
+    };
+  }
+
   // Use slicer header weight as truth if available, scale proportionally
   const totalGrams = headerGrams ?? parsedGrams;
+
+  // Warn if there's a large mismatch between parsed and header
+  if (headerGrams !== null && parsedGrams > 0) {
+    const mismatchPct = Math.abs(headerGrams - parsedGrams) / headerGrams;
+    if (mismatchPct > 0.05) {
+      warnings.push(
+        `Parsed weight (${parsedGrams.toFixed(1)}g) differs from slicer-reported weight (${headerGrams.toFixed(1)}g) by ${(mismatchPct * 100).toFixed(0)}%. Using slicer value as authoritative.`,
+      );
+    }
+  }
+
   const scale = parsedGrams > 0 ? totalGrams / parsedGrams : 1;
 
   let cum = 0;
@@ -104,3 +233,16 @@ export function parseGcode(text: string, density: number): ParseResult {
     parsedGrams: Math.round(parsedGrams * 10) / 10,
   };
 }
+
+// ─── Re-exports for Convenience ─────────────────────────
+
+export {
+  detectSlicer,
+  extractMetadata,
+  validateGcodeFile,
+  SLICER_PROFILES,
+  type SlicerProfile,
+  type SlicerId,
+  type DetectionResult,
+  type GcodeMetadata,
+} from "./slicer-profiles";
