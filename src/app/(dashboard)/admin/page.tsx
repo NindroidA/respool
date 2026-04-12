@@ -1,22 +1,11 @@
-import { headers } from "next/headers";
-import { redirect } from "next/navigation";
-import { getSession } from "@/lib/auth";
-import { prisma } from "@/lib/prisma";
 import { getUsers } from "./actions";
 import { UserTable } from "@/components/admin/user-table";
+import { headers } from "next/headers";
+import { getSession } from "@/lib/auth";
 import { Shield, Users } from "lucide-react";
 
-export default async function AdminPage() {
+export default async function AdminOverviewPage() {
   const session = await getSession(await headers());
-  if (!session?.user) redirect("/login");
-
-  const user = await prisma.user.findUnique({
-    where: { id: session.user.id },
-    select: { role: true },
-  });
-
-  if (user?.role !== "admin") redirect("/dashboard");
-
   const users = await getUsers();
 
   return (
@@ -29,7 +18,9 @@ export default async function AdminPage() {
           <h1 className="bg-linear-to-r from-emerald-400 to-teal-400 bg-clip-text text-2xl font-bold tracking-tight text-transparent">
             Admin Panel
           </h1>
-          <p className="text-sm text-muted-foreground">User management</p>
+          <p className="text-sm text-muted-foreground">
+            System overview and user management
+          </p>
         </div>
       </div>
 
@@ -55,7 +46,7 @@ export default async function AdminPage() {
 
       {/* User table */}
       <div className="rounded-xl border border-border bg-card">
-        <UserTable users={users} currentUserId={session.user.id} />
+        <UserTable users={users} currentUserId={session!.user.id} />
       </div>
     </div>
   );
