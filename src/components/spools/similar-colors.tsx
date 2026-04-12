@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { colorDistance } from "@/lib/filament-colors";
+import { colorDistance } from "@/lib/filament-utils";
 import { ProgressBar } from "@/components/shared/progress-bar";
 
 interface SpoolSummary {

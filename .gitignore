@@ -49,5 +49,8 @@ pgdata/
 .desloppify/
 .worktrees/
 
+# ─── Planning Docs ──────────────────
+.plans/
+
 # ─── Vercel (not used, but just in case) ──────────
 .vercel

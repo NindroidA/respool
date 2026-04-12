@@ -38,7 +38,12 @@ export const FILAMENT_COLORS: FilamentColorEntry[] = [
   { name: "Olive", hex: "#808000", category: "solid", sortOrder: 28 },
   { name: "Maroon", hex: "#800000", category: "solid", sortOrder: 29 },
   { name: "Skin Tone Light", hex: "#FDDBB4", category: "solid", sortOrder: 30 },
-  { name: "Skin Tone Medium", hex: "#C68642", category: "solid", sortOrder: 31 },
+  {
+    name: "Skin Tone Medium",
+    hex: "#C68642",
+    category: "solid",
+    sortOrder: 31,
+  },
 
   // ─── Silk / Shimmer Colors ─────────────────────────────
   { name: "Silk Gold", hex: "#D4AF37", category: "silk", sortOrder: 1 },
@@ -51,7 +56,13 @@ export const FILAMENT_COLORS: FilamentColorEntry[] = [
   { name: "Silk Ruby", hex: "#9B111E", category: "silk", sortOrder: 8 },
   { name: "Silk Champagne", hex: "#F7E7CE", category: "silk", sortOrder: 9 },
   { name: "Silk Amethyst", hex: "#9966CC", category: "silk", sortOrder: 10 },
-  { name: "Silk Rainbow", hex: "#FF6B6B", hexSecondary: "#4ECDC4", category: "silk", sortOrder: 11 },
+  {
+    name: "Silk Rainbow",
+    hex: "#FF6B6B",
+    hexSecondary: "#4ECDC4",
+    category: "silk",
+    sortOrder: 11,
+  },
 
   // ─── Matte Colors ──────────────────────────────────────
   { name: "Matte Black", hex: "#212121", category: "matte", sortOrder: 1 },
@@ -64,22 +75,95 @@ export const FILAMENT_COLORS: FilamentColorEntry[] = [
   { name: "Matte Olive", hex: "#6B6B2E", category: "matte", sortOrder: 8 },
 
   // ─── Dual-Color / Multi-Color ──────────────────────────
-  { name: "Red-Gold", hex: "#E53935", hexSecondary: "#D4AF37", category: "dual", sortOrder: 1 },
-  { name: "Blue-Green", hex: "#1565C0", hexSecondary: "#43A047", category: "dual", sortOrder: 2 },
-  { name: "Purple-Pink", hex: "#7B1FA2", hexSecondary: "#EC407A", category: "dual", sortOrder: 3 },
-  { name: "Black-Red", hex: "#1A1A1A", hexSecondary: "#E53935", category: "dual", sortOrder: 4 },
-  { name: "Gold-Green", hex: "#D4AF37", hexSecondary: "#43A047", category: "dual", sortOrder: 5 },
-  { name: "Blue-Purple", hex: "#1565C0", hexSecondary: "#7B1FA2", category: "dual", sortOrder: 6 },
-  { name: "Sunset", hex: "#FF6D00", hexSecondary: "#E53935", category: "dual", sortOrder: 7 },
-  { name: "Ocean", hex: "#00BCD4", hexSecondary: "#1565C0", category: "dual", sortOrder: 8 },
+  {
+    name: "Red-Gold",
+    hex: "#E53935",
+    hexSecondary: "#D4AF37",
+    category: "dual",
+    sortOrder: 1,
+  },
+  {
+    name: "Blue-Green",
+    hex: "#1565C0",
+    hexSecondary: "#43A047",
+    category: "dual",
+    sortOrder: 2,
+  },
+  {
+    name: "Purple-Pink",
+    hex: "#7B1FA2",
+    hexSecondary: "#EC407A",
+    category: "dual",
+    sortOrder: 3,
+  },
+  {
+    name: "Black-Red",
+    hex: "#1A1A1A",
+    hexSecondary: "#E53935",
+    category: "dual",
+    sortOrder: 4,
+  },
+  {
+    name: "Gold-Green",
+    hex: "#D4AF37",
+    hexSecondary: "#43A047",
+    category: "dual",
+    sortOrder: 5,
+  },
+  {
+    name: "Blue-Purple",
+    hex: "#1565C0",
+    hexSecondary: "#7B1FA2",
+    category: "dual",
+    sortOrder: 6,
+  },
+  {
+    name: "Sunset",
+    hex: "#FF6D00",
+    hexSecondary: "#E53935",
+    category: "dual",
+    sortOrder: 7,
+  },
+  {
+    name: "Ocean",
+    hex: "#00BCD4",
+    hexSecondary: "#1565C0",
+    category: "dual",
+    sortOrder: 8,
+  },
 
   // ─── Translucent Colors ────────────────────────────────
   { name: "Clear", hex: "#E8E8E8", category: "translucent", sortOrder: 1 },
-  { name: "Translucent Blue", hex: "#64B5F6", category: "translucent", sortOrder: 2 },
-  { name: "Translucent Green", hex: "#81C784", category: "translucent", sortOrder: 3 },
-  { name: "Translucent Orange", hex: "#FFB74D", category: "translucent", sortOrder: 4 },
-  { name: "Translucent Red", hex: "#EF9A9A", category: "translucent", sortOrder: 5 },
-  { name: "Translucent Purple", hex: "#CE93D8", category: "translucent", sortOrder: 6 },
+  {
+    name: "Translucent Blue",
+    hex: "#64B5F6",
+    category: "translucent",
+    sortOrder: 2,
+  },
+  {
+    name: "Translucent Green",
+    hex: "#81C784",
+    category: "translucent",
+    sortOrder: 3,
+  },
+  {
+    name: "Translucent Orange",
+    hex: "#FFB74D",
+    category: "translucent",
+    sortOrder: 4,
+  },
+  {
+    name: "Translucent Red",
+    hex: "#EF9A9A",
+    category: "translucent",
+    sortOrder: 5,
+  },
+  {
+    name: "Translucent Purple",
+    hex: "#CE93D8",
+    category: "translucent",
+    sortOrder: 6,
+  },
 
   // ─── Glow-in-the-Dark ──────────────────────────────────
   { name: "Glow Green", hex: "#76FF03", category: "glow", sortOrder: 1 },
@@ -87,33 +171,35 @@ export const FILAMENT_COLORS: FilamentColorEntry[] = [
   { name: "Glow Aqua", hex: "#64FFDA", category: "glow", sortOrder: 3 },
 
   // ─── Marble / Granite ──────────────────────────────────
-  { name: "Marble White/Gray", hex: "#F5F5F5", hexSecondary: "#9E9E9E", category: "marble", sortOrder: 1 },
-  { name: "Marble Black/White", hex: "#212121", hexSecondary: "#E0E0E0", category: "marble", sortOrder: 2 },
-  { name: "Marble Rainbow", hex: "#FF6B6B", hexSecondary: "#4ECDC4", category: "marble", sortOrder: 3 },
-  { name: "Wood Grain", hex: "#8D6E4C", hexSecondary: "#D2B48C", category: "marble", sortOrder: 4 },
+  {
+    name: "Marble White/Gray",
+    hex: "#F5F5F5",
+    hexSecondary: "#9E9E9E",
+    category: "marble",
+    sortOrder: 1,
+  },
+  {
+    name: "Marble Black/White",
+    hex: "#212121",
+    hexSecondary: "#E0E0E0",
+    category: "marble",
+    sortOrder: 2,
+  },
+  {
+    name: "Marble Rainbow",
+    hex: "#FF6B6B",
+    hexSecondary: "#4ECDC4",
+    category: "marble",
+    sortOrder: 3,
+  },
+  {
+    name: "Wood Grain",
+    hex: "#8D6E4C",
+    hexSecondary: "#D2B48C",
+    category: "marble",
+    sortOrder: 4,
+  },
 ];
 
-/**
- * Calculate perceptual color distance between two hex colors.
- * Uses weighted Euclidean RGB distance (human eyes are more sensitive to green).
- */
-export function colorDistance(hex1: string, hex2: string): number {
-  const r1 = parseInt(hex1.slice(1, 3), 16);
-  const g1 = parseInt(hex1.slice(3, 5), 16);
-  const b1 = parseInt(hex1.slice(5, 7), 16);
-  const r2 = parseInt(hex2.slice(1, 3), 16);
-  const g2 = parseInt(hex2.slice(3, 5), 16);
-  const b2 = parseInt(hex2.slice(5, 7), 16);
-
-  const rMean = (r1 + r2) / 2;
-  const dr = r1 - r2;
-  const dg = g1 - g2;
-  const db = b1 - b2;
-
-  // Weighted distance — accounts for human color perception
-  return Math.sqrt(
-    (2 + rMean / 256) * dr * dr +
-    4 * dg * dg +
-    (2 + (255 - rMean) / 256) * db * db
-  );
-}
+// colorDistance was removed — use the CIE76 Delta-E version from filament-utils.ts
+// which is more perceptually accurate.

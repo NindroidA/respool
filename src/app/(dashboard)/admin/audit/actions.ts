@@ -2,6 +2,7 @@
 
 import { prisma } from "@/lib/prisma";
 import { requireAdmin } from "@/lib/auth-helpers";
+import type { Prisma } from "@prisma/client";
 
 export async function getAuditLogs(filters?: {
   search?: string;
@@ -16,7 +17,7 @@ export async function getAuditLogs(filters?: {
   const perPage = filters?.perPage ?? 50;
   const skip = (page - 1) * perPage;
 
-  const where: Record<string, unknown> = {};
+  const where: Prisma.AuditLogWhereInput = {};
 
   if (filters?.category && filters.category !== "all")
     where.category = filters.category;

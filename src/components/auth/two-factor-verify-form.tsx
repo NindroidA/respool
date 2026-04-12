@@ -90,8 +90,8 @@ export function TwoFactorVerifyForm() {
 
       toast.success("Verified successfully");
       router.push("/dashboard");
-    } catch {
-      toast.error("Verification failed");
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : "Verification failed");
       setLoading(false);
     }
   }

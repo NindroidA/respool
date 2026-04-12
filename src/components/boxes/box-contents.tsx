@@ -43,8 +43,8 @@ export function BoxContents({ spools, currentBoxId, allBoxes }: BoxContentsProps
     try {
       await moveSpoolToBox(spoolId, targetBoxId);
       toast.success(targetBoxId ? "Spool moved" : "Spool removed from box");
-    } catch {
-      toast.error("Failed to move spool");
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : "Failed to move spool");
     }
   }
 

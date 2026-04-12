@@ -43,8 +43,8 @@ export function UsageTimeline({ logs }: UsageTimelineProps) {
     try {
       await deleteLog(logId);
       toast.success("Log entry deleted");
-    } catch {
-      toast.error("Failed to delete log entry");
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : "Failed to delete log entry");
     } finally {
       setDeleting(null);
     }

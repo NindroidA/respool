@@ -24,8 +24,8 @@ export function BoxDetailActions({ boxId }: BoxDetailActionsProps) {
       await deleteBox(boxId);
       toast.success("Box deleted");
       router.push("/boxes");
-    } catch {
-      toast.error("Failed to delete box");
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : "Failed to delete box");
     }
   }
 

@@ -18,11 +18,11 @@ export const registerSchema = z
   });
 
 // Coerce empty strings to undefined so optional number fields don't fail
-const optionalPositiveNumber = z.preprocess(
+export const optionalPositiveNumber = z.preprocess(
   (val) => (val === "" || val === undefined || val === null ? undefined : val),
   z.coerce.number().positive().optional(),
 );
-const optionalPositiveInt = z.preprocess(
+export const optionalPositiveInt = z.preprocess(
   (val) => (val === "" || val === undefined || val === null ? undefined : val),
   z.coerce.number().int().positive().optional(),
 );

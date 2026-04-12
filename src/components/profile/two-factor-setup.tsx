@@ -93,8 +93,8 @@ function TwoFactorEnable() {
         setBackupCodes(data.backupCodes);
         setStep("qr");
       }
-    } catch {
-      toast.error("Failed to enable 2FA");
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : "Failed to enable 2FA");
     } finally {
       setLoading(false);
     }
@@ -117,8 +117,8 @@ function TwoFactorEnable() {
       setStep("done");
       toast.success("Two-factor authentication enabled!");
       router.refresh();
-    } catch {
-      toast.error("Verification failed");
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : "Verification failed");
     } finally {
       setLoading(false);
     }
@@ -369,8 +369,8 @@ function TwoFactorManage() {
       setDisableOpen(false);
       setPassword("");
       router.refresh();
-    } catch {
-      toast.error("Failed to disable 2FA");
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : "Failed to disable 2FA");
     } finally {
       setLoading(false);
     }
@@ -394,8 +394,8 @@ function TwoFactorManage() {
         setShowCodes(true);
         toast.success("New backup codes generated");
       }
-    } catch {
-      toast.error("Failed to regenerate");
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : "Failed to regenerate");
     } finally {
       setLoading(false);
     }

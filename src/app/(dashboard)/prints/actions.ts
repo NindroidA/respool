@@ -5,6 +5,7 @@ import { prisma } from "@/lib/prisma";
 import { requireUser } from "@/lib/auth-helpers";
 import { createPrintSchema } from "@/lib/validators";
 import { audit } from "@/lib/audit";
+import type { Prisma } from "@prisma/client";
 
 export async function getPrints(filters?: {
   search?: string;
@@ -12,7 +13,7 @@ export async function getPrints(filters?: {
 }) {
   const user = await requireUser();
 
-  const where: Record<string, unknown> = { userId: user.id };
+  const where: Prisma.PrintWhereInput = { userId: user.id };
 
   if (filters?.search) {
     where.OR = [

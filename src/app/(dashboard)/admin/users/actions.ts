@@ -2,6 +2,7 @@
 
 import { prisma } from "@/lib/prisma";
 import { requireAdmin } from "@/lib/auth-helpers";
+import type { Prisma } from "@prisma/client";
 
 export async function getEnhancedUsers(filters?: {
   search?: string;
@@ -16,7 +17,7 @@ export async function getEnhancedUsers(filters?: {
   const perPage = filters?.perPage ?? 20;
   const skip = (page - 1) * perPage;
 
-  const where: Record<string, unknown> = {};
+  const where: Prisma.UserWhereInput = {};
 
   if (filters?.search) {
     where.OR = [

@@ -29,8 +29,8 @@ export function SpoolDetailActions({ spoolId, archived }: SpoolDetailActionsProp
         await archiveSpool(spoolId);
         toast.success("Spool archived");
       }
-    } catch {
-      toast.error("Failed to update spool");
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : "Failed to update spool");
     }
   }
 
@@ -40,8 +40,8 @@ export function SpoolDetailActions({ spoolId, archived }: SpoolDetailActionsProp
       await deleteSpool(spoolId);
       toast.success("Spool deleted");
       router.push("/spools");
-    } catch {
-      toast.error("Failed to delete spool");
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : "Failed to delete spool");
     }
   }
 

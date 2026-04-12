@@ -27,8 +27,8 @@ export function AddSpoolToBox({ boxId, unboxedSpools }: AddSpoolToBoxProps) {
     try {
       await moveSpoolToBox(spoolId, boxId);
       toast.success("Spool added to box");
-    } catch {
-      toast.error("Failed to add spool");
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : "Failed to add spool");
     }
   }
 

@@ -6,6 +6,9 @@ import { getSession } from "./auth";
 export async function requireUser() {
   const session = await getSession(await headers());
   if (!session?.user) throw new Error("Unauthorized");
+  if ((session.user as { banned?: boolean }).banned) {
+    throw new Error("Account is banned");
+  }
   return session.user;
 }
 

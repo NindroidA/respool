@@ -43,8 +43,8 @@ export function BoxForm({ box, trigger }: BoxFormProps) {
       }
       setOpen(false);
       router.refresh();
-    } catch {
-      toast.error("Something went wrong");
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : "Something went wrong");
     } finally {
       setLoading(false);
     }

@@ -3,23 +3,20 @@
 import { revalidatePath } from "next/cache";
 import { prisma } from "@/lib/prisma";
 import { requireUser } from "@/lib/auth-helpers";
+import { optionalPositiveNumber, optionalPositiveInt } from "@/lib/validators";
 import { z } from "zod/v4";
-
-const optionalPositiveNumber = z.preprocess(
-  (val) => (val === "" || val === undefined || val === null ? undefined : val),
-  z.coerce.number().positive().optional(),
-);
-const optionalPositiveInt = z.preprocess(
-  (val) => (val === "" || val === undefined || val === null ? undefined : val),
-  z.coerce.number().int().positive().optional(),
-);
+import type { Prisma } from "@prisma/client";
 
 const presetSchema = z.object({
   name: z.string().min(1, "Name is required").max(200),
   brand: z.string().min(1, "Brand is required").max(200),
   material: z.string().min(1, "Material is required"),
   color: z.string().regex(/^#[0-9A-Fa-f]{6}$/, "Invalid hex color"),
-  colorSecondary: z.string().regex(/^#[0-9A-Fa-f]{6}$/).optional().nullable(),
+  colorSecondary: z
+    .string()
+    .regex(/^#[0-9A-Fa-f]{6}$/)
+    .optional()
+    .nullable(),
   filamentColorId: z.string().optional().nullable(),
   startingMass: z.coerce.number().int().min(1, "Must be at least 1g"),
   diameter: optionalPositiveNumber,
@@ -37,7 +34,7 @@ export async function getPresets(filters?: {
 
   const source = filters?.source ?? "all";
 
-  const where: Record<string, unknown> =
+  const where: Prisma.FilamentPresetWhereInput =
     source === "community"
       ? { userId: null, source: "community" }
       : source === "user"

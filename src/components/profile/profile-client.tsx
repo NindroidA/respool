@@ -100,8 +100,8 @@ export function ProfileClient({ user, stats, providers }: ProfileClientProps) {
     try {
       await updateProfile({ name });
       toast.success("Profile updated");
-    } catch {
-      toast.error("Failed to update profile");
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : "Failed to update profile");
     } finally {
       setSaving(false);
     }

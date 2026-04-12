@@ -43,8 +43,8 @@ export function SettingsForm({ settings }: SettingsFormProps) {
           parseInt(formData.get("lowFilamentThreshold") as string) || 100,
       });
       toast.success("Settings saved");
-    } catch {
-      toast.error("Failed to save settings");
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : "Failed to save settings");
     } finally {
       setLoading(false);
     }
