@@ -60,7 +60,7 @@ jobs:
         run: docker-compose up -d
 
       - name: Run migrations
-        run: docker-compose exec -T app sh -c "node node_modules/prisma/build/index.js migrate deploy"
+        run: docker-compose exec -T -u root app sh -c "node node_modules/prisma/build/index.js migrate deploy"
 
       - name: Health check
         id: healthcheck
