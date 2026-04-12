@@ -33,7 +33,8 @@ describe("audit", () => {
     });
 
     // Give fire-and-forget time to complete
-    await new Promise((r) => setTimeout(r, 10));
+    // Flush microtask queue so the fire-and-forget promise resolves
+    await new Promise((r) => queueMicrotask(() => r(undefined)));
 
     expect(prisma.auditLog.create).toHaveBeenCalledWith(
       expect.objectContaining({
@@ -55,7 +56,8 @@ describe("audit", () => {
       category: "box",
     });
 
-    await new Promise((r) => setTimeout(r, 10));
+    // Flush microtask queue so the fire-and-forget promise resolves
+    await new Promise((r) => queueMicrotask(() => r(undefined)));
 
     expect(prisma.auditLog.create).toHaveBeenCalledWith(
       expect.objectContaining({
@@ -73,7 +75,8 @@ describe("audit", () => {
       severity: "critical",
     });
 
-    await new Promise((r) => setTimeout(r, 10));
+    // Flush microtask queue so the fire-and-forget promise resolves
+    await new Promise((r) => queueMicrotask(() => r(undefined)));
 
     expect(prisma.auditLog.create).toHaveBeenCalledWith(
       expect.objectContaining({
@@ -94,7 +97,8 @@ describe("audit", () => {
       targetName: "White PLA",
     });
 
-    await new Promise((r) => setTimeout(r, 10));
+    // Flush microtask queue so the fire-and-forget promise resolves
+    await new Promise((r) => queueMicrotask(() => r(undefined)));
 
     expect(prisma.auditLog.create).toHaveBeenCalledWith(
       expect.objectContaining({
@@ -113,7 +117,8 @@ describe("audit", () => {
       category: "system",
     });
 
-    await new Promise((r) => setTimeout(r, 10));
+    // Flush microtask queue so the fire-and-forget promise resolves
+    await new Promise((r) => queueMicrotask(() => r(undefined)));
 
     expect(prisma.auditLog.create).toHaveBeenCalledWith(
       expect.objectContaining({

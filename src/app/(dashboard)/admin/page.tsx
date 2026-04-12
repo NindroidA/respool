@@ -1,4 +1,4 @@
-import { getAdminStats } from "./overview-actions";
+import { getAdminStats } from "./actions";
 import {
   Shield,
   Users,
@@ -75,10 +75,7 @@ export default async function AdminOverviewPage() {
           ) : (
             <div className="space-y-2">
               {stats.recentActivity.map((event) => (
-                <div
-                  key={event.id}
-                  className="flex items-start gap-3 text-sm"
-                >
+                <div key={event.id} className="flex items-start gap-3 text-sm">
                   <span
                     className={`mt-0.5 text-xs ${severityColor[event.severity] ?? ""}`}
                   >
