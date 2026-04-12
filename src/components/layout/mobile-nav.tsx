@@ -50,7 +50,7 @@ export function MobileNav({ user }: MobileNavProps) {
   return (
     <>
       {/* Top bar */}
-      <header className="fixed inset-x-0 top-0 z-30 flex h-14 items-center justify-between border-b border-border bg-[var(--bg-raised)] px-4 lg:hidden">
+      <header className="fixed inset-x-0 top-0 z-30 flex h-14 items-center justify-between border-b border-border bg-(--bg-raised) px-4 lg:hidden">
         <Link href="/dashboard" className="flex items-center gap-2">
           <Image src="/logo.png" alt="Respool" width={24} height={24} />
           <span className="text-base font-semibold text-foreground">
@@ -63,7 +63,7 @@ export function MobileNav({ user }: MobileNavProps) {
           </button>
           <Avatar className="h-7 w-7">
             <AvatarImage src={user.image ?? undefined} alt={user.name} />
-            <AvatarFallback className="bg-[var(--accent-jade-muted)] text-[10px] text-jade">
+            <AvatarFallback className="bg-(--accent-jade-muted) text-2xs text-jade">
               {initials}
             </AvatarFallback>
           </Avatar>
@@ -71,7 +71,7 @@ export function MobileNav({ user }: MobileNavProps) {
       </header>
 
       {/* Bottom tab nav */}
-      <nav className="fixed inset-x-0 bottom-0 z-30 flex h-16 items-center justify-around border-t border-border bg-[var(--bg-raised)] lg:hidden">
+      <nav className="fixed inset-x-0 bottom-0 z-30 flex h-16 items-center justify-around border-t border-border bg-(--bg-raised) lg:hidden">
         {bottomTabs.map((item) => (
           <Link
             key={item.href}
@@ -82,7 +82,7 @@ export function MobileNav({ user }: MobileNavProps) {
             )}
           >
             <item.icon className="h-5 w-5" />
-            <span className="text-[10px] font-medium">{item.label}</span>
+            <span className="text-2xs font-medium">{item.label}</span>
           </Link>
         ))}
 
@@ -90,9 +90,9 @@ export function MobileNav({ user }: MobileNavProps) {
         <Sheet>
           <SheetTrigger className="flex flex-col items-center gap-1 px-3 py-1 text-muted-foreground">
             <MoreHorizontal className="h-5 w-5" />
-            <span className="text-[10px] font-medium">More</span>
+            <span className="text-2xs font-medium">More</span>
           </SheetTrigger>
-          <SheetContent side="bottom" className="bg-[var(--bg-raised)]">
+          <SheetContent side="bottom" className="bg-(--bg-raised)">
             <SheetHeader>
               <SheetTitle className="text-left text-foreground">
                 More
@@ -106,8 +106,8 @@ export function MobileNav({ user }: MobileNavProps) {
                   className={cn(
                     "flex items-center gap-3 rounded-lg px-3 py-3 text-sm font-medium transition-colors",
                     isActive(item.href)
-                      ? "bg-[var(--accent-jade-muted)] text-neon"
-                      : "text-muted-foreground hover:bg-[var(--bg-card-hover)]",
+                      ? "bg-(--accent-jade-muted) text-neon"
+                      : "text-muted-foreground hover:bg-(--bg-card-hover)",
                   )}
                 >
                   <item.icon className="h-5 w-5" />
@@ -124,8 +124,8 @@ export function MobileNav({ user }: MobileNavProps) {
                       className={cn(
                         "flex items-center gap-3 rounded-lg px-3 py-3 text-sm font-medium transition-colors",
                         isActive(item.href)
-                          ? "bg-[var(--accent-jade-muted)] text-neon"
-                          : "text-muted-foreground hover:bg-[var(--bg-card-hover)]",
+                          ? "bg-(--accent-jade-muted) text-neon"
+                          : "text-muted-foreground hover:bg-(--bg-card-hover)",
                       )}
                     >
                       <item.icon className="h-5 w-5" />
@@ -137,7 +137,7 @@ export function MobileNav({ user }: MobileNavProps) {
               <Separator className="my-2" />
               <button
                 onClick={handleSignOut}
-                className="flex w-full items-center gap-3 rounded-lg px-3 py-3 text-sm font-medium text-muted-foreground transition-colors hover:bg-[var(--bg-card-hover)]"
+                className="flex w-full items-center gap-3 rounded-lg px-3 py-3 text-sm font-medium text-muted-foreground transition-colors hover:bg-(--bg-card-hover)"
               >
                 <LogOut className="h-5 w-5" />
                 Sign out

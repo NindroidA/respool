@@ -23,7 +23,7 @@ export function LowFilamentAlerts({ spools }: LowFilamentAlertsProps) {
     <div>
       <div className="mb-3 flex items-center gap-2">
         <AlertTriangle className="h-4 w-4 text-(--color-warning)" />
-        <p className="text-[10px] font-bold uppercase tracking-[0.12em] text-(--text-faint)">
+        <p className="text-2xs font-bold uppercase tracking-widest text-(--text-faint)">
           Low Filament
         </p>
       </div>

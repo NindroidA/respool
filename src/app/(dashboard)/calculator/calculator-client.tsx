@@ -498,7 +498,7 @@ export function CalculatorClient({ inventorySpools }: Props) {
                         className="inline-block size-3 rounded-full ring-1 ring-white/10"
                         style={{ backgroundColor: sp.color }}
                       />
-                      <span className="text-[10px] font-medium text-muted-foreground">
+                      <span className="text-2xs font-medium text-muted-foreground">
                         {ordinal(i + 1)}
                       </span>
                     </div>
@@ -521,7 +521,7 @@ export function CalculatorClient({ inventorySpools }: Props) {
                   <div className="mt-1 flex items-center gap-2 text-xs text-muted-foreground">
                     <Badge
                       variant="outline"
-                      className="h-5 border-transparent px-1.5 text-[10px]"
+                      className="h-5 border-transparent px-1.5 text-2xs"
                       style={{
                         backgroundColor: `color-mix(in srgb, ${sp.color} 15%, transparent)`,
                         color: sp.color,

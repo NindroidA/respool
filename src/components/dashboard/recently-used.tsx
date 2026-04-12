@@ -20,7 +20,7 @@ export function RecentlyUsed({ spools }: RecentlyUsedProps) {
 
   return (
     <div>
-      <p className="mb-3 text-[10px] font-bold uppercase tracking-[0.12em] text-(--text-faint)">
+      <p className="mb-3 text-2xs font-bold uppercase tracking-widest text-(--text-faint)">
         Recently Used
       </p>
       <div className="flex gap-3 overflow-x-auto pb-2">

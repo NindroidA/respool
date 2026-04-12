@@ -38,9 +38,9 @@ function formatDate(date: Date | null): string {
 
 function ProviderIcon({ provider }: { provider: string }) {
   if (provider === "github")
-    return <span className="text-[10px] font-bold">GH</span>;
+    return <span className="text-2xs font-bold">GH</span>;
   if (provider === "google")
-    return <span className="text-[10px] font-bold">G</span>;
+    return <span className="text-2xs font-bold">G</span>;
   return <Mail className="h-3.5 w-3.5" />;
 }
 
@@ -73,7 +73,7 @@ export function UserTable({ users, currentUserId }: UserTableProps) {
                 <div className="flex items-center gap-3">
                   <Avatar className="h-8 w-8">
                     <AvatarImage src={user.image ?? undefined} />
-                    <AvatarFallback className="bg-(--accent-jade-muted) text-[10px] text-jade">
+                    <AvatarFallback className="bg-(--accent-jade-muted) text-2xs text-jade">
                       {initials}
                     </AvatarFallback>
                   </Avatar>

@@ -114,7 +114,7 @@ export function ColorPicker({
                       "group relative flex h-10 w-full items-center justify-center rounded-lg border-2 transition-all",
                       filamentColorId === color.id
                         ? "border-jade shadow-[0_0_8px_rgba(16,185,129,0.3)]"
-                        : "border-transparent hover:border-[var(--border-default)]",
+                        : "border-transparent hover:border-(--border-default)",
                     )}
                     style={{ backgroundColor: color.hex }}
                     title={color.name}

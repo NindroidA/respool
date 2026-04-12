@@ -51,12 +51,12 @@ export function BoxCard({ box, index = 0 }: BoxCardProps) {
             {box.spools.slice(0, 12).map((spool) => (
               <div
                 key={spool.id}
-                className="h-3 w-3 shrink-0 rounded-full border border-[var(--border-subtle)]"
+                className="h-3 w-3 shrink-0 rounded-full border border-(--border-subtle)"
                 style={{ backgroundColor: spool.color }}
               />
             ))}
             {box.spools.length > 12 && (
-              <span className="text-[10px] text-muted-foreground">
+              <span className="text-2xs text-muted-foreground">
                 +{box.spools.length - 12}
               </span>
             )}

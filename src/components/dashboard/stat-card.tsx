@@ -70,7 +70,7 @@ export function StatCard({
             {displayed.toLocaleString()}
             {suffix}
           </p>
-          <p className="text-[10px] text-(--text-faint)">{label}</p>
+          <p className="text-2xs text-(--text-faint)">{label}</p>
         </div>
       </div>
     </motion.div>

@@ -73,7 +73,7 @@ export function SpoolSelector({ spools, value, onChange }: SpoolSelectorProps) {
             className="flex items-center gap-3 rounded-lg border border-border bg-card p-3"
           >
             <div
-              className="h-5 w-5 shrink-0 rounded-full border border-[var(--border-subtle)]"
+              className="h-5 w-5 shrink-0 rounded-full border border-(--border-subtle)"
               style={{ backgroundColor: spool.color }}
             />
             <div className="min-w-0 flex-1">
@@ -83,7 +83,7 @@ export function SpoolSelector({ spools, value, onChange }: SpoolSelectorProps) {
               <div className="flex items-center gap-2">
                 <Badge
                   variant="outline"
-                  className="border-transparent text-[10px] font-semibold"
+                  className="border-transparent text-2xs font-semibold"
                   style={{
                     backgroundColor: `${materialColor.primary}18`,
                     color: materialColor.light,
@@ -91,7 +91,7 @@ export function SpoolSelector({ spools, value, onChange }: SpoolSelectorProps) {
                 >
                   {spool.material}
                 </Badge>
-                <span className="font-mono text-[10px] text-muted-foreground">
+                <span className="font-mono text-2xs text-muted-foreground">
                   {spool.currentMass}g remaining
                 </span>
               </div>

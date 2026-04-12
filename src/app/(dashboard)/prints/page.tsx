@@ -67,7 +67,7 @@ export default async function PrintsPage({ searchParams }: Props) {
           <p className="font-mono text-xl font-bold text-primary">
             {stats.totalPrints}
           </p>
-          <p className="text-[10px] font-medium uppercase tracking-wider text-(--text-faint)">
+          <p className="text-2xs font-medium uppercase tracking-wider text-(--text-faint)">
             total prints
           </p>
         </div>
@@ -75,7 +75,7 @@ export default async function PrintsPage({ searchParams }: Props) {
           <p className="font-mono text-xl font-bold text-teal-400">
             {stats.totalGrams}g
           </p>
-          <p className="text-[10px] font-medium uppercase tracking-wider text-(--text-faint)">
+          <p className="text-2xs font-medium uppercase tracking-wider text-(--text-faint)">
             filament used
           </p>
         </div>
@@ -83,7 +83,7 @@ export default async function PrintsPage({ searchParams }: Props) {
           <p className="font-mono text-xl font-bold text-amber-400">
             {stats.totalMinutes > 0 ? formatTime(stats.totalMinutes) : "—"}
           </p>
-          <p className="text-[10px] font-medium uppercase tracking-wider text-(--text-faint)">
+          <p className="text-2xs font-medium uppercase tracking-wider text-(--text-faint)">
             print time
           </p>
         </div>

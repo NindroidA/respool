@@ -32,7 +32,7 @@ export function ColorSwatch({
       className={cn(
         SIZES[size],
         RADIUS[size],
-        "shrink-0 border border-[var(--border-subtle)]",
+        "shrink-0 border border-(--border-subtle)",
         className
       )}
       style={{

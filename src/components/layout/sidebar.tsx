@@ -38,7 +38,7 @@ export function Sidebar({ user }: SidebarProps) {
       <nav className="flex-1 space-y-6 overflow-y-auto px-3 py-2">
         {/* Main */}
         <div>
-          <p className="mb-2 px-3 text-[10px] font-bold uppercase tracking-[0.12em] text-[var(--text-faint)]">
+          <p className="mb-2 px-3 text-2xs font-bold uppercase tracking-widest text-(--text-faint)">
             Main
           </p>
           <div className="space-y-1">
@@ -49,8 +49,8 @@ export function Sidebar({ user }: SidebarProps) {
                 className={cn(
                   "flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium transition-colors",
                   isActive(item.href)
-                    ? "border-l-2 border-neon bg-[var(--accent-jade-muted)] text-neon"
-                    : "text-muted-foreground hover:bg-[var(--bg-card-hover)] hover:text-foreground",
+                    ? "border-l-2 border-neon bg-(--accent-jade-muted) text-neon"
+                    : "text-muted-foreground hover:bg-(--bg-card-hover) hover:text-foreground",
                 )}
               >
                 <item.icon className="h-4 w-4" />
@@ -62,7 +62,7 @@ export function Sidebar({ user }: SidebarProps) {
 
         {/* Tools */}
         <div>
-          <p className="mb-2 px-3 text-[10px] font-bold uppercase tracking-[0.12em] text-[var(--text-faint)]">
+          <p className="mb-2 px-3 text-2xs font-bold uppercase tracking-widest text-(--text-faint)">
             Tools
           </p>
           <div className="space-y-1">
@@ -73,8 +73,8 @@ export function Sidebar({ user }: SidebarProps) {
                 className={cn(
                   "flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium transition-colors",
                   isActive(item.href)
-                    ? "border-l-2 border-neon bg-[var(--accent-jade-muted)] text-neon"
-                    : "text-muted-foreground hover:bg-[var(--bg-card-hover)] hover:text-foreground",
+                    ? "border-l-2 border-neon bg-(--accent-jade-muted) text-neon"
+                    : "text-muted-foreground hover:bg-(--bg-card-hover) hover:text-foreground",
                 )}
               >
                 <item.icon className="h-4 w-4" />
@@ -91,8 +91,8 @@ export function Sidebar({ user }: SidebarProps) {
                   className={cn(
                     "flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium transition-colors",
                     isActive(item.href)
-                      ? "border-l-2 border-neon bg-[var(--accent-jade-muted)] text-neon"
-                      : "text-muted-foreground hover:bg-[var(--bg-card-hover)] hover:text-foreground",
+                      ? "border-l-2 border-neon bg-(--accent-jade-muted) text-neon"
+                      : "text-muted-foreground hover:bg-(--bg-card-hover) hover:text-foreground",
                   )}
                 >
                   <item.icon className="h-4 w-4" />

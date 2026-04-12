@@ -168,7 +168,7 @@ export default async function DashboardPage() {
       {/* Charts */}
       <div className="grid grid-cols-1 gap-3 lg:grid-cols-2">
         <div className="rounded-xl border border-primary/15 bg-linear-to-br from-primary/5 to-transparent p-4 ring-1 ring-primary/5">
-          <p className="mb-2 text-[10px] font-bold uppercase tracking-[0.12em] text-(--text-faint)">
+          <p className="mb-2 text-2xs font-bold uppercase tracking-widest text-(--text-faint)">
             Filament by Material
           </p>
           <div className="h-50">
@@ -185,7 +185,7 @@ export default async function DashboardPage() {
                       MATERIAL_COLORS[d.material]?.primary ?? "#71717a",
                   }}
                 />
-                <span className="text-[10px] text-muted-foreground">
+                <span className="text-2xs text-muted-foreground">
                   {d.material} ({d.grams}g)
                 </span>
               </div>
@@ -193,7 +193,7 @@ export default async function DashboardPage() {
           </div>
         </div>
         <div className="rounded-xl border border-teal-500/15 bg-linear-to-br from-teal-500/5 to-transparent p-4 ring-1 ring-teal-500/5">
-          <p className="mb-2 text-[10px] font-bold uppercase tracking-[0.12em] text-(--text-faint)">
+          <p className="mb-2 text-2xs font-bold uppercase tracking-widest text-(--text-faint)">
             Usage (Last 30 Days)
           </p>
           <div className="h-50">
@@ -207,7 +207,7 @@ export default async function DashboardPage() {
 
       {/* Activity Feed */}
       <div className="rounded-xl border border-border bg-card p-4 ring-1 ring-primary/5">
-        <p className="mb-3 text-[10px] font-bold uppercase tracking-[0.12em] text-(--text-faint)">
+        <p className="mb-3 text-2xs font-bold uppercase tracking-widest text-(--text-faint)">
           Recent Activity
         </p>
         <ActivityFeed items={data.activities} />

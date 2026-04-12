@@ -67,7 +67,7 @@ export function LoginForm() {
 
       <div className="relative">
         <Separator />
-        <span className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 bg-[var(--bg-card)] px-3 text-xs text-muted-foreground">
+        <span className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 bg-(--bg-card) px-3 text-xs text-muted-foreground">
           or
         </span>
       </div>
@@ -83,7 +83,7 @@ export function LoginForm() {
             autoComplete="email"
           />
           {errors.email && (
-            <p className="text-xs text-[var(--color-error)]">{errors.email}</p>
+            <p className="text-xs text-(--color-error)">{errors.email}</p>
           )}
         </div>
 
@@ -97,7 +97,7 @@ export function LoginForm() {
             autoComplete="current-password"
           />
           {errors.password && (
-            <p className="text-xs text-[var(--color-error)]">
+            <p className="text-xs text-(--color-error)">
               {errors.password}
             </p>
           )}

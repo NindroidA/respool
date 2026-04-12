@@ -79,7 +79,7 @@ export function PrintCard({ print, index = 0 }: PrintCardProps) {
       animate={{ opacity: 1, y: 0 }}
       transition={{ delay: index * 0.05, duration: 0.25 }}
     >
-      <div className="group flex items-start gap-4 rounded-xl border border-border bg-card p-4 transition-colors hover:bg-[var(--bg-card-hover)]">
+      <div className="group flex items-start gap-4 rounded-xl border border-border bg-card p-4 transition-colors hover:bg-(--bg-card-hover)">
         <div className="min-w-0 flex-1">
           {/* Name + status */}
           <div className="flex items-center gap-2">
@@ -88,7 +88,7 @@ export function PrintCard({ print, index = 0 }: PrintCardProps) {
             </p>
             <Badge
               variant="outline"
-              className="shrink-0 border-transparent text-[10px] font-semibold"
+              className="shrink-0 border-transparent text-2xs font-semibold"
               style={{
                 backgroundColor: statusStyle.bg,
                 color: statusStyle.text,
@@ -104,7 +104,7 @@ export function PrintCard({ print, index = 0 }: PrintCardProps) {
               {print.filaments.map((f) => (
                 <div
                   key={f.spool.id}
-                  className="h-3.5 w-3.5 rounded-full border border-[var(--border-subtle)]"
+                  className="h-3.5 w-3.5 rounded-full border border-(--border-subtle)"
                   style={{ backgroundColor: f.spool.color }}
                   title={`${f.spool.name}: ${f.gramsUsed}g`}
                 />
@@ -118,7 +118,7 @@ export function PrintCard({ print, index = 0 }: PrintCardProps) {
                 {formatTime(print.printTimeMinutes)}
               </span>
             )}
-            <span className="font-mono text-[10px] text-[var(--text-faint)]">
+            <span className="font-mono text-2xs text-(--text-faint)">
               {formatDate(print.createdAt)}
             </span>
           </div>

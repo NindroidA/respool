@@ -43,13 +43,13 @@ export default async function LandingPage() {
         <div className="text-center">
           {/* Animated gradient border card */}
           <div
-            className="mx-auto mb-8 inline-block rounded-2xl p-[2px]"
+            className="mx-auto mb-8 inline-block rounded-2xl p-0.5"
             style={{
               background:
                 "conic-gradient(from 0deg, #6ee7b7, #34d399, #10b981, #4ade80, #2dd4bf, #6ee7b7)",
             }}
           >
-            <div className="rounded-2xl bg-[var(--bg-surface)] px-8 py-6">
+            <div className="rounded-2xl bg-(--bg-surface) px-8 py-6">
               <Image src="/logo.png" alt="Respool" width={64} height={64} />
             </div>
           </div>
@@ -69,13 +69,13 @@ export default async function LandingPage() {
           <div className="mt-8 flex items-center justify-center gap-4">
             <Link
               href="/register"
-              className="inline-flex items-center rounded-xl bg-gradient-to-r from-[var(--accent-jade)] to-[var(--accent-neon)] px-6 py-3 text-sm font-semibold text-[var(--bg-base)] transition-shadow hover:shadow-[0_0_20px_rgba(16,185,129,0.3)]"
+              className="inline-flex items-center rounded-xl bg-linear-to-r from-jade to-neon px-6 py-3 text-sm font-semibold text-(--bg-base) transition-shadow hover:shadow-[0_0_20px_rgba(16,185,129,0.3)]"
             >
               Get Started
             </Link>
             <Link
               href="/login"
-              className="inline-flex items-center rounded-xl border border-border px-6 py-3 text-sm font-medium text-muted-foreground transition-colors hover:bg-[var(--bg-card)] hover:text-foreground"
+              className="inline-flex items-center rounded-xl border border-border px-6 py-3 text-sm font-medium text-muted-foreground transition-colors hover:bg-(--bg-card) hover:text-foreground"
             >
               Sign In
             </Link>
@@ -89,7 +89,7 @@ export default async function LandingPage() {
               key={feature.title}
               className="glass-card p-6 transition-shadow hover:glow-jade"
             >
-              <div className="mb-3 flex h-10 w-10 items-center justify-center rounded-lg bg-[var(--accent-jade-muted)]">
+              <div className="mb-3 flex h-10 w-10 items-center justify-center rounded-lg bg-(--accent-jade-muted)">
                 <feature.icon className="h-5 w-5 text-jade" />
               </div>
               <h3 className="text-sm font-semibold text-foreground">
@@ -104,7 +104,7 @@ export default async function LandingPage() {
 
         {/* Footer */}
         <div className="mt-20 text-center">
-          <p className="text-xs text-[var(--text-faint)]">
+          <p className="text-xs text-(--text-faint)">
             Open source · MIT License · Built for makers
           </p>
         </div>

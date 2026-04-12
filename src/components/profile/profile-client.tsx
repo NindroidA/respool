@@ -152,7 +152,7 @@ export function ProfileClient({ user, stats, providers }: ProfileClientProps) {
           <p className="font-mono text-xl font-bold text-primary">
             {stats.totalSpools}
           </p>
-          <p className="text-[10px] font-medium uppercase tracking-wider text-(--text-faint)">
+          <p className="text-2xs font-medium uppercase tracking-wider text-(--text-faint)">
             spools
           </p>
         </div>
@@ -161,7 +161,7 @@ export function ProfileClient({ user, stats, providers }: ProfileClientProps) {
           <p className="font-mono text-xl font-bold text-teal-400">
             {stats.totalPrints}
           </p>
-          <p className="text-[10px] font-medium uppercase tracking-wider text-(--text-faint)">
+          <p className="text-2xs font-medium uppercase tracking-wider text-(--text-faint)">
             prints
           </p>
         </div>
@@ -170,7 +170,7 @@ export function ProfileClient({ user, stats, providers }: ProfileClientProps) {
           <p className="font-mono text-xl font-bold text-amber-400">
             {stats.totalFilamentUsed}g
           </p>
-          <p className="text-[10px] font-medium uppercase tracking-wider text-(--text-faint)">
+          <p className="text-2xs font-medium uppercase tracking-wider text-(--text-faint)">
             filament used
           </p>
         </div>
@@ -195,7 +195,7 @@ export function ProfileClient({ user, stats, providers }: ProfileClientProps) {
           <div className="space-y-1.5">
             <Label>Email</Label>
             <Input value={user.email} disabled />
-            <p className="text-[10px] text-(--text-faint)">
+            <p className="text-2xs text-(--text-faint)">
               Email cannot be changed
             </p>
           </div>

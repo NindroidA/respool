@@ -73,7 +73,7 @@ export function RegisterForm() {
 
       <div className="relative">
         <Separator />
-        <span className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 bg-[var(--bg-card)] px-3 text-xs text-muted-foreground">
+        <span className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 bg-(--bg-card) px-3 text-xs text-muted-foreground">
           or
         </span>
       </div>
@@ -89,7 +89,7 @@ export function RegisterForm() {
             autoComplete="name"
           />
           {errors.name && (
-            <p className="text-xs text-[var(--color-error)]">{errors.name}</p>
+            <p className="text-xs text-(--color-error)">{errors.name}</p>
           )}
         </div>
 
@@ -103,7 +103,7 @@ export function RegisterForm() {
             autoComplete="email"
           />
           {errors.email && (
-            <p className="text-xs text-[var(--color-error)]">{errors.email}</p>
+            <p className="text-xs text-(--color-error)">{errors.email}</p>
           )}
         </div>
 
@@ -117,7 +117,7 @@ export function RegisterForm() {
             autoComplete="new-password"
           />
           {errors.password && (
-            <p className="text-xs text-[var(--color-error)]">
+            <p className="text-xs text-(--color-error)">
               {errors.password}
             </p>
           )}
@@ -133,7 +133,7 @@ export function RegisterForm() {
             autoComplete="new-password"
           />
           {errors.confirmPassword && (
-            <p className="text-xs text-[var(--color-error)]">
+            <p className="text-xs text-(--color-error)">
               {errors.confirmPassword}
             </p>
           )}

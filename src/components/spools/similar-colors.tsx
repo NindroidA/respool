@@ -32,7 +32,7 @@ export function SimilarColors({
 
   return (
     <div>
-      <p className="mb-3 text-[10px] font-bold uppercase tracking-[0.12em] text-[var(--text-faint)]">
+      <p className="mb-3 text-2xs font-bold uppercase tracking-widest text-(--text-faint)">
         Similar Colors
       </p>
       <div className="grid grid-cols-2 gap-2 sm:grid-cols-4">
@@ -40,18 +40,18 @@ export function SimilarColors({
           <Link
             key={spool.id}
             href={`/spools/${spool.id}`}
-            className="rounded-lg border border-border bg-card p-3 transition-colors hover:bg-[var(--bg-card-hover)]"
+            className="rounded-lg border border-border bg-card p-3 transition-colors hover:bg-(--bg-card-hover)"
           >
             <div className="flex items-center gap-2">
               <div
-                className="h-4 w-4 shrink-0 rounded-full border border-[var(--border-subtle)]"
+                className="h-4 w-4 shrink-0 rounded-full border border-(--border-subtle)"
                 style={{ backgroundColor: spool.color }}
               />
               <p className="truncate text-xs font-medium text-foreground">
                 {spool.name}
               </p>
             </div>
-            <p className="mt-1.5 font-mono text-[10px] text-muted-foreground">
+            <p className="mt-1.5 font-mono text-2xs text-muted-foreground">
               {spool.currentMass}g remaining
             </p>
             <ProgressBar

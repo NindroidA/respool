@@ -52,7 +52,7 @@ export default async function BoxesPage() {
       {/* Unboxed spools */}
       {unboxedSpools.length > 0 && (
         <div>
-          <p className="mb-3 text-[10px] font-bold uppercase tracking-[0.12em] text-(--text-faint)">
+          <p className="mb-3 text-2xs font-bold uppercase tracking-widest text-(--text-faint)">
             Unboxed Spools
           </p>
           <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">

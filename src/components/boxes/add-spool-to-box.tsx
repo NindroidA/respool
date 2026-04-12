@@ -44,7 +44,7 @@ export function AddSpoolToBox({ boxId, unboxedSpools }: AddSpoolToBoxProps) {
         {unboxedSpools.map((spool) => (
           <DropdownMenuItem key={spool.id} onClick={() => handleAdd(spool.id)}>
             <div
-              className="mr-2 h-3 w-3 shrink-0 rounded-full border border-[var(--border-subtle)]"
+              className="mr-2 h-3 w-3 shrink-0 rounded-full border border-(--border-subtle)"
               style={{ backgroundColor: spool.color }}
             />
             <span className="truncate">{spool.name}</span>

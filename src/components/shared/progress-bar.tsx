@@ -22,8 +22,8 @@ export function ProgressBar({
   return (
     <div
       className={cn(
-        "h-1.5 w-full overflow-hidden rounded-full bg-[var(--border-default)]",
-        className
+        "h-1.5 w-full overflow-hidden rounded-full bg-(--border-default)",
+        className,
       )}
     >
       <motion.div

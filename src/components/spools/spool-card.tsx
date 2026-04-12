@@ -152,7 +152,7 @@ export function SpoolCard({ spool, index = 0 }: SpoolCardProps) {
             {spool.material}
           </Badge>
           {spool.box && (
-            <span className="text-[10px] text-muted-foreground">
+            <span className="text-2xs text-muted-foreground">
               {spool.box.name}
             </span>
           )}
@@ -164,7 +164,7 @@ export function SpoolCard({ spool, index = 0 }: SpoolCardProps) {
             <span className="font-mono text-xs font-semibold text-neon">
               {spool.currentMass}g
             </span>
-            <span className="font-mono text-[10px] text-muted-foreground">
+            <span className="font-mono text-2xs text-muted-foreground">
               / {spool.startingMass}g
             </span>
           </div>

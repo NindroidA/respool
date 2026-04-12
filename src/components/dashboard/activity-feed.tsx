@@ -66,7 +66,7 @@ export function ActivityFeed({ items }: ActivityFeedProps) {
             <p className="min-w-0 flex-1 truncate text-sm text-foreground">
               {item.description}
             </p>
-            <span className="shrink-0 font-mono text-[10px] text-(--text-faint)">
+            <span className="shrink-0 font-mono text-2xs text-(--text-faint)">
               {formatRelativeTime(item.timestamp)}
             </span>
           </div>

@@ -144,7 +144,7 @@ export default async function SpoolDetailPage({ params }: Props) {
           <p className="font-mono text-lg font-bold text-teal-400">
             {totalUsed}g
           </p>
-          <p className="text-[10px] font-medium uppercase tracking-wider text-(--text-faint)">
+          <p className="text-2xs font-medium uppercase tracking-wider text-(--text-faint)">
             total used
           </p>
         </div>
@@ -152,7 +152,7 @@ export default async function SpoolDetailPage({ params }: Props) {
           <p className="font-mono text-lg font-bold text-primary">
             {timesUsed}
           </p>
-          <p className="text-[10px] font-medium uppercase tracking-wider text-(--text-faint)">
+          <p className="text-2xs font-medium uppercase tracking-wider text-(--text-faint)">
             times used
           </p>
         </div>
@@ -160,7 +160,7 @@ export default async function SpoolDetailPage({ params }: Props) {
           <p className="font-mono text-lg font-bold text-amber-400">
             {spool.cost ? `$${(spool.cost / 100).toFixed(2)}` : "—"}
           </p>
-          <p className="text-[10px] font-medium uppercase tracking-wider text-(--text-faint)">
+          <p className="text-2xs font-medium uppercase tracking-wider text-(--text-faint)">
             cost
           </p>
         </div>
@@ -168,7 +168,7 @@ export default async function SpoolDetailPage({ params }: Props) {
           <p className="font-mono text-lg font-bold text-violet-400">
             {costPerGram ? `$${costPerGram}` : "—"}
           </p>
-          <p className="text-[10px] font-medium uppercase tracking-wider text-(--text-faint)">
+          <p className="text-2xs font-medium uppercase tracking-wider text-(--text-faint)">
             per gram
           </p>
         </div>
@@ -177,7 +177,7 @@ export default async function SpoolDetailPage({ params }: Props) {
       {/* Details */}
       {(spool.diameter || spool.printingTemperature || spool.note) && (
         <div className="rounded-xl border border-border bg-card p-5 ring-1 ring-primary/5">
-          <p className="mb-3 text-[10px] font-bold uppercase tracking-[0.12em] text-(--text-faint)">
+          <p className="mb-3 text-2xs font-bold uppercase tracking-widest text-(--text-faint)">
             Details
           </p>
           <div className="grid grid-cols-2 gap-4 text-sm sm:grid-cols-3">
@@ -220,7 +220,7 @@ export default async function SpoolDetailPage({ params }: Props) {
 
       {/* Usage Timeline */}
       <div>
-        <p className="mb-3 text-[10px] font-bold uppercase tracking-[0.12em] text-(--text-faint)">
+        <p className="mb-3 text-2xs font-bold uppercase tracking-widest text-(--text-faint)">
           Usage History
         </p>
         <UsageTimeline logs={spool.logs} />

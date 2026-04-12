@@ -78,7 +78,7 @@ export function UsageTimeline({ logs }: UsageTimelineProps) {
                   -{log.gramsUsed}g
                 </span>
               </p>
-              <span className="shrink-0 font-mono text-[10px] text-(--text-faint)">
+              <span className="shrink-0 font-mono text-2xs text-(--text-faint)">
                 {formatRelativeTime(log.createdAt)}
               </span>
             </div>

@@ -94,7 +94,7 @@ export function SettingsForm({ settings }: SettingsFormProps) {
               defaultValue={settings.lowFilamentThreshold}
               className="font-mono"
             />
-            <p className="text-[10px] text-(--text-faint)">
+            <p className="text-2xs text-(--text-faint)">
               Spools below this amount trigger warnings
             </p>
           </div>

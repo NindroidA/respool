@@ -67,14 +67,14 @@ export function BoxContents({ spools, currentBoxId, allBoxes }: BoxContentsProps
         return (
           <div
             key={spool.id}
-            className="group flex items-start gap-3 rounded-lg border border-border bg-card p-3 transition-colors hover:bg-[var(--bg-card-hover)]"
+            className="group flex items-start gap-3 rounded-lg border border-border bg-card p-3 transition-colors hover:bg-(--bg-card-hover)"
           >
             <Link
               href={`/spools/${spool.id}`}
               className="flex min-w-0 flex-1 items-start gap-3"
             >
               <div
-                className="mt-0.5 h-4 w-4 shrink-0 rounded-full border border-[var(--border-subtle)]"
+                className="mt-0.5 h-4 w-4 shrink-0 rounded-full border border-(--border-subtle)"
                 style={{ backgroundColor: spool.color }}
               />
               <div className="min-w-0 flex-1">
@@ -84,7 +84,7 @@ export function BoxContents({ spools, currentBoxId, allBoxes }: BoxContentsProps
                 <div className="mt-1 flex items-center gap-2">
                   <Badge
                     variant="outline"
-                    className="border-transparent text-[10px] font-semibold"
+                    className="border-transparent text-2xs font-semibold"
                     style={{
                       backgroundColor: `${materialColor.primary}18`,
                       color: materialColor.light,
@@ -92,7 +92,7 @@ export function BoxContents({ spools, currentBoxId, allBoxes }: BoxContentsProps
                   >
                     {spool.material}
                   </Badge>
-                  <span className="font-mono text-[10px] text-muted-foreground">
+                  <span className="font-mono text-2xs text-muted-foreground">
                     {spool.currentMass}g
                   </span>
                 </div>
