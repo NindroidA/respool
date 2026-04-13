@@ -20,7 +20,7 @@ export function Footer() {
             <p className="text-sm leading-relaxed text-(--text-muted)">
               3D printing filament management.
             </p>
-            <p className="text-sm font-medium">
+            <p className="text-sm font-medium text-(--text-muted)">
               A{" "}
               <a
                 href={NINDROID_URL}
@@ -30,7 +30,7 @@ export function Footer() {
               >
                 Nindroid Systems
               </a>{" "}
-              <span className="text-(--text-muted)">Project</span>
+              Project
             </p>
             <div className="flex items-center gap-4 pt-1">
               <a

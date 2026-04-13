@@ -2,6 +2,22 @@
 
 All notable changes to Respool are documented here.
 
+## [1.2.2] — 2026-04-12
+
+### Added
+- **Delete account** — danger zone on profile page with typed confirmation ("delete my account"), cascading deletion, last-admin protection
+- **Landing page demo** — interactive preview section showing spool cards, dashboard stats, and calculator example so visitors can see the app before signing up
+
+### Changed
+- Landing page — removed "Self-Hosted" feature card, updated tagline to "3D printing filament management", added 2 new feature cards (QR Labels, Smart Reorder), final CTA section
+- Footer — fixed "A" color mismatch (now consistent muted text)
+- Button component — added `cursor-pointer` globally, `cursor-not-allowed` on disabled
+
+### Fixed
+- MFA Enable button missing pointer cursor on hover
+
+---
+
 ## [1.2.1] — 2026-04-12
 
 ### Changed

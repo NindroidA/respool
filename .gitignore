@@ -52,5 +52,9 @@ pgdata/
 # ─── Planning Docs ──────────────────
 .plans/
 
+# ─── Private / Testing ─────────────
+private/
+.playwright-mcp/
+
 # ─── Vercel (not used, but just in case) ──────────
 .vercel

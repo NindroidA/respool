@@ -3,6 +3,7 @@
 import { revalidatePath } from "next/cache";
 import { prisma } from "@/lib/prisma";
 import { requireUser } from "@/lib/auth-helpers";
+import { audit } from "@/lib/audit";
 import { z } from "zod/v4";
 
 const updateProfileSchema = z.object({
@@ -60,4 +61,30 @@ export async function updateProfile(data: { name: string }) {
 
   revalidatePath("/profile");
   revalidatePath("/dashboard");
+}
+
+export async function deleteAccount() {
+  const user = await requireUser();
+
+  // Prevent admin from deleting themselves if they're the last admin
+  const adminCount = await prisma.user.count({ where: { role: "admin" } });
+  const isAdmin = (user as { role?: string }).role === "admin";
+  if (isAdmin && adminCount <= 1) {
+    throw new Error(
+      "Cannot delete the last admin account. Promote another user first.",
+    );
+  }
+
+  await audit({
+    user: { id: user.id, email: user.email, name: user.name },
+    action: "auth.account_deleted",
+    category: "auth",
+    severity: "critical",
+    targetType: "User",
+    targetId: user.id,
+    targetName: user.name,
+  });
+
+  // Cascade delete: sessions, accounts, spools (→ logs), boxes, prints, settings, presets
+  await prisma.user.delete({ where: { id: user.id } });
 }

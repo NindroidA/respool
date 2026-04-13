@@ -6,13 +6,20 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { updateProfile } from "@/app/(dashboard)/profile/actions";
+import {
+  updateProfile,
+  deleteAccount,
+} from "@/app/(dashboard)/profile/actions";
+import { signOut } from "@/lib/auth-client";
+import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import {
   Loader2,
   Disc,
   Layers3,
   Weight,
+  Trash2,
+  AlertTriangle,
   Calendar,
   Shield,
   Mail,
@@ -82,8 +89,11 @@ function providerLabel(provider: string) {
 }
 
 export function ProfileClient({ user, stats, providers }: ProfileClientProps) {
+  const router = useRouter();
   const [name, setName] = useState(user.name);
   const [saving, setSaving] = useState(false);
+  const [deleting, setDeleting] = useState(false);
+  const [deleteConfirm, setDeleteConfirm] = useState("");
 
   const initials = user.name
     .split(" ")
@@ -101,7 +111,9 @@ export function ProfileClient({ user, stats, providers }: ProfileClientProps) {
       await updateProfile({ name });
       toast.success("Profile updated");
     } catch (err) {
-      toast.error(err instanceof Error ? err.message : "Failed to update profile");
+      toast.error(
+        err instanceof Error ? err.message : "Failed to update profile",
+      );
     } finally {
       setSaving(false);
     }
@@ -254,6 +266,75 @@ export function ProfileClient({ user, stats, providers }: ProfileClientProps) {
         </h3>
 
         <TwoFactorSetup enabled={user.twoFactorEnabled} />
+      </div>
+
+      {/* Danger Zone */}
+      <div className="rounded-xl border border-red-500/30 bg-linear-to-br from-red-500/5 to-transparent p-6">
+        <div className="flex items-center gap-2 mb-4">
+          <AlertTriangle className="h-4 w-4 text-red-400" />
+          <h3 className="text-sm font-semibold uppercase tracking-wider text-red-400">
+            Danger Zone
+          </h3>
+        </div>
+
+        <div className="space-y-3">
+          <p className="text-sm text-muted-foreground">
+            Permanently delete your account and all associated data. This
+            includes all spools, prints, boxes, usage logs, presets, and
+            settings.{" "}
+            <span className="font-medium text-red-400">
+              This action cannot be undone.
+            </span>
+          </p>
+
+          <div className="space-y-2">
+            <Label
+              htmlFor="delete-confirm"
+              className="text-xs text-muted-foreground"
+            >
+              Type{" "}
+              <span className="font-mono font-medium text-red-400">
+                delete my account
+              </span>{" "}
+              to confirm
+            </Label>
+            <Input
+              id="delete-confirm"
+              value={deleteConfirm}
+              onChange={(e) => setDeleteConfirm(e.target.value)}
+              placeholder="delete my account"
+              className="border-red-500/30 font-mono text-sm focus-visible:border-red-500 focus-visible:ring-red-500/50"
+            />
+          </div>
+
+          <Button
+            variant="destructive"
+            className="gap-2"
+            disabled={deleteConfirm !== "delete my account" || deleting}
+            onClick={async () => {
+              setDeleting(true);
+              try {
+                await deleteAccount();
+                await signOut();
+                router.push("/login");
+              } catch (err) {
+                toast.error(
+                  err instanceof Error
+                    ? err.message
+                    : "Failed to delete account",
+                );
+                setDeleting(false);
+              }
+            }}
+          >
+            {deleting ? (
+              <Loader2 className="h-4 w-4 animate-spin" />
+            ) : (
+              <Trash2 className="h-4 w-4" />
+            )}
+            Delete Account Permanently
+          </Button>
+        </div>
       </div>
     </div>
   );
