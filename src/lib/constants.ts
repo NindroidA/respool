@@ -42,17 +42,14 @@ export const DEFAULT_FILAMENT_DIAMETER = 1.75; // mm
 
 // ─── Nindroid Systems / Footer Links ────────────────────
 
-export const NINDROID_PROJECTS = [
-  { name: "NinSys Homepage", url: "https://nindroidsystems.com" },
-  { name: "Cogworks", url: "https://cogworks.nindroidsystems.com" },
-  { name: "Pluginator", url: "https://pluginator.nindroidsystems.com" },
-] as const;
+export const NINDROID_URL = "https://nindroidsystems.com";
 
 export const FOOTER_LINKS = {
   github: "https://github.com/NindroidA/respool",
   coffee: "https://buymeacoffee.com/NindroidA",
   contributing:
     "https://github.com/NindroidA/respool/blob/main/CONTRIBUTING.md",
+  changelog: "https://github.com/NindroidA/respool/blob/main/CHANGELOG.md",
   issues: "https://github.com/NindroidA/respool/issues",
   license: "https://github.com/NindroidA/respool/blob/main/LICENSE",
 } as const;

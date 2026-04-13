@@ -109,6 +109,10 @@ If you find Respool useful, consider buying me a coffee!
 
 *Scanned with [desloppify](https://github.com/peteromallet/desloppify)*
 
+## Changelog
+
+See [CHANGELOG.md](CHANGELOG.md) for a full history of releases and changes.
+
 ## License
 
 [MIT](LICENSE)

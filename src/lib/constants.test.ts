@@ -5,7 +5,7 @@ import {
   DEFAULT_MATERIALS,
   DEFAULT_SPOOL_MASS,
   DEFAULT_FILAMENT_DIAMETER,
-  NINDROID_PROJECTS,
+  NINDROID_URL,
   FOOTER_LINKS,
 } from "./constants";
 
@@ -62,13 +62,9 @@ describe("defaults", () => {
   });
 });
 
-describe("NINDROID_PROJECTS", () => {
-  it("has valid project entries with URLs", () => {
-    expect(NINDROID_PROJECTS.length).toBeGreaterThan(0);
-    for (const project of NINDROID_PROJECTS) {
-      expect(project.name).toBeTruthy();
-      expect(project.url).toMatch(/^https:\/\//);
-    }
+describe("NINDROID_URL", () => {
+  it("is a valid HTTPS URL", () => {
+    expect(NINDROID_URL).toMatch(/^https:\/\//);
   });
 });
 
@@ -77,6 +73,7 @@ describe("FOOTER_LINKS", () => {
     expect(FOOTER_LINKS.github).toMatch(/^https:\/\//);
     expect(FOOTER_LINKS.coffee).toMatch(/^https:\/\//);
     expect(FOOTER_LINKS.contributing).toMatch(/^https:\/\//);
+    expect(FOOTER_LINKS.changelog).toMatch(/^https:\/\//);
     expect(FOOTER_LINKS.issues).toMatch(/^https:\/\//);
     expect(FOOTER_LINKS.license).toMatch(/^https:\/\//);
   });

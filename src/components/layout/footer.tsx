@@ -1,5 +1,5 @@
 import Image from "next/image";
-import { NINDROID_PROJECTS, FOOTER_LINKS } from "@/lib/constants";
+import { NINDROID_URL, FOOTER_LINKS } from "@/lib/constants";
 import { ExternalLink } from "lucide-react";
 
 const appVersion = process.env.APP_VERSION ?? "0.0.0";
@@ -8,7 +8,7 @@ export function Footer() {
   return (
     <footer className="border-t border-border bg-(--bg-raised)">
       <div className="mx-auto max-w-6xl px-4 py-10 sm:px-6 lg:px-8">
-        <div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-3">
+        <div className="grid gap-8 sm:grid-cols-2">
           {/* Column 1 — Brand */}
           <div className="space-y-3">
             <div className="flex items-center gap-2">
@@ -18,10 +18,19 @@ export function Footer() {
               </span>
             </div>
             <p className="text-sm leading-relaxed text-(--text-muted)">
-              Self-hosted 3D printing filament management.
+              3D printing filament management.
             </p>
-            <p className="text-sm font-medium text-jade">
-              A Nindroid Systems Project
+            <p className="text-sm font-medium">
+              A{" "}
+              <a
+                href={NINDROID_URL}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-jade transition-colors hover:underline"
+              >
+                Nindroid Systems
+              </a>{" "}
+              <span className="text-(--text-muted)">Project</span>
             </p>
             <div className="flex items-center gap-4 pt-1">
               <a
@@ -45,29 +54,7 @@ export function Footer() {
             </div>
           </div>
 
-          {/* Column 2 — Projects */}
-          <div>
-            <p className="mb-3 text-2xs font-bold uppercase tracking-widest text-(--text-faint)">
-              Projects
-            </p>
-            <ul className="space-y-2">
-              {NINDROID_PROJECTS.map((project) => (
-                <li key={project.name}>
-                  <a
-                    href={project.url}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="inline-flex items-center gap-1.5 text-sm text-(--text-muted) transition-colors hover:text-jade"
-                  >
-                    {project.name}
-                    <ExternalLink className="h-3 w-3" />
-                  </a>
-                </li>
-              ))}
-            </ul>
-          </div>
-
-          {/* Column 3 — Resources */}
+          {/* Column 2 — Resources */}
           <div>
             <p className="mb-3 text-2xs font-bold uppercase tracking-widest text-(--text-faint)">
               Resources
@@ -81,6 +68,17 @@ export function Footer() {
                   className="inline-flex items-center gap-1.5 text-sm text-(--text-muted) transition-colors hover:text-jade"
                 >
                   Documentation
+                  <ExternalLink className="h-3 w-3" />
+                </a>
+              </li>
+              <li>
+                <a
+                  href={FOOTER_LINKS.changelog}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center gap-1.5 text-sm text-(--text-muted) transition-colors hover:text-jade"
+                >
+                  Changelog
                   <ExternalLink className="h-3 w-3" />
                 </a>
               </li>
