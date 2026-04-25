@@ -48,6 +48,8 @@ pgdata/
 .superpowers/
 .desloppify/
 .worktrees/
+entities.json
+mempalace.yaml
 
 # ─── Planning Docs ──────────────────
 .plans/

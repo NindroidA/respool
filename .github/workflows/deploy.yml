@@ -62,6 +62,9 @@ jobs:
       - name: Run migrations
         run: docker-compose exec -T -u root app sh -c "node node_modules/prisma/build/index.js migrate deploy"
 
+      - name: Seed filament colors (idempotent)
+        run: docker-compose exec -T app sh -c "node prisma/seed.cjs"
+
       - name: Health check
         id: healthcheck
         run: |
