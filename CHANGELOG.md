@@ -2,6 +2,13 @@
 
 All notable changes to Respool are documented here.
 
+## [1.2.3] — 2026-10-07
+
+### Security
+- Patched dependency advisories via in-range lockfile bumps: `proxy-addr` 2.0.8 (critical), `@modelcontextprotocol/sdk` 1.31.0, `brace-expansion` 1.1.21 / 5.0.12, `fast-uri` 3.1.8, `sharp` 0.35.5, `source-map-js` 1.2.2, `hono` 4.13.7, `postcss-selector-parser` 7.1.6
+
+---
+
 ## [1.2.2] — 2026-04-12
 
 ### Added
