@@ -2,6 +2,13 @@
 
 All notable changes to Respool are documented here.
 
+## [1.2.4] — 2026-10-12
+
+### Security
+- Bumped `next` and `eslint-config-next` 16.3.6 → 16.3.8: fixes Image Optimization SSRF (high), SSG/ISR cache poisoning, metadata image route disclosure, Draft Mode `use cache` leak, and dev-server MCP endpoint disclosure
+
+---
+
 ## [1.2.3] — 2026-10-07
 
 ### Security
